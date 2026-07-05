@@ -9,196 +9,212 @@
     <meta name="theme-color" content="#005bea" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* ===== RESET E ESTILOS BASE ===== */
+        /* ===== RESET ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
+
         body {
             min-height: 100vh;
             background: radial-gradient(circle at 20% 30%, #0b0e1a, #03050b);
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             padding: 16px;
         }
+
         .app {
             max-width: 1200px;
             width: 100%;
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
-            border-radius: 48px;
-            padding: 24px 24px 16px;
+            border-radius: 32px;
+            padding: 20px 20px 16px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.06);
-            transition: all 0.3s;
         }
+
+        /* ===== HEADER ===== */
         .header {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
+            gap: 12px;
             margin-bottom: 16px;
             padding-bottom: 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
+
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
+
         .logo-img {
-            height: 48px;
+            height: 44px;
             width: auto;
             object-fit: contain;
             filter: drop-shadow(0 4px 12px rgba(0, 91, 234, 0.3));
             border-radius: 8px;
         }
+
         .info-bar {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
         }
+
         .info-item {
             display: flex;
             align-items: center;
             gap: 6px;
             color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
+            font-size: 13px;
             background: rgba(255, 255, 255, 0.04);
-            padding: 6px 14px;
+            padding: 4px 12px;
             border-radius: 40px;
             border: 1px solid rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(4px);
-            min-height: 40px;
+            min-height: 36px;
         }
+
         .info-item i {
             color: #00c6fb;
-            font-size: 15px;
+            font-size: 14px;
         }
+
         .info-item .value {
             font-weight: 500;
             color: #fff;
             white-space: nowrap;
         }
+
         .version {
-            font-size: 11px;
+            font-size: 10px;
             color: rgba(255, 255, 255, 0.25);
             background: rgba(255, 255, 255, 0.04);
-            padding: 4px 12px;
+            padding: 4px 10px;
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.04);
-            white-space: nowrap;
-        }
-        .date-display {
-            text-align: center;
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.7);
-            padding: 8px 0 12px;
-            font-weight: 400;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            margin-bottom: 16px;
-        }
-        .date-display strong {
-            color: #fff;
-            font-weight: 500;
         }
 
-        /* ===== PRÓXIMO ÔNIBUS ===== */
+        /* ===== DATE ===== */
+        .date-display {
+            text-align: center;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 6px 0 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            margin-bottom: 14px;
+        }
+
+        /* ===== NEXT BUS ===== */
         .next-bus {
-            background: rgba(0, 198, 251, 0.08);
-            border: 1px solid rgba(0, 198, 251, 0.25);
-            border-radius: 20px;
-            padding: 14px 20px;
-            margin-bottom: 24px;
+            background: rgba(0, 198, 251, 0.06);
+            border: 1px solid rgba(0, 198, 251, 0.2);
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
-            transition: all 0.3s;
+            gap: 10px;
         }
+
         .next-bus .label {
             color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
+            font-size: 13px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
+
         .next-bus .label i {
             color: #00c6fb;
         }
+
         .next-bus .bus-info {
             display: flex;
             flex-wrap: wrap;
-            align-items: baseline;
-            gap: 8px 16px;
+            align-items: center;
+            gap: 8px 14px;
         }
+
         .next-bus .destino {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: #fff;
         }
+
         .next-bus .horario {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #b0caff;
         }
+
         .next-bus .countdown {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             color: #00c6fb;
-            background: rgba(0, 198, 251, 0.15);
-            padding: 4px 14px;
+            background: rgba(0, 198, 251, 0.12);
+            padding: 2px 14px;
             border-radius: 30px;
-            border: 1px solid rgba(0, 198, 251, 0.2);
-            min-width: 80px;
+            border: 1px solid rgba(0, 198, 251, 0.15);
+            min-width: 70px;
             text-align: center;
         }
+
         .next-bus .countdown.passed {
             color: #ff6b6b;
             border-color: rgba(255, 107, 107, 0.3);
-            background: rgba(255, 107, 107, 0.1);
-        }
-        .next-bus .empty-msg {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 15px;
+            background: rgba(255, 107, 107, 0.08);
         }
 
-        /* ===== FILTROS ===== */
+        .next-bus .empty-msg {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+        }
+
+        /* ===== FILTERS ===== */
         .filters {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 24px;
+            gap: 6px;
+            margin-bottom: 20px;
         }
+
         .filter-btn {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
             color: rgba(255, 255, 255, 0.6);
-            padding: 8px 18px;
+            padding: 6px 16px;
             border-radius: 40px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.25s;
             backdrop-filter: blur(4px);
-            min-height: 44px;
+            min-height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
             touch-action: manipulation;
+            flex: 0 1 auto;
         }
+
         .filter-btn:hover {
             background: rgba(255, 255, 255, 0.08);
             color: #fff;
             border-color: rgba(255, 255, 255, 0.15);
         }
+
         .filter-btn.active {
             background: linear-gradient(135deg, #00c6fb, #005bea);
             border-color: transparent;
@@ -209,15 +225,16 @@
         /* ===== CARDS ===== */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
         }
+
         .card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(8px);
-            border-radius: 24px;
-            padding: 18px 20px;
+            border-radius: 20px;
+            padding: 16px 18px;
             border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.3s ease;
             position: relative;
@@ -226,10 +243,10 @@
             opacity: 1;
             transform: translateY(0);
         }
+
         .card.passed {
-            opacity: 0.45;
+            opacity: 0.4;
             filter: grayscale(0.5);
-            order: 1;
         }
         .card.passed .horario {
             color: #888;
@@ -237,24 +254,26 @@
         .card.passed .destino {
             color: #aaa;
         }
+
         .card.next {
             border-color: rgba(0, 198, 251, 0.5);
-            box-shadow: 0 0 30px rgba(0, 198, 251, 0.1);
+            box-shadow: 0 0 30px rgba(0, 198, 251, 0.08);
         }
         .card.next::after {
             content: '⬇ PRÓXIMO';
             position: absolute;
             top: 8px;
-            right: 12px;
-            font-size: 10px;
+            right: 10px;
+            font-size: 9px;
             font-weight: 700;
             color: #00c6fb;
-            background: rgba(0, 198, 251, 0.15);
-            padding: 2px 10px;
+            background: rgba(0, 198, 251, 0.12);
+            padding: 2px 8px;
             border-radius: 20px;
             letter-spacing: 0.5px;
-            border: 1px solid rgba(0, 198, 251, 0.2);
+            border: 1px solid rgba(0, 198, 251, 0.15);
         }
+
         .card::before {
             content: '';
             position: absolute;
@@ -269,103 +288,89 @@
         .card.next::before {
             opacity: 1;
         }
+
         .card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             background: rgba(255, 255, 255, 0.06);
             border-color: rgba(255, 255, 255, 0.12);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
+
         .card .destino {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             color: #fff;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .card .destino i {
-            color: #00c6fb;
-            font-size: 16px;
-        }
-        .card .horario {
-            font-size: 26px;
-            font-weight: 700;
-            color: #b0caff;
-            letter-spacing: 1px;
             margin-bottom: 4px;
-        }
-        .card .embarque {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        .card .embarque i {
+        .card .destino i {
+            color: #00c6fb;
+            font-size: 15px;
+        }
+        .card .horario {
+            font-size: 24px;
+            font-weight: 700;
+            color: #b0caff;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        .card .embarque {
             font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .card .embarque i {
+            font-size: 11px;
             color: #00c6fb;
         }
         .card .dias {
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
+            gap: 4px;
         }
         .card .dias span {
-            background: rgba(0, 198, 251, 0.12);
+            background: rgba(0, 198, 251, 0.1);
             color: #00c6fb;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 600;
-            padding: 3px 10px;
+            padding: 2px 10px;
             border-radius: 20px;
-            border: 1px solid rgba(0, 198, 251, 0.15);
+            border: 1px solid rgba(0, 198, 251, 0.12);
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
         .empty {
             grid-column: 1 / -1;
             text-align: center;
             padding: 40px 20px;
             color: rgba(255, 255, 255, 0.3);
-            font-size: 15px;
+            font-size: 14px;
         }
         .empty i {
-            font-size: 36px;
+            font-size: 32px;
             display: block;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             opacity: 0.4;
         }
 
-        /* ===== NOTE ===== */
-        .note {
-            margin: 20px 0;
-            padding: 15px 18px;
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffe69c;
-            border-left: 6px solid #ffc107;
-            border-radius: 10px;
-            font-size: 15px;
-            line-height: 1.5;
-            font-weight: 500;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-        .note strong {
-            color: #b45309;
-        }
-
-        /* ===== FORMULÁRIO DE ALERTA ===== */
+        /* ===== ALERTS SECTION ===== */
         .alerts-section {
             background: rgba(255, 255, 255, 0.04);
-            border-radius: 24px;
-            padding: 20px 20px 16px;
-            margin-bottom: 24px;
+            border-radius: 20px;
+            padding: 18px 16px 14px;
+            margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
+
         .alerts-section h3 {
             color: #fff;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 600;
             margin-bottom: 12px;
             display: flex;
@@ -375,70 +380,81 @@
         .alerts-section h3 i {
             color: #00c6fb;
         }
+
         .alert-form {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             align-items: flex-end;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
+
         .alert-form .field {
-            flex: 1 1 160px;
-            min-width: 130px;
+            flex: 1 1 140px;
+            min-width: 120px;
         }
+
         .alert-form label {
             display: block;
             color: rgba(255, 255, 255, 0.6);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
-            margin-bottom: 4px;
-            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+            letter-spacing: 0.3px;
         }
+
         .alert-form input,
         .alert-form select {
             width: 100%;
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             background: rgba(255, 255, 255, 0.05);
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
             transition: 0.3s;
             outline: none;
+            height: 38px;
         }
+
         .alert-form input:focus,
         .alert-form select:focus {
             border-color: #00c6fb;
-            box-shadow: 0 0 0 3px rgba(0, 198, 251, 0.15);
+            box-shadow: 0 0 0 3px rgba(0, 198, 251, 0.12);
         }
+
         .alert-form input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.25);
         }
+
         .alert-form select option {
             background: #1a1f2e;
             color: #fff;
         }
+
         .alert-form .btn-add {
             background: linear-gradient(135deg, #00c6fb, #005bea);
             border: none;
             color: #fff;
             font-weight: 600;
-            padding: 10px 24px;
-            border-radius: 12px;
+            padding: 0 20px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13px;
             transition: 0.3s;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             white-space: nowrap;
-            height: 44px;
-            min-width: 120px;
+            height: 38px;
+            min-width: 100px;
             justify-content: center;
+            flex: 0 1 auto;
         }
+
         .alert-form .btn-add:hover {
-            transform: scale(1.03);
-            box-shadow: 0 8px 24px rgba(0, 91, 234, 0.4);
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 91, 234, 0.35);
         }
         .alert-form .btn-add:active {
             transform: scale(0.97);
@@ -447,20 +463,23 @@
         .alert-list {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 8px;
+            gap: 8px;
+            margin-top: 6px;
         }
+
         .alert-item {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 8px 14px 8px 18px;
+            border-radius: 10px;
+            padding: 6px 12px 6px 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            font-size: 14px;
+            font-size: 13px;
             color: rgba(255, 255, 255, 0.85);
+            flex-wrap: wrap;
         }
+
         .alert-item .name {
             font-weight: 600;
             color: #fff;
@@ -469,44 +488,150 @@
             color: #b0caff;
         }
         .alert-item .phone {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 13px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
         }
         .alert-item .remove-btn {
             background: none;
             border: none;
             color: #ff6b6b;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             padding: 0 4px;
             transition: 0.3s;
-            opacity: 0.5;
+            opacity: 0.4;
         }
         .alert-item .remove-btn:hover {
             opacity: 1;
             transform: scale(1.2);
         }
         .alert-item .status {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 600;
             padding: 2px 10px;
             border-radius: 20px;
-            background: rgba(0, 198, 251, 0.15);
+            background: rgba(0, 198, 251, 0.12);
             color: #00c6fb;
-            border: 1px solid rgba(0, 198, 251, 0.15);
+            border: 1px solid rgba(0, 198, 251, 0.12);
         }
         .alert-item .status.alerted {
-            background: rgba(255, 107, 107, 0.15);
+            background: rgba(255, 107, 107, 0.12);
             color: #ff6b6b;
             border-color: rgba(255, 107, 107, 0.2);
         }
+
         .no-alerts {
             color: rgba(255, 255, 255, 0.3);
-            font-size: 14px;
-            padding: 6px 0;
+            font-size: 13px;
+            padding: 4px 0;
         }
 
-        /* ===== MODAL DE ALERTA ===== */
+        /* ===== NOTE ===== */
+        .note {
+            margin: 16px 0;
+            padding: 12px 16px;
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffe69c;
+            border-left: 5px solid #ffc107;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+        .note strong {
+            color: #b45309;
+        }
+
+        /* ===== MODAL GERAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s, visibility 0.4s;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: rgba(20, 30, 50, 0.95);
+            border-radius: 32px;
+            padding: 36px 28px 28px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-box .icon-big {
+            font-size: 44px;
+            background: linear-gradient(135deg, #00c6fb, #005bea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .modal-box h2 {
+            color: #fff;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .modal-box p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .modal-box .btn-primary {
+            background: linear-gradient(135deg, #00c6fb, #005bea);
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 12px 32px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-box .btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 40px rgba(0, 91, 234, 0.6);
+        }
+        .modal-box .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        /* ===== ALERT MODAL ===== */
         .alert-modal {
             position: fixed;
             top: 0;
@@ -521,21 +646,24 @@
             z-index: 2000;
             padding: 20px;
         }
+
         .alert-modal.active {
             display: flex;
         }
+
         .alert-modal .modal-box {
             background: rgba(20, 30, 50, 0.97);
-            border-radius: 36px;
-            padding: 40px 32px 32px;
-            max-width: 460px;
+            border-radius: 32px;
+            padding: 36px 28px 28px;
+            max-width: 440px;
             width: 100%;
             text-align: center;
-            border: 1px solid rgba(0, 198, 251, 0.3);
+            border: 1px solid rgba(0, 198, 251, 0.25);
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
             transform: scale(0.95) translateY(10px);
             animation: alertPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
+
         @keyframes alertPop {
             0% {
                 opacity: 0;
@@ -546,53 +674,37 @@
                 transform: scale(1) translateY(0);
             }
         }
+
         .alert-modal .icon-big {
-            font-size: 56px;
+            font-size: 48px;
             background: linear-gradient(135deg, #00c6fb, #005bea);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
+
         .alert-modal h2 {
             color: #fff;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
+
         .alert-modal .msg {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 17px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 16px;
             line-height: 1.6;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .alert-modal .msg strong {
             color: #00c6fb;
         }
+
         .alert-modal .sub-msg {
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 14px;
-            margin-bottom: 24px;
-        }
-        .alert-modal .btn-primary {
-            background: linear-gradient(135deg, #00c6fb, #005bea);
-            border: none;
-            color: #fff;
-            font-size: 17px;
-            font-weight: 600;
-            padding: 14px 36px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4);
-            touch-action: manipulation;
-        }
-        .alert-modal .btn-primary:hover {
-            transform: scale(1.03);
-            box-shadow: 0 12px 40px rgba(0, 91, 234, 0.6);
-        }
-        .alert-modal .btn-primary:active {
-            transform: scale(0.97);
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 13px;
+            margin-bottom: 20px;
         }
 
         /* ===== FOOTER ===== */
@@ -601,37 +713,44 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
-            padding-top: 14px;
+            gap: 8px;
+            padding-top: 12px;
             border-top: 1px solid rgba(255, 255, 255, 0.04);
-            font-size: 12px;
+            font-size: 11px;
             color: rgba(255, 255, 255, 0.2);
         }
 
-        /* ===== ANIMAÇÕES ===== */
+        .footer .version {
+            font-size: 10px;
+        }
+
+        /* ===== ANIMAÇÕES DOS CARDS ===== */
         .card {
-            animation: fadeUp 0.5s ease forwards;
+            animation: fadeUp 0.4s ease forwards;
             opacity: 0;
         }
+
         .card.passed {
-            animation: fadeUp 0.5s ease forwards, fadeGray 0.5s ease forwards;
+            animation: fadeUp 0.4s ease forwards, fadeGray 0.4s ease forwards;
         }
+
         @keyframes fadeUp {
             0% {
                 opacity: 0;
-                transform: translateY(16px);
+                transform: translateY(12px);
             }
             100% {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
         @keyframes fadeGray {
             0% {
                 opacity: 1;
             }
             100% {
-                opacity: 0.45;
+                opacity: 0.4;
             }
         }
 
@@ -672,8 +791,9 @@
             animation-delay: 0.46s;
         }
 
+        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar {
-            width: 5px;
+            width: 4px;
         }
         ::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.02);
@@ -688,33 +808,29 @@
 
         /* ===== RESPONSIVIDADE ===== */
         @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
             .app {
-                padding: 16px 14px 12px;
-                border-radius: 28px;
+                padding: 16px;
+                border-radius: 24px;
             }
             .header {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 12px;
+                gap: 8px;
             }
             .logo-area {
                 justify-content: center;
             }
             .info-bar {
                 justify-content: center;
+                gap: 6px;
             }
-            .cards-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
-            .card .horario {
-                font-size: 22px;
-            }
-            .card .destino {
-                font-size: 16px;
-            }
-            .logo-img {
-                height: 40px;
+            .info-item {
+                font-size: 12px;
+                padding: 4px 10px;
+                min-height: 32px;
             }
             .next-bus {
                 flex-direction: column;
@@ -724,83 +840,126 @@
             .next-bus .bus-info {
                 justify-content: center;
             }
+            .cards-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .card .horario {
+                font-size: 20px;
+            }
+            .card .destino {
+                font-size: 15px;
+            }
+            .logo-img {
+                height: 38px;
+            }
             .alert-form .field {
                 flex: 1 1 100%;
+                min-width: 100%;
             }
             .alert-form .btn-add {
                 width: 100%;
-            }
-        }
-        @media (max-width: 550px) {
-            .cards-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            .info-bar {
-                flex-wrap: wrap;
                 justify-content: center;
-                gap: 8px;
             }
-            .info-item {
-                font-size: 13px;
-                padding: 4px 12px;
-                min-height: 36px;
-            }
-            .filter-btn {
-                font-size: 12px;
-                padding: 6px 14px;
-                min-height: 40px;
-            }
-            .logo-img {
-                height: 36px;
-            }
-            .version {
-                font-size: 10px;
-            }
-            .card {
-                padding: 14px 16px;
-            }
-            .card .horario {
-                font-size: 24px;
-            }
-            .footer {
-                font-size: 11px;
-                flex-direction: column;
-                text-align: center;
-            }
-            .next-bus .destino {
-                font-size: 18px;
-            }
-            .next-bus .countdown {
-                font-size: 14px;
-                min-width: 60px;
+            .alert-item {
+                width: 100%;
             }
             .date-display {
                 font-size: 14px;
             }
-            .alert-item {
-                flex-wrap: wrap;
-                gap: 6px;
+            .version {
+                font-size: 9px;
             }
         }
-        @media (max-width: 380px) {
+
+        @media (max-width: 550px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .info-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
             .info-item {
                 font-size: 11px;
-                padding: 3px 10px;
+                padding: 3px 8px;
+                min-height: 28px;
             }
             .filter-btn {
                 font-size: 11px;
-                padding: 4px 10px;
+                padding: 4px 12px;
+                min-height: 32px;
             }
             .logo-img {
-                height: 30px;
+                height: 32px;
+            }
+            .version {
+                font-size: 8px;
+            }
+            .card {
+                padding: 12px 14px;
+            }
+            .card .horario {
+                font-size: 20px;
+            }
+            .footer {
+                font-size: 10px;
+                flex-direction: column;
+                text-align: center;
+            }
+            .next-bus .destino {
+                font-size: 16px;
+            }
+            .next-bus .countdown {
+                font-size: 12px;
+                min-width: 60px;
+            }
+            .date-display {
+                font-size: 13px;
+            }
+            .alert-modal .modal-box {
+                padding: 28px 20px 24px;
+            }
+            .alert-modal h2 {
+                font-size: 20px;
+            }
+            .alert-modal .msg {
+                font-size: 15px;
+            }
+            .modal-box {
+                padding: 28px 20px 24px;
+            }
+            .modal-box h2 {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .info-item {
+                font-size: 10px;
+                padding: 2px 6px;
+            }
+            .filter-btn {
+                font-size: 10px;
+                padding: 3px 10px;
+                min-height: 28px;
+            }
+            .logo-img {
+                height: 28px;
+            }
+            .card .horario {
+                font-size: 18px;
+            }
+            .card .destino {
+                font-size: 14px;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== MODAL DE BOAS-VINDAS ===== -->
+    <!-- MODAL BOAS-VINDAS -->
     <div class="modal-overlay" id="welcomeModal">
         <div class="modal-box">
             <div class="icon-big"><i class="fas fa-bus"></i></div>
@@ -810,7 +969,7 @@
         </div>
     </div>
 
-    <!-- ===== MODAL DE ALERTA (LIGAÇÃO IA) ===== -->
+    <!-- MODAL DE ALERTA -->
     <div class="alert-modal" id="alertModal">
         <div class="modal-box">
             <div class="icon-big"><i class="fas fa-phone-volume"></i></div>
@@ -821,7 +980,7 @@
         </div>
     </div>
 
-    <!-- ===== APP PRINCIPAL ===== -->
+    <!-- APP PRINCIPAL -->
     <div class="app">
         <header class="header">
             <div class="logo-area">
@@ -840,17 +999,15 @@
                     <i class="fas fa-cloud-sun"></i>
                     <span class="value" id="weatherValue">-- °C</span>
                 </div>
-                <span class="version"><i class="fas fa-code-branch"></i> v2.5.0</span>
+                <span class="version"><i class="fas fa-code-branch"></i> v2.5.1</span>
             </div>
         </header>
 
-        <!-- DATA -->
         <div class="date-display">
             <i class="far fa-calendar-alt" style="margin-right:6px; color:#00c6fb;"></i>
             <span id="fullDate">--</span>
         </div>
 
-        <!-- PRÓXIMO ÔNIBUS -->
         <div class="next-bus" id="nextBus">
             <div class="label"><i class="fas fa-bus"></i> Próximo ônibus</div>
             <div class="bus-info" id="nextBusInfo">
@@ -860,7 +1017,6 @@
             </div>
         </div>
 
-        <!-- FILTROS -->
         <div class="filters">
             <button class="filter-btn" data-filter="all">Todos</button>
             <button class="filter-btn" data-filter="Segunda a Sexta">Segunda–Sexta</button>
@@ -868,10 +1024,9 @@
             <button class="filter-btn" data-filter="Domingo">Domingo</button>
         </div>
 
-        <!-- CARDS -->
         <div class="cards-grid" id="cardsContainer"></div>
 
-        <!-- ===== SEÇÃO DE ALERTAS ===== -->
+        <!-- SEÇÃO DE ALERTAS -->
         <div class="alerts-section">
             <h3><i class="fas fa-bell"></i> Alertas de Ônibus</h3>
             <div class="alert-form" id="alertForm">
@@ -887,14 +1042,11 @@
                     <label>Destino</label>
                     <select id="alertDestino">
                         <option value="">Selecione...</option>
-                        <!-- preenchido via JS -->
                     </select>
                 </div>
                 <button class="btn-add" id="addAlertBtn"><i class="fas fa-plus"></i> Cadastrar</button>
             </div>
-            <div id="alertListContainer">
-                <!-- lista renderizada via JS -->
-            </div>
+            <div id="alertListContainer"></div>
         </div>
 
         <div class="note">
@@ -903,7 +1055,7 @@
 
         <div class="footer">
             <span>© 2026 VTM Integração – Todos os direitos reservados</span>
-            <span class="version">2.5.0</span>
+            <span class="version">2.5.1</span>
         </div>
     </div>
 
@@ -932,7 +1084,7 @@
         let currentFilter = 'all';
         let allHorarios = [...horarios];
         let alertas = [];
-        let alertaDisparado = {}; // chave: destino+horario => true
+        let alertaDisparado = {};
 
         // ================================================================
         //  DOM REFS
@@ -941,7 +1093,6 @@
         const nextBusInfo = document.getElementById('nextBusInfo');
         const fullDateSpan = document.getElementById('fullDate');
 
-        const alertForm = document.getElementById('alertForm');
         const alertName = document.getElementById('alertName');
         const alertPhone = document.getElementById('alertPhone');
         const alertDestino = document.getElementById('alertDestino');
@@ -1018,7 +1169,7 @@
         }
 
         // ================================================================
-        //  CLIMA (HG Weather com format=json-cors)
+        //  CLIMA
         //  ================================================================
         const WEATHER_API_KEY = '84ac546d';
         const CITY = 'Maraba';
@@ -1126,14 +1277,13 @@
         }
 
         // ================================================================
-        //  ALERTAS – CADASTRO E LISTA
+        //  ALERTAS
         //  ================================================================
         function loadAlertas() {
             try {
                 const raw = localStorage.getItem('vtm_alertas');
                 alertas = raw ? JSON.parse(raw) : [];
             } catch { alertas = []; }
-            // Inicializa disparos
             alertaDisparado = {};
             alertas.forEach(a => {
                 const key = a.destino + '|' + a.horario;
@@ -1177,7 +1327,6 @@
             html += '</div>';
             alertListContainer.innerHTML = html;
 
-            // Eventos de remover
             document.querySelectorAll('.remove-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const idx = parseInt(this.dataset.idx);
@@ -1197,12 +1346,10 @@
                 alert('Preencha nome, telefone e destino.');
                 return;
             }
-            // Telefone simples
             if (telefone.length < 10) {
                 alert('Número de telefone inválido (mínimo 10 dígitos).');
                 return;
             }
-            // Procura o próximo horário desse destino hoje
             const hoje = getCurrentDay();
             const horariosHoje = allHorarios.filter(h => h.dias.includes(hoje) && h.destino === destino);
             if (!horariosHoje.length) {
@@ -1215,11 +1362,9 @@
                 alert(`Todos os ônibus para "${destino}" já passaram hoje.`);
                 return;
             }
-            // Pega o primeiro horário futuro
             futuro.sort((a, b) => a.horario.localeCompare(b.horario));
             const horarioEscolhido = futuro[0].horario;
 
-            // Verifica se já existe alerta para esse destino+horário
             const existe = alertas.some(a => a.destino === destino && a.horario === horarioEscolhido);
             if (existe) {
                 alert(`Já existe um alerta para "${destino}" às ${horarioEscolhido}.`);
@@ -1246,7 +1391,7 @@
         }
 
         // ================================================================
-        //  VERIFICAÇÃO DE ALERTAS (a cada 30s)
+        //  VERIFICAÇÃO DE ALERTAS
         //  ================================================================
         function verificarAlertas() {
             const agora = getCurrentMinutes();
@@ -1254,21 +1399,16 @@
                 const key = a.destino + '|' + a.horario;
                 const hm = getMinutesFromTime(a.horario);
                 const diff = hm - agora;
-                // Se já foi disparado, não repetir
                 if (alertaDisparado[key]) return;
-                // Se faltar 30 minutos ou menos (e ainda não passou)
                 if (diff <= 30 && diff >= -2) {
-                    // Dispara
                     alertaDisparado[key] = true;
                     const msg =
                         `Olá ${a.nome}! Faltam ${Math.round(diff)} minutos para o seu VTM da linha "${a.destino}" passar na parada "${a.embarque || 'terminal'}". Programa-se!`;
-                    // Mostra modal
-                    alertMessage.innerHTML = `📢 <strong>${a.nome}</strong>, faltam <strong>${Math.round(diff)} minutos</strong> para o <strong>VTM "${a.destino}"</strong> passar na parada <strong>${a.embarque || 'terminal'}</strong>.`;
+                    alertMessage.innerHTML =
+                        `📢 <strong>${a.nome}</strong>, faltam <strong>${Math.round(diff)} minutos</strong> para o <strong>VTM "${a.destino}"</strong> passar na parada <strong>${a.embarque || 'terminal'}</strong>.`;
                     alertSubMsg.textContent = `🔔 Alerta disparado às ${new Date().toLocaleTimeString()}`;
                     alertModal.classList.add('active');
-                    // Sintetiza voz (IA)
                     speak(msg);
-                    // Salva estado
                     saveAlertas();
                     renderAlertList();
                 }
@@ -1281,16 +1421,18 @@
         function initFilters() {
             const btns = document.querySelectorAll('.filter-btn');
             const hoje = getCurrentDay();
+            btns.forEach(btn => btn.classList.remove('active'));
+            let found = false;
             btns.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.filter === hoje) btn.classList.add('active');
+                if (btn.dataset.filter === hoje) {
+                    btn.classList.add('active');
+                    currentFilter = hoje;
+                    found = true;
+                }
             });
-            // Se não achou, ativa "Todos"
-            if (!document.querySelector('.filter-btn.active')) {
+            if (!found) {
                 document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
                 currentFilter = 'all';
-            } else {
-                currentFilter = document.querySelector('.filter-btn.active').dataset.filter;
             }
 
             btns.forEach(btn => {
@@ -1307,34 +1449,29 @@
         //  INICIALIZAÇÃO
         //  ================================================================
         function init() {
-            // Data / relógio
             updateDateAndGreeting();
             updateClock();
             setInterval(updateClock, 1000);
 
-            // Clima
             fetchWeather();
             setInterval(fetchWeather, 600000);
 
-            // Filtros
             initFilters();
-
-            // Renderização inicial
             renderCards();
 
-            // Alertas
             loadAlertas();
             addBtn.addEventListener('click', addAlerta);
 
-            // Modal de boas-vindas
+            // Modal boas-vindas
             const welcomeModal = document.getElementById('welcomeModal');
             const closeModalBtn = document.getElementById('closeModalBtn');
             window.addEventListener('load', () => welcomeModal.classList.add('active'));
             closeModalBtn.addEventListener('click', () => welcomeModal.classList.remove('active'));
-            welcomeModal.addEventListener('click', (e) => { if (e.target === welcomeModal) welcomeModal.classList.remove(
-                    'active'); });
+            welcomeModal.addEventListener('click', (e) => {
+                if (e.target === welcomeModal) welcomeModal.classList.remove('active');
+            });
 
-            // Modal de alerta
+            // Modal alerta
             closeAlertBtn.addEventListener('click', () => {
                 alertModal.classList.remove('active');
                 window.speechSynthesis.cancel();
@@ -1346,20 +1483,18 @@
                 }
             });
 
-            // Verificação periódica (a cada 30s)
+            // Verificação periódica
             setInterval(() => {
                 verificarAlertas();
-                // também atualiza cards e contagem
                 renderCards();
             }, 30000);
 
-            // Atualização completa a cada 60s
             setInterval(() => {
                 updateDateAndGreeting();
                 renderCards();
             }, 60000);
 
-            // PWA (service worker) - opcional
+            // PWA
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/sw.js')
                     .then(() => console.log('SW registrado'))
@@ -1369,6 +1504,5 @@
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
-
 </body>
 </html>
