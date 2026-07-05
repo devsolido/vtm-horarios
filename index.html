@@ -737,7 +737,7 @@
         // ================================================================
         //  SERVE PARA: Clima com HG Weather (CHAVE ATUALIZADA)
         //  ================================================================
-       const WEATHER_API_KEY = '84ac546d'; // ← NOVA CHAVE
+   const WEATHER_API_KEY = '84ac546d';
 const CITY = 'Maraba';
 const STATE = 'PA';
 
@@ -748,14 +748,10 @@ async function fetchWeather() {
     el.textContent = '⏳ Carregando...';
 
     try {
-        // URL direta (comentada por enquanto)
-        // const url = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt`;
+        // 🌟 SOLUÇÃO OFICIAL: adicione &format=json-cors à URL
+        const url = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt&format=json-cors`;
         
-        // 🔧 PROXY CORS (solução temporária até a HG liberar o domínio)
-        const target = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt`;
-        const url = `https://corsproxy.io/?${encodeURIComponent(target)}`;
-        
-        console.log('🔎 Buscando clima via proxy:', url);
+        console.log('🔎 Buscando clima em:', url);
 
         const res = await fetch(url);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
