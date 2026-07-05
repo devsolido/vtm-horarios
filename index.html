@@ -1025,29 +1025,45 @@
         </div>
 
         <div class="cards-grid" id="cardsContainer"></div>
-
-        <!-- SEÇÃO DE ALERTAS -->
-        <div class="alerts-section">
-            <h3><i class="fas fa-bell"></i> Alertas de Ônibus</h3>
-            <div class="alert-form" id="alertForm">
-                <div class="field">
-                    <label>Seu nome</label>
-                    <input type="text" id="alertName" placeholder="Ex: João Silva" />
-                </div>
-                <div class="field">
-                    <label>Telefone (com DDD)</label>
-                    <input type="tel" id="alertPhone" placeholder="(91) 99999-9999" />
-                </div>
-                <div class="field">
-                    <label>Destino</label>
-                    <select id="alertDestino">
-                        <option value="">Selecione...</option>
-                    </select>
-                </div>
-                <button class="btn-add" id="addAlertBtn"><i class="fas fa-plus"></i> Cadastrar</button>
-            </div>
-            <div id="alertListContainer"></div>
+<!-- SEÇÃO DE ALERTAS (EM CONSTRUÇÃO) -->
+<div class="alerts-section" style="opacity: 0.7; pointer-events: none; position: relative; overflow: hidden;">
+    <!-- Overlay de "Em Construção" -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 10; padding: 20px; text-align: center;">
+        <div style="background: linear-gradient(135deg, #00c6fb, #005bea); padding: 16px 20px; border-radius: 60px; display: inline-flex; align-items: center; gap: 12px; box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4); margin-bottom: 12px;">
+            <i class="fas fa-tools" style="color: #fff; font-size: 24px;"></i>
+            <span style="color: #fff; font-weight: 700; font-size: 18px; letter-spacing: 0.5px;">EM CONSTRUÇÃO</span>
         </div>
+        <p style="color: rgba(255,255,255,0.8); font-size: 15px; max-width: 400px; margin: 0;">
+            Estamos desenvolvendo a funcionalidade de alertas por ligação com IA.<br />
+            <span style="color: rgba(255,255,255,0.5); font-size: 13px;">Em breve você receberá avisos diretamente no seu telefone!</span>
+        </p>
+    </div>
+
+    <!-- Conteúdo original (desabilitado visualmente) -->
+    <h3><i class="fas fa-bell"></i> Alertas de Ônibus</h3>
+    <div class="alert-form" id="alertForm">
+        <div class="field">
+            <label>Seu nome</label>
+            <input type="text" id="alertName" placeholder="Ex: João Silva" disabled />
+        </div>
+        <div class="field">
+            <label>Telefone (com DDD)</label>
+            <input type="tel" id="alertPhone" placeholder="(91) 99999-9999" disabled />
+        </div>
+        <div class="field">
+            <label>Destino</label>
+            <select id="alertDestino" disabled>
+                <option value="">Selecione...</option>
+            </select>
+        </div>
+        <button class="btn-add" id="addAlertBtn" disabled style="opacity: 0.5; cursor: not-allowed;">
+            <i class="fas fa-plus"></i> Cadastrar
+        </button>
+    </div>
+    <div id="alertListContainer">
+        <div class="no-alerts" style="color: rgba(255,255,255,0.3); font-style: italic;">Funcionalidade em desenvolvimento</div>
+    </div>
+</div>
 
         <div class="note">
             <strong>⚠ Nota:</strong> Os horários estão sujeitos a alterações por decisão da administração da VTM Integração ou em razão de condições adversas no trânsito, como congestionamentos, acidentes, obras ou outros imprevistos.
