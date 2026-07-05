@@ -472,6 +472,11 @@
             </div>
 
             <div class="info-bar">
+                <!-- SAUDAÇÃO DINÂMICA -->
+                <div class="info-item" id="greeting">
+                    <i class="fas fa-hand-peace"></i>
+                    <span class="value" id="greetingValue">Bom dia!</span>
+                </div>
                 <div class="info-item" id="clock">
                     <i class="far fa-clock"></i>
                     <span class="value" id="clockValue">--:--:--</span>
@@ -484,37 +489,25 @@
             </div>
         </header>
 
-     <div class="cards-grid" id="cardsContainer"></div>
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="Segunda a Sexta">Segunda–Sexta</button>
+            <button class="filter-btn" data-filter="Sábado">Sábado</button>
+            <button class="filter-btn" data-filter="Domingo">Domingo</button>
+        </div>
 
-<style>
-.note {
-    margin: 20px 0;
-    padding: 15px 18px;
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffe69c;
-    border-left: 6px solid #ffc107;
-    border-radius: 10px;
-    font-size: 15px;
-    line-height: 1.5;
-    font-weight: 500;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
+        <div class="cards-grid" id="cardsContainer"></div>
 
-.note strong {
-    color: #b45309;
-    font-weight: 700;
-}
-</style>
+        <div class="note" style="margin:20px 0; padding:15px 18px; background-color:#fff3cd; color:#856404; border:1px solid #ffe69c; border-left:6px solid #ffc107; border-radius:10px; font-size:15px; line-height:1.5; font-weight:500; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+            <strong>⚠ Nota:</strong> Os horários podem sofrer alterações, conforme decisão da administração da empresa, em razão de eventuais imprevistos no trânsito.
+        </div>
 
-<div class="note">
-    <strong>⚠ Nota:</strong> Os horários podem sofrer alterações, conforme decisão da administração da empresa, em razão de eventuais imprevistos no trânsito.
-</div>
+        <div class="footer">
+            <span>© 2026 VTM Integração – Todos os direitos reservados</span>
+            <span class="version">2.8.2</span>
+        </div>
+    </div>
 
-<div class="footer">
-    <span>© 2026 VTM Integração – Todos os direitos reservados</span>
-    <span class="version">2.8.2</span>
-</div>
     <script>
         // ================================================================
         //  ⭐ ALTERE AQUI OS HORÁRIOS – Adicione ou remova objetos neste array
@@ -622,6 +615,20 @@
         }
         updateClock();
         setInterval(updateClock, 1000);
+
+        // ================================================================
+        //  SERVE PARA: Saudação dinâmica (Bom dia / Boa tarde / Boa noite)
+        // ================================================================
+        function setGreeting() {
+            const now = new Date();
+            const hour = now.getHours();
+            let greeting = '';
+            if (hour < 12) greeting = 'Bom dia!';
+            else if (hour < 18) greeting = 'Boa tarde!';
+            else greeting = 'Boa noite!';
+            document.getElementById('greetingValue').textContent = greeting;
+        }
+        setGreeting();
 
         // ================================================================
         //  SERVE PARA: Clima de Marabá (PA) – substitua a chave se quiser
