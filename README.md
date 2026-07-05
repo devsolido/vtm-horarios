@@ -33,7 +33,7 @@ com design futurista, responsivo e dados em tempo real.
 
 ## ✨ Visão Geral
 
-> **SERVE PARA:** exibir horários de ônibus da **Vale Transporte Marabá** com filtros por dia, relógio em tempo real, clima local e uma interface **100% responsiva** (celular, tablet e PC).
+> Criado para  exibir horários de ônibus da **Vale Transporte Marabá** com filtros por dia, relógio em tempo real, clima local e uma interface **100% responsiva** (celular, tablet e PC).
 
 ---
 
