@@ -734,54 +734,56 @@
             document.getElementById('clockValue').textContent = `${h}:${m}:${s}`;
         }
 
-      // ================================================================
-//  SERVE PARA: Clima com HG Weather
-//  ================================================================
-const WEATHER_API_KEY = '2f7ac9bd';
-const CITY = 'Maraba';
-const STATE = 'PA';
+        // ================================================================
+        //  SERVE PARA: Clima com HG Weather (CHAVE ATUALIZADA)
+        //  ================================================================
+        const WEATHER_API_KEY = '84ac546d'; // ← NOVA CHAVE
+        const CITY = 'Maraba';
+        const STATE = 'PA';
 
-async function fetchWeather() {
-    const el = document.getElementById('weatherValue');
-    el.textContent = '⏳ Carregando...';
+        async function fetchWeather() {
+            const el = document.getElementById('weatherValue');
+            if (!el) return;
 
-    try {
-        // URL correta para a HG Weather
-        const url = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt`;
-        console.log('🔎 Buscando clima em:', url);
+            el.textContent = '⏳ Carregando...';
 
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            try {
+                const url = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt`;
+                console.log('🔎 Buscando clima em:', url);
 
-        const data = await res.json();
-        console.log('📦 Dados do clima:', data);
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        if (!data.results || data.results.temp === undefined) {
-            throw new Error('Dados incompletos');
+                const data = await res.json();
+                console.log('📦 Dados do clima:', data);
+
+                if (!data.results || data.results.temp === undefined) {
+                    throw new Error('Dados incompletos');
+                }
+
+                const temp = Math.round(data.results.temp);
+                const conditionSlug = data.results.condition_slug || '';
+
+                const emojiMap = {
+                    'clear_day': '☀️',
+                    'clear_night': '🌙',
+                    'cloud': '☁️',
+                    'cloudly_day': '⛅',
+                    'cloudly_night': '☁️',
+                    'rain': '🌧️',
+                    'storm': '⛈️',
+                    'snow': '❄️',
+                    'fog': '🌫️'
+                };
+                const emoji = emojiMap[conditionSlug] || '🌤️';
+
+                el.textContent = `${emoji} ${temp} °C`;
+            } catch (error) {
+                console.error('❌ Erro ao buscar clima:', error);
+                el.textContent = '⚠️ Sem dados';
+            }
         }
 
-        const temp = Math.round(data.results.temp);
-        const conditionSlug = data.results.condition_slug || '';
-
-        const emojiMap = {
-            'clear_day': '☀️',
-            'clear_night': '🌙',
-            'cloud': '☁️',
-            'cloudly_day': '⛅',
-            'cloudly_night': '☁️',
-            'rain': '🌧️',
-            'storm': '⛈️',
-            'snow': '❄️',
-            'fog': '🌫️'
-        };
-        const emoji = emojiMap[conditionSlug] || '🌤️';
-
-        el.textContent = `${emoji} ${temp} °C`;
-    } catch (error) {
-        console.error('❌ Erro ao buscar clima:', error);
-        el.textContent = '⚠️ Sem dados';
-    }
-}
         // ================================================================
         //  SERVE PARA: Lógica principal – Próximo ônibus e cards
         //  ================================================================
@@ -803,7 +805,7 @@ async function fetchWeather() {
                 else passados.push(h);
             });
 
-            // Ordenar futuros por horário, passados por horário (decrescente? tanto faz)
+            // Ordenar futuros por horário, passados por horário
             futuros.sort((a, b) => a.horario.localeCompare(b.horario));
             passados.sort((a, b) => a.horario.localeCompare(b.horario));
 
@@ -861,9 +863,8 @@ async function fetchWeather() {
                     <span class="horario">${next.horario}</span>
                     <span class="countdown${isPassed ? ' passed' : ''}">${countdownText}</span>
                 `;
-                // se já passou, mostrar como "passou" (mas não deve acontecer)
             } else {
-                // Nenhum futuro: mostrar mensagem
+                // Nenhum futuro: mostrar próximo amanhã ou mensagem
                 const nextTomorrow = findNextTomorrow();
                 if (nextTomorrow) {
                     nextBusInfo.innerHTML = `
@@ -880,8 +881,6 @@ async function fetchWeather() {
         }
 
         function findNextTomorrow() {
-            // Para simplificar, pegar o primeiro horário do próximo dia disponível
-            // Vamos pegar todos os horários do dia atual e do dia seguinte
             const today = new Date().getDay();
             const tomorrow = (today + 1) % 7;
             const dayMap = {
@@ -894,7 +893,6 @@ async function fetchWeather() {
                 6: 'Sábado'
             };
             const tomorrowLabel = dayMap[tomorrow];
-            // Buscar horários do dia seguinte (considerando o filtro atual? melhor considerar todos)
             const allNext = allHorarios.filter(h => h.dias.includes(tomorrowLabel));
             if (allNext.length === 0) return null;
             allNext.sort((a, b) => a.horario.localeCompare(b.horario));
@@ -927,7 +925,6 @@ async function fetchWeather() {
                 }
             });
             if (!found) {
-                // fallback: todos
                 document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
                 currentFilter = 'all';
             }
@@ -949,7 +946,7 @@ async function fetchWeather() {
 
             // Clima
             fetchWeather();
-            setInterval(fetchWeather, 600000);
+            setInterval(fetchWeather, 600000); // a cada 10 min
 
             // Modal
             const modal = document.getElementById('welcomeModal');
@@ -964,11 +961,11 @@ async function fetchWeather() {
                 if (e.target === modal) modal.classList.remove('active');
             });
 
-            // Registrar Service Worker (PWA)
+            // Registrar Service Worker (PWA) – ignore erros 404 se ainda não criou os arquivos
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/sw.js')
                     .then(() => console.log('SW registrado!'))
-                    .catch(err => console.warn('SW falhou:', err));
+                    .catch(err => console.warn('SW falhou (ignore se ainda não criou os arquivos):', err));
             }
         }
 
