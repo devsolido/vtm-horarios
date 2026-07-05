@@ -734,35 +734,35 @@
             document.getElementById('clockValue').textContent = `${h}:${m}:${s}`;
         }
 
-        // ================================================================
-        //  SERVE PARA: Clima (placeholder)
-        //  ================================================================
-      const WEATHER_API_KEY = '2f7ac9bd'; // ← SUA CHAVE INSERIDA
+      // ================================================================
+//  SERVE PARA: Clima com HG Weather
+//  ================================================================
+const WEATHER_API_KEY = '2f7ac9bd';
 const CITY = 'Maraba';
 const STATE = 'PA';
 
 async function fetchWeather() {
     const el = document.getElementById('weatherValue');
-    // Se a chave não estiver definida, mostra erro
-    if (!WEATHER_API_KEY || WEATHER_API_KEY === 'SUA_CHAVE_AQUI') {
-        el.textContent = '⚠️ Chave não configurada';
-        return;
-    }
-    try {
-        const url = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error('Erro na API');
-        const data = await res.json();
+    el.textContent = '⏳ Carregando...';
 
-        // Verifica se os dados vieram corretamente
-        if (!data.results || typeof data.results.temp === 'undefined') {
+    try {
+        // URL correta para a HG Weather
+        const url = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt`;
+        console.log('🔎 Buscando clima em:', url);
+
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        console.log('📦 Dados do clima:', data);
+
+        if (!data.results || data.results.temp === undefined) {
             throw new Error('Dados incompletos');
         }
 
         const temp = Math.round(data.results.temp);
         const conditionSlug = data.results.condition_slug || '';
 
-        // Mapeia condition_slug para emoji
         const emojiMap = {
             'clear_day': '☀️',
             'clear_night': '🌙',
@@ -778,11 +778,10 @@ async function fetchWeather() {
 
         el.textContent = `${emoji} ${temp} °C`;
     } catch (error) {
-        console.warn('Erro ao buscar clima:', error);
-        el.textContent = '⚠️ Sem dados'; // fallback sem inventar temperatura
+        console.error('❌ Erro ao buscar clima:', error);
+        el.textContent = '⚠️ Sem dados';
     }
 }
-
         // ================================================================
         //  SERVE PARA: Lógica principal – Próximo ônibus e cards
         //  ================================================================
