@@ -737,53 +737,58 @@
         // ================================================================
         //  SERVE PARA: Clima com HG Weather (CHAVE ATUALIZADA)
         //  ================================================================
-        const WEATHER_API_KEY = '84ac546d'; // ← NOVA CHAVE
-        const CITY = 'Maraba';
-        const STATE = 'PA';
+       const WEATHER_API_KEY = '84ac546d'; // ← NOVA CHAVE
+const CITY = 'Maraba';
+const STATE = 'PA';
 
-        async function fetchWeather() {
-            const el = document.getElementById('weatherValue');
-            if (!el) return;
+async function fetchWeather() {
+    const el = document.getElementById('weatherValue');
+    if (!el) return;
 
-            el.textContent = '⏳ Carregando...';
+    el.textContent = '⏳ Carregando...';
 
-            try {
-                const url = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt`;
-                console.log('🔎 Buscando clima em:', url);
+    try {
+        // URL direta (comentada por enquanto)
+        // const url = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt`;
+        
+        // 🔧 PROXY CORS (solução temporária até a HG liberar o domínio)
+        const target = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt`;
+        const url = `https://corsproxy.io/?${encodeURIComponent(target)}`;
+        
+        console.log('🔎 Buscando clima via proxy:', url);
 
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-                const data = await res.json();
-                console.log('📦 Dados do clima:', data);
+        const data = await res.json();
+        console.log('📦 Dados do clima:', data);
 
-                if (!data.results || data.results.temp === undefined) {
-                    throw new Error('Dados incompletos');
-                }
-
-                const temp = Math.round(data.results.temp);
-                const conditionSlug = data.results.condition_slug || '';
-
-                const emojiMap = {
-                    'clear_day': '☀️',
-                    'clear_night': '🌙',
-                    'cloud': '☁️',
-                    'cloudly_day': '⛅',
-                    'cloudly_night': '☁️',
-                    'rain': '🌧️',
-                    'storm': '⛈️',
-                    'snow': '❄️',
-                    'fog': '🌫️'
-                };
-                const emoji = emojiMap[conditionSlug] || '🌤️';
-
-                el.textContent = `${emoji} ${temp} °C`;
-            } catch (error) {
-                console.error('❌ Erro ao buscar clima:', error);
-                el.textContent = '⚠️ Sem dados';
-            }
+        if (!data.results || data.results.temp === undefined) {
+            throw new Error('Dados incompletos');
         }
 
+        const temp = Math.round(data.results.temp);
+        const conditionSlug = data.results.condition_slug || '';
+
+        const emojiMap = {
+            'clear_day': '☀️',
+            'clear_night': '🌙',
+            'cloud': '☁️',
+            'cloudly_day': '⛅',
+            'cloudly_night': '☁️',
+            'rain': '🌧️',
+            'storm': '⛈️',
+            'snow': '❄️',
+            'fog': '🌫️'
+        };
+        const emoji = emojiMap[conditionSlug] || '🌤️';
+
+        el.textContent = `${emoji} ${temp} °C`;
+    } catch (error) {
+        console.error('❌ Erro ao buscar clima:', error);
+        el.textContent = '⚠️ Sem dados';
+    }
+}
         // ================================================================
         //  SERVE PARA: Lógica principal – Próximo ônibus e cards
         //  ================================================================
