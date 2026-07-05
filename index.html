@@ -737,49 +737,51 @@
         // ================================================================
         //  SERVE PARA: Clima (placeholder)
         //  ================================================================
-        const WEATHER_API_KEY = 'SUA_CHAVE_AQUI';
-        const CITY = 'Maraba';
-        const COUNTRY = 'BR';
+      const WEATHER_API_KEY = '2f7ac9bd'; // ← SUA CHAVE INSERIDA
+const CITY = 'Maraba';
+const STATE = 'PA';
 
-        async function fetchWeather() {
-            const el = document.getElementById('weatherValue');
-            if (WEATHER_API_KEY === 'SUA_CHAVE_AQUI') {
-                el.textContent = '🌤️ 28 °C';
-                return;
-            }
-            try {
-                const url =
-                    `https://api.openweathermap.org/data/2.5/weather?q=${CITY},${COUNTRY}&appid=${WEATHER_API_KEY}&units=metric&lang=pt_br`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
-                const temp = Math.round(data.main.temp);
-                const iconMap = {
-                    '01d': '☀️',
-                    '01n': '🌙',
-                    '02d': '⛅',
-                    '02n': '☁️',
-                    '03d': '☁️',
-                    '03n': '☁️',
-                    '04d': '☁️',
-                    '04n': '☁️',
-                    '09d': '🌧️',
-                    '09n': '🌧️',
-                    '10d': '🌦️',
-                    '10n': '🌧️',
-                    '11d': '⛈️',
-                    '11n': '⛈️',
-                    '13d': '❄️',
-                    '13n': '❄️',
-                    '50d': '🌫️',
-                    '50n': '🌫️'
-                };
-                const emoji = iconMap[data.weather[0].icon] || '🌤️';
-                el.textContent = `${emoji} ${temp} °C`;
-            } catch {
-                el.textContent = '🌤️ 28 °C';
-            }
+async function fetchWeather() {
+    const el = document.getElementById('weatherValue');
+    // Se a chave não estiver definida, mostra erro
+    if (!WEATHER_API_KEY || WEATHER_API_KEY === 'SUA_CHAVE_AQUI') {
+        el.textContent = '⚠️ Chave não configurada';
+        return;
+    }
+    try {
+        const url = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Erro na API');
+        const data = await res.json();
+
+        // Verifica se os dados vieram corretamente
+        if (!data.results || typeof data.results.temp === 'undefined') {
+            throw new Error('Dados incompletos');
         }
+
+        const temp = Math.round(data.results.temp);
+        const conditionSlug = data.results.condition_slug || '';
+
+        // Mapeia condition_slug para emoji
+        const emojiMap = {
+            'clear_day': '☀️',
+            'clear_night': '🌙',
+            'cloud': '☁️',
+            'cloudly_day': '⛅',
+            'cloudly_night': '☁️',
+            'rain': '🌧️',
+            'storm': '⛈️',
+            'snow': '❄️',
+            'fog': '🌫️'
+        };
+        const emoji = emojiMap[conditionSlug] || '🌤️';
+
+        el.textContent = `${emoji} ${temp} °C`;
+    } catch (error) {
+        console.warn('Erro ao buscar clima:', error);
+        el.textContent = '⚠️ Sem dados'; // fallback sem inventar temperatura
+    }
+}
 
         // ================================================================
         //  SERVE PARA: Lógica principal – Próximo ônibus e cards
