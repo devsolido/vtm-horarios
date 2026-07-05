@@ -55,36 +55,13 @@
             gap: 12px;
         }
 
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #00c6fb, #005bea);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 24px;
-            box-shadow: 0 8px 24px rgba(0, 91, 234, 0.4);
-            flex-shrink: 0;
-        }
-
-        .logo-text .main {
-            font-size: 22px;
-            font-weight: 700;
-            background: linear-gradient(to right, #f0f4ff, #b0caff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.5px;
-        }
-
-        .logo-text .sub {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.5);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-weight: 300;
+        /* ========== NOVA LOGO ========== */
+        .logo-img {
+            height: 48px;        /* mesma altura do ícone antigo */
+            width: auto;         /* mantém proporção */
+            object-fit: contain;
+            filter: drop-shadow(0 4px 12px rgba(0, 91, 234, 0.3));
+            border-radius: 8px;  /* (opcional) para cantos suaves */
         }
 
         .info-bar {
@@ -396,6 +373,8 @@
             .cards-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
             .card .horario { font-size: 22px; }
             .card .destino { font-size: 16px; }
+            /* Ajuste da logo para mobile */
+            .logo-img { height: 40px; }
         }
 
         @media (max-width: 550px) {
@@ -405,8 +384,7 @@
             .filter-btn { font-size: 12px; padding: 6px 14px; min-height: 40px; }
             .modal-box { padding: 28px 20px 24px; }
             .modal-box h2 { font-size: 22px; }
-            .logo-text .main { font-size: 18px; }
-            .logo-icon { width: 40px; height: 40px; font-size: 20px; }
+            .logo-img { height: 36px; }  /* ainda menor em telas muito pequenas */
             .version { font-size: 10px; }
             .card { padding: 14px 16px; }
             .card .horario { font-size: 24px; }
@@ -417,6 +395,7 @@
             .info-item { font-size: 11px; padding: 3px 10px; }
             .filter-btn { font-size: 11px; padding: 4px 10px; }
             .modal-box .btn-primary { font-size: 15px; padding: 12px 28px; }
+            .logo-img { height: 30px; }
         }
 
         .card {
@@ -464,11 +443,8 @@
     <div class="app">
         <header class="header">
             <div class="logo-area">
-                <div class="logo-icon"><i class="fas fa-bus"></i></div>
-                <div class="logo-text">
-                    <span class="main">VTM Integração</span>
-                    <span class="sub">Vale Transporte Marabá</span>
-                </div>
+                <!-- ========== SUBSTITUÍDO PELA IMAGEM ========== -->
+                <img src="logo-nova.png" alt="VTM Integração" class="logo-img">
             </div>
 
             <div class="info-bar">
