@@ -1,24 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
     <title>VTM Integração - Horários</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="theme-color" content="#005bea">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <meta name="theme-color" content="#005bea" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <style>
-        /* ============================================================
-           SERVE PARA: Reset e estilos base de todo o sistema
-           ============================================================ */
+        /* ===== RESET E ESTILOS BASE ===== */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
-
         body {
             min-height: 100vh;
             background: radial-gradient(circle at 20% 30%, #0b0e1a, #03050b);
@@ -27,20 +24,17 @@
             align-items: center;
             padding: 16px;
         }
-
         .app {
             max-width: 1200px;
             width: 100%;
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border-radius: 48px;
             padding: 24px 24px 16px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.06);
             transition: all 0.3s;
         }
-
         .header {
             display: flex;
             flex-wrap: wrap;
@@ -51,13 +45,11 @@
             padding-bottom: 16px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
-
         .logo-area {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-
         .logo-img {
             height: 48px;
             width: auto;
@@ -65,14 +57,12 @@
             filter: drop-shadow(0 4px 12px rgba(0, 91, 234, 0.3));
             border-radius: 8px;
         }
-
         .info-bar {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             gap: 12px;
         }
-
         .info-item {
             display: flex;
             align-items: center;
@@ -86,18 +76,15 @@
             backdrop-filter: blur(4px);
             min-height: 40px;
         }
-
         .info-item i {
             color: #00c6fb;
             font-size: 15px;
         }
-
         .info-item .value {
             font-weight: 500;
             color: #fff;
             white-space: nowrap;
         }
-
         .version {
             font-size: 11px;
             color: rgba(255, 255, 255, 0.25);
@@ -107,7 +94,6 @@
             border: 1px solid rgba(255, 255, 255, 0.04);
             white-space: nowrap;
         }
-
         .date-display {
             text-align: center;
             font-size: 16px;
@@ -123,6 +109,7 @@
             font-weight: 500;
         }
 
+        /* ===== PRÓXIMO ÔNIBUS ===== */
         .next-bus {
             background: rgba(0, 198, 251, 0.08);
             border: 1px solid rgba(0, 198, 251, 0.25);
@@ -183,13 +170,13 @@
             font-size: 15px;
         }
 
+        /* ===== FILTROS ===== */
         .filters {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 24px;
         }
-
         .filter-btn {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -207,13 +194,11 @@
             justify-content: center;
             touch-action: manipulation;
         }
-
         .filter-btn:hover {
             background: rgba(255, 255, 255, 0.08);
             color: #fff;
             border-color: rgba(255, 255, 255, 0.15);
         }
-
         .filter-btn.active {
             background: linear-gradient(135deg, #00c6fb, #005bea);
             border-color: transparent;
@@ -221,17 +206,16 @@
             box-shadow: 0 6px 20px rgba(0, 91, 234, 0.35);
         }
 
+        /* ===== CARDS ===== */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
-
         .card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             border-radius: 24px;
             padding: 18px 20px;
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -239,15 +223,13 @@
             position: relative;
             overflow: hidden;
             cursor: default;
-            touch-action: manipulation;
             opacity: 1;
             transform: translateY(0);
         }
-
         .card.passed {
             opacity: 0.45;
             filter: grayscale(0.5);
-            order: 1; /* coloca no final */
+            order: 1;
         }
         .card.passed .horario {
             color: #888;
@@ -255,7 +237,6 @@
         .card.passed .destino {
             color: #aaa;
         }
-
         .card.next {
             border-color: rgba(0, 198, 251, 0.5);
             box-shadow: 0 0 30px rgba(0, 198, 251, 0.1);
@@ -274,7 +255,6 @@
             letter-spacing: 0.5px;
             border: 1px solid rgba(0, 198, 251, 0.2);
         }
-
         .card::before {
             content: '';
             position: absolute;
@@ -289,14 +269,12 @@
         .card.next::before {
             opacity: 1;
         }
-
         .card:hover {
             transform: translateY(-4px);
             background: rgba(255, 255, 255, 0.06);
             border-color: rgba(255, 255, 255, 0.12);
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
         }
-
         .card .destino {
             font-size: 18px;
             font-weight: 700;
@@ -306,12 +284,10 @@
             align-items: center;
             gap: 8px;
         }
-
         .card .destino i {
             color: #00c6fb;
             font-size: 16px;
         }
-
         .card .horario {
             font-size: 26px;
             font-weight: 700;
@@ -319,7 +295,6 @@
             letter-spacing: 1px;
             margin-bottom: 4px;
         }
-
         .card .embarque {
             font-size: 13px;
             color: rgba(255, 255, 255, 0.6);
@@ -328,18 +303,15 @@
             align-items: center;
             gap: 6px;
         }
-
         .card .embarque i {
             font-size: 12px;
             color: #00c6fb;
         }
-
         .card .dias {
             display: flex;
             flex-wrap: wrap;
             gap: 5px;
         }
-
         .card .dias span {
             background: rgba(0, 198, 251, 0.12);
             color: #00c6fb;
@@ -351,7 +323,6 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-
         .empty {
             grid-column: 1 / -1;
             text-align: center;
@@ -359,7 +330,6 @@
             color: rgba(255, 255, 255, 0.3);
             font-size: 15px;
         }
-
         .empty i {
             font-size: 36px;
             display: block;
@@ -367,186 +337,7 @@
             opacity: 0.4;
         }
 
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            padding-top: 14px;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.2);
-        }
-
-        .footer .version {
-            font-size: 11px;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
-            padding: 16px;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-box {
-            background: rgba(20, 30, 50, 0.95);
-            border-radius: 36px;
-            padding: 40px 32px 32px;
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
-            transform: scale(0.9) translateY(20px);
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .modal-overlay.active .modal-box {
-            transform: scale(1) translateY(0);
-        }
-
-        .modal-box .icon-big {
-            font-size: 48px;
-            background: linear-gradient(135deg, #00c6fb, #005bea);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-        }
-
-        .modal-box h2 {
-            color: #fff;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-bottom: 6px;
-        }
-
-        .modal-box p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 15px;
-            margin-bottom: 24px;
-            line-height: 1.5;
-        }
-
-        .modal-box .btn-primary {
-            background: linear-gradient(135deg, #00c6fb, #005bea);
-            border: none;
-            color: #fff;
-            font-size: 17px;
-            font-weight: 600;
-            padding: 14px 36px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4);
-            touch-action: manipulation;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .modal-box .btn-primary:hover {
-            transform: scale(1.03);
-            box-shadow: 0 12px 40px rgba(0, 91, 234, 0.6);
-        }
-
-        .modal-box .btn-primary:active {
-            transform: scale(0.97);
-        }
-
-        @media (max-width: 768px) {
-            .app { padding: 16px 14px 12px; border-radius: 28px; }
-            .header { flex-direction: column; align-items: stretch; gap: 12px; }
-            .logo-area { justify-content: center; }
-            .info-bar { justify-content: center; }
-            .cards-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .card .horario { font-size: 22px; }
-            .card .destino { font-size: 16px; }
-            .logo-img { height: 40px; }
-            .next-bus { flex-direction: column; align-items: stretch; text-align: center; }
-            .next-bus .bus-info { justify-content: center; }
-        }
-
-        @media (max-width: 550px) {
-            .cards-grid { grid-template-columns: 1fr; gap: 12px; }
-            .info-bar { flex-wrap: wrap; justify-content: center; gap: 8px; }
-            .info-item { font-size: 13px; padding: 4px 12px; min-height: 36px; }
-            .filter-btn { font-size: 12px; padding: 6px 14px; min-height: 40px; }
-            .modal-box { padding: 28px 20px 24px; }
-            .modal-box h2 { font-size: 22px; }
-            .logo-img { height: 36px; }
-            .version { font-size: 10px; }
-            .card { padding: 14px 16px; }
-            .card .horario { font-size: 24px; }
-            .footer { font-size: 11px; flex-direction: column; text-align: center; }
-            .next-bus .destino { font-size: 18px; }
-            .next-bus .countdown { font-size: 14px; min-width: 60px; }
-            .date-display { font-size: 14px; }
-        }
-
-        @media (max-width: 380px) {
-            .info-item { font-size: 11px; padding: 3px 10px; }
-            .filter-btn { font-size: 11px; padding: 4px 10px; }
-            .modal-box .btn-primary { font-size: 15px; padding: 12px 28px; }
-            .logo-img { height: 30px; }
-        }
-
-        /* Animações */
-        .card {
-            animation: fadeUp 0.5s ease forwards;
-            opacity: 0;
-        }
-        .card.passed {
-            animation: fadeUp 0.5s ease forwards, fadeGray 0.5s ease forwards;
-        }
-
-        @keyframes fadeUp {
-            0% { opacity: 0; transform: translateY(16px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeGray {
-            0% { opacity: 1; }
-            100% { opacity: 0.45; }
-        }
-
-        .card:nth-child(1)  { animation-delay: 0.02s; }
-        .card:nth-child(2)  { animation-delay: 0.06s; }
-        .card:nth-child(3)  { animation-delay: 0.10s; }
-        .card:nth-child(4)  { animation-delay: 0.14s; }
-        .card:nth-child(5)  { animation-delay: 0.18s; }
-        .card:nth-child(6)  { animation-delay: 0.22s; }
-        .card:nth-child(7)  { animation-delay: 0.26s; }
-        .card:nth-child(8)  { animation-delay: 0.30s; }
-        .card:nth-child(9)  { animation-delay: 0.34s; }
-        .card:nth-child(10) { animation-delay: 0.38s; }
-        .card:nth-child(11) { animation-delay: 0.42s; }
-        .card:nth-child(12) { animation-delay: 0.46s; }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 198, 251, 0.3); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 198, 251, 0.6); }
-
+        /* ===== NOTE ===== */
         .note {
             margin: 20px 0;
             padding: 15px 18px;
@@ -563,11 +354,453 @@
         .note strong {
             color: #b45309;
         }
+
+        /* ===== FORMULÁRIO DE ALERTA ===== */
+        .alerts-section {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 24px;
+            padding: 20px 20px 16px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .alerts-section h3 {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .alerts-section h3 i {
+            color: #00c6fb;
+        }
+        .alert-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 16px;
+        }
+        .alert-form .field {
+            flex: 1 1 160px;
+            min-width: 130px;
+        }
+        .alert-form label {
+            display: block;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+        .alert-form input,
+        .alert-form select {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 14px;
+            transition: 0.3s;
+            outline: none;
+        }
+        .alert-form input:focus,
+        .alert-form select:focus {
+            border-color: #00c6fb;
+            box-shadow: 0 0 0 3px rgba(0, 198, 251, 0.15);
+        }
+        .alert-form input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .alert-form select option {
+            background: #1a1f2e;
+            color: #fff;
+        }
+        .alert-form .btn-add {
+            background: linear-gradient(135deg, #00c6fb, #005bea);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            height: 44px;
+            min-width: 120px;
+            justify-content: center;
+        }
+        .alert-form .btn-add:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 24px rgba(0, 91, 234, 0.4);
+        }
+        .alert-form .btn-add:active {
+            transform: scale(0.97);
+        }
+
+        .alert-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .alert-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 8px 14px 8px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .alert-item .name {
+            font-weight: 600;
+            color: #fff;
+        }
+        .alert-item .dest {
+            color: #b0caff;
+        }
+        .alert-item .phone {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+        }
+        .alert-item .remove-btn {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 4px;
+            transition: 0.3s;
+            opacity: 0.5;
+        }
+        .alert-item .remove-btn:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        .alert-item .status {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+            background: rgba(0, 198, 251, 0.15);
+            color: #00c6fb;
+            border: 1px solid rgba(0, 198, 251, 0.15);
+        }
+        .alert-item .status.alerted {
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+            border-color: rgba(255, 107, 107, 0.2);
+        }
+        .no-alerts {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            padding: 6px 0;
+        }
+
+        /* ===== MODAL DE ALERTA ===== */
+        .alert-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+        .alert-modal.active {
+            display: flex;
+        }
+        .alert-modal .modal-box {
+            background: rgba(20, 30, 50, 0.97);
+            border-radius: 36px;
+            padding: 40px 32px 32px;
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(0, 198, 251, 0.3);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+            transform: scale(0.95) translateY(10px);
+            animation: alertPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes alertPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .alert-modal .icon-big {
+            font-size: 56px;
+            background: linear-gradient(135deg, #00c6fb, #005bea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .alert-modal h2 {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .alert-modal .msg {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 17px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .alert-modal .msg strong {
+            color: #00c6fb;
+        }
+        .alert-modal .sub-msg {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .alert-modal .btn-primary {
+            background: linear-gradient(135deg, #00c6fb, #005bea);
+            border: none;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 14px 36px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4);
+            touch-action: manipulation;
+        }
+        .alert-modal .btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 40px rgba(0, 91, 234, 0.6);
+        }
+        .alert-modal .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ===== ANIMAÇÕES ===== */
+        .card {
+            animation: fadeUp 0.5s ease forwards;
+            opacity: 0;
+        }
+        .card.passed {
+            animation: fadeUp 0.5s ease forwards, fadeGray 0.5s ease forwards;
+        }
+        @keyframes fadeUp {
+            0% {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeGray {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0.45;
+            }
+        }
+
+        .card:nth-child(1) {
+            animation-delay: 0.02s;
+        }
+        .card:nth-child(2) {
+            animation-delay: 0.06s;
+        }
+        .card:nth-child(3) {
+            animation-delay: 0.10s;
+        }
+        .card:nth-child(4) {
+            animation-delay: 0.14s;
+        }
+        .card:nth-child(5) {
+            animation-delay: 0.18s;
+        }
+        .card:nth-child(6) {
+            animation-delay: 0.22s;
+        }
+        .card:nth-child(7) {
+            animation-delay: 0.26s;
+        }
+        .card:nth-child(8) {
+            animation-delay: 0.30s;
+        }
+        .card:nth-child(9) {
+            animation-delay: 0.34s;
+        }
+        .card:nth-child(10) {
+            animation-delay: 0.38s;
+        }
+        .card:nth-child(11) {
+            animation-delay: 0.42s;
+        }
+        .card:nth-child(12) {
+            animation-delay: 0.46s;
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 198, 251, 0.3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 198, 251, 0.6);
+        }
+
+        /* ===== RESPONSIVIDADE ===== */
+        @media (max-width: 768px) {
+            .app {
+                padding: 16px 14px 12px;
+                border-radius: 28px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .logo-area {
+                justify-content: center;
+            }
+            .info-bar {
+                justify-content: center;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .card .horario {
+                font-size: 22px;
+            }
+            .card .destino {
+                font-size: 16px;
+            }
+            .logo-img {
+                height: 40px;
+            }
+            .next-bus {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+            .next-bus .bus-info {
+                justify-content: center;
+            }
+            .alert-form .field {
+                flex: 1 1 100%;
+            }
+            .alert-form .btn-add {
+                width: 100%;
+            }
+        }
+        @media (max-width: 550px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .info-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px;
+            }
+            .info-item {
+                font-size: 13px;
+                padding: 4px 12px;
+                min-height: 36px;
+            }
+            .filter-btn {
+                font-size: 12px;
+                padding: 6px 14px;
+                min-height: 40px;
+            }
+            .logo-img {
+                height: 36px;
+            }
+            .version {
+                font-size: 10px;
+            }
+            .card {
+                padding: 14px 16px;
+            }
+            .card .horario {
+                font-size: 24px;
+            }
+            .footer {
+                font-size: 11px;
+                flex-direction: column;
+                text-align: center;
+            }
+            .next-bus .destino {
+                font-size: 18px;
+            }
+            .next-bus .countdown {
+                font-size: 14px;
+                min-width: 60px;
+            }
+            .date-display {
+                font-size: 14px;
+            }
+            .alert-item {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+        }
+        @media (max-width: 380px) {
+            .info-item {
+                font-size: 11px;
+                padding: 3px 10px;
+            }
+            .filter-btn {
+                font-size: 11px;
+                padding: 4px 10px;
+            }
+            .logo-img {
+                height: 30px;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- MODAL DE BOAS-VINDAS -->
+    <!-- ===== MODAL DE BOAS-VINDAS ===== -->
     <div class="modal-overlay" id="welcomeModal">
         <div class="modal-box">
             <div class="icon-big"><i class="fas fa-bus"></i></div>
@@ -577,11 +810,22 @@
         </div>
     </div>
 
-    <!-- APP PRINCIPAL -->
+    <!-- ===== MODAL DE ALERTA (LIGAÇÃO IA) ===== -->
+    <div class="alert-modal" id="alertModal">
+        <div class="modal-box">
+            <div class="icon-big"><i class="fas fa-phone-volume"></i></div>
+            <h2>📞 Alerta VTM</h2>
+            <div class="msg" id="alertMessage">--</div>
+            <div class="sub-msg" id="alertSubMsg">Ligação simulada com IA</div>
+            <button class="btn-primary" id="closeAlertBtn"><i class="fas fa-check"></i> Entendi</button>
+        </div>
+    </div>
+
+    <!-- ===== APP PRINCIPAL ===== -->
     <div class="app">
         <header class="header">
             <div class="logo-area">
-                <img src="logo-nova.png" alt="VTM Integração" class="logo-img">
+                <img src="logo-nova.png" alt="VTM Integração" class="logo-img" />
             </div>
             <div class="info-bar">
                 <div class="info-item" id="greeting">
@@ -596,12 +840,12 @@
                     <i class="fas fa-cloud-sun"></i>
                     <span class="value" id="weatherValue">-- °C</span>
                 </div>
-                <span class="version"><i class="fas fa-code-branch"></i> v2.4.0</span>
+                <span class="version"><i class="fas fa-code-branch"></i> v2.5.0</span>
             </div>
         </header>
 
-        <!-- DATA COMPLETA -->
-        <div class="date-display" id="dateDisplay">
+        <!-- DATA -->
+        <div class="date-display">
             <i class="far fa-calendar-alt" style="margin-right:6px; color:#00c6fb;"></i>
             <span id="fullDate">--</span>
         </div>
@@ -616,6 +860,7 @@
             </div>
         </div>
 
+        <!-- FILTROS -->
         <div class="filters">
             <button class="filter-btn" data-filter="all">Todos</button>
             <button class="filter-btn" data-filter="Segunda a Sexta">Segunda–Sexta</button>
@@ -623,21 +868,48 @@
             <button class="filter-btn" data-filter="Domingo">Domingo</button>
         </div>
 
+        <!-- CARDS -->
         <div class="cards-grid" id="cardsContainer"></div>
 
+        <!-- ===== SEÇÃO DE ALERTAS ===== -->
+        <div class="alerts-section">
+            <h3><i class="fas fa-bell"></i> Alertas de Ônibus</h3>
+            <div class="alert-form" id="alertForm">
+                <div class="field">
+                    <label>Seu nome</label>
+                    <input type="text" id="alertName" placeholder="Ex: João Silva" />
+                </div>
+                <div class="field">
+                    <label>Telefone (com DDD)</label>
+                    <input type="tel" id="alertPhone" placeholder="(91) 99999-9999" />
+                </div>
+                <div class="field">
+                    <label>Destino</label>
+                    <select id="alertDestino">
+                        <option value="">Selecione...</option>
+                        <!-- preenchido via JS -->
+                    </select>
+                </div>
+                <button class="btn-add" id="addAlertBtn"><i class="fas fa-plus"></i> Cadastrar</button>
+            </div>
+            <div id="alertListContainer">
+                <!-- lista renderizada via JS -->
+            </div>
+        </div>
+
         <div class="note">
-            <strong>⚠ Nota:</strong> Os horários podem sofrer alterações, conforme decisão da administração da empresa, em razão de eventuais imprevistos no trânsito.
+            <strong>⚠ Nota:</strong> Os horários podem sofrer alterações. O alerta é ativado 30 minutos antes do horário programado.
         </div>
 
         <div class="footer">
             <span>© 2026 VTM Integração – Todos os direitos reservados</span>
-            <span class="version">2.4.0</span>
+            <span class="version">2.5.0</span>
         </div>
     </div>
 
     <script>
         // ================================================================
-        //  ⭐ HORÁRIOS – Edite aqui
+        //  HORÁRIOS
         //  ================================================================
         const horarios = [
             { destino: "Morada Nova", horario: "11:35", embarque: "Antônio Vilhena", dias: ["Sábado"] },
@@ -652,51 +924,59 @@
             { destino: "Liberdade", horario: "16:00", embarque: "Praça", dias: ["Segunda a Sexta"] }
         ];
 
-        // ================================================================
-        //  SERVE PARA: Ordenar horários
-        //  ================================================================
         horarios.sort((a, b) => a.horario.localeCompare(b.horario));
 
         // ================================================================
-        //  SERVE PARA: Variáveis globais
+        //  VARIÁVEIS GLOBAIS
         //  ================================================================
         let currentFilter = 'all';
         let allHorarios = [...horarios];
-        let intervalUpdate = null;
-
-        const container = document.getElementById('cardsContainer');
-        const nextBusDiv = document.getElementById('nextBus');
-        const nextBusInfo = document.getElementById('nextBusInfo');
-        const countdownSpan = document.getElementById('countdown');
-        const fullDateSpan = document.getElementById('fullDate');
+        let alertas = [];
+        let alertaDisparado = {}; // chave: destino+horario => true
 
         // ================================================================
-        //  SERVE PARA: Utilitários
+        //  DOM REFS
+        //  ================================================================
+        const container = document.getElementById('cardsContainer');
+        const nextBusInfo = document.getElementById('nextBusInfo');
+        const fullDateSpan = document.getElementById('fullDate');
+
+        const alertForm = document.getElementById('alertForm');
+        const alertName = document.getElementById('alertName');
+        const alertPhone = document.getElementById('alertPhone');
+        const alertDestino = document.getElementById('alertDestino');
+        const addBtn = document.getElementById('addAlertBtn');
+        const alertListContainer = document.getElementById('alertListContainer');
+
+        const alertModal = document.getElementById('alertModal');
+        const alertMessage = document.getElementById('alertMessage');
+        const alertSubMsg = document.getElementById('alertSubMsg');
+        const closeAlertBtn = document.getElementById('closeAlertBtn');
+
+        // ================================================================
+        //  UTILITÁRIOS
         //  ================================================================
         function getCurrentDay() {
-            const days = ['Domingo', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Sábado'];
-            const d = new Date().getDay(); // 0=Dom, 6=Sáb
-            return days[d];
+            const days = ['Domingo', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta',
+                'Sábado'
+            ];
+            return days[new Date().getDay()];
         }
 
-        function getMinutesFromTime(timeStr) {
-            const [h, m] = timeStr.split(':').map(Number);
+        function getMinutesFromTime(t) {
+            const [h, m] = t.split(':').map(Number);
             return h * 60 + m;
         }
 
         function getCurrentMinutes() {
-            const now = new Date();
-            return now.getHours() * 60 + now.getMinutes();
+            const n = new Date();
+            return n.getHours() * 60 + n.getMinutes();
         }
 
-        function formatDateFull(date) {
-            return date.toLocaleDateString('pt-BR', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            }).replace(/^(\d+)\s+de\s+(\w+)/, (match, day, month) => {
-                return day + ' de ' + month.charAt(0).toUpperCase() + month.slice(1);
-            });
+        function formatDateFull(d) {
+            return d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+                .replace(/^(\d+)\s+de\s+(\w+)/, (_, day, month) => day + ' de ' + month.charAt(0).toUpperCase() + month.slice(
+                1));
         }
 
         function formatCountdown(minDiff) {
@@ -704,179 +984,131 @@
             if (minDiff < 1) return 'Agora!';
             const h = Math.floor(minDiff / 60);
             const m = Math.round(minDiff % 60);
-            if (h > 0) return `${h}h ${m}min`;
-            return `${m} min`;
+            return h > 0 ? `${h}h ${m}min` : `${m} min`;
+        }
+
+        function speak(text) {
+            if (!window.speechSynthesis) return;
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'pt-BR';
+            utter.rate = 0.9;
+            utter.pitch = 1.0;
+            const voices = window.speechSynthesis.getVoices();
+            const brVoice = voices.find(v => v.lang === 'pt-BR');
+            if (brVoice) utter.voice = brVoice;
+            window.speechSynthesis.speak(utter);
         }
 
         // ================================================================
-        //  SERVE PARA: Atualizar data e saudação
+        //  RELÓGIO, DATA, SAUDAÇÃO
         //  ================================================================
-        function updateDateAndGreeting() {
-            const now = new Date();
-            fullDateSpan.textContent = formatDateFull(now);
+        function updateClock() {
+            const n = new Date();
+            document.getElementById('clockValue').textContent =
+                `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
+        }
 
-            const hour = now.getHours();
-            let g = '';
-            if (hour < 12) g = 'Bom dia!';
-            else if (hour < 18) g = 'Boa tarde!';
-            else g = 'Boa noite!';
+        function updateDateAndGreeting() {
+            const n = new Date();
+            fullDateSpan.textContent = formatDateFull(n);
+            const h = n.getHours();
+            let g = h < 12 ? 'Bom dia!' : h < 18 ? 'Boa tarde!' : 'Boa noite!';
             document.getElementById('greetingValue').textContent = g;
         }
 
         // ================================================================
-        //  SERVE PARA: Relógio
+        //  CLIMA (HG Weather com format=json-cors)
         //  ================================================================
-        function updateClock() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('clockValue').textContent = `${h}:${m}:${s}`;
+        const WEATHER_API_KEY = '84ac546d';
+        const CITY = 'Maraba';
+        const STATE = 'PA';
+
+        async function fetchWeather() {
+            const el = document.getElementById('weatherValue');
+            if (!el) return;
+            el.textContent = '⏳ Carregando...';
+            try {
+                const url =
+                    `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt&format=json-cors`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (!data.results || data.results.temp === undefined) throw new Error('Dados incompletos');
+                const temp = Math.round(data.results.temp);
+                const slug = data.results.condition_slug || '';
+                const emojiMap = {
+                    'clear_day': '☀️',
+                    'clear_night': '🌙',
+                    'cloud': '☁️',
+                    'cloudly_day': '⛅',
+                    'cloudly_night': '☁️',
+                    'rain': '🌧️',
+                    'storm': '⛈️',
+                    'snow': '❄️',
+                    'fog': '🌫️'
+                };
+                const emoji = emojiMap[slug] || '🌤️';
+                el.textContent = `${emoji} ${temp} °C`;
+            } catch (e) {
+                console.warn('Clima:', e);
+                el.textContent = '⚠️ Sem dados';
+            }
         }
 
         // ================================================================
-        //  SERVE PARA: Clima com HG Weather (CHAVE ATUALIZADA)
+        //  RENDER CARDS E PRÓXIMO
         //  ================================================================
-   const WEATHER_API_KEY = '84ac546d';
-const CITY = 'Maraba';
-const STATE = 'PA';
-
-async function fetchWeather() {
-    const el = document.getElementById('weatherValue');
-    if (!el) return;
-
-    el.textContent = '⏳ Carregando...';
-
-    try {
-        // 🌟 SOLUÇÃO OFICIAL: adicione &format=json-cors à URL
-        const url = `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt&format=json-cors`;
-        
-        console.log('🔎 Buscando clima em:', url);
-
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const data = await res.json();
-        console.log('📦 Dados do clima:', data);
-
-        if (!data.results || data.results.temp === undefined) {
-            throw new Error('Dados incompletos');
-        }
-
-        const temp = Math.round(data.results.temp);
-        const conditionSlug = data.results.condition_slug || '';
-
-        const emojiMap = {
-            'clear_day': '☀️',
-            'clear_night': '🌙',
-            'cloud': '☁️',
-            'cloudly_day': '⛅',
-            'cloudly_night': '☁️',
-            'rain': '🌧️',
-            'storm': '⛈️',
-            'snow': '❄️',
-            'fog': '🌫️'
-        };
-        const emoji = emojiMap[conditionSlug] || '🌤️';
-
-        el.textContent = `${emoji} ${temp} °C`;
-    } catch (error) {
-        console.error('❌ Erro ao buscar clima:', error);
-        el.textContent = '⚠️ Sem dados';
-    }
-}
-        // ================================================================
-        //  SERVE PARA: Lógica principal – Próximo ônibus e cards
-        //  ================================================================
-        function getFilteredHorarios(filter) {
-            if (filter === 'all') return [...allHorarios];
-            return allHorarios.filter(h => h.dias.includes(filter));
-        }
-
-        function renderAll() {
-            const nowMinutes = getCurrentMinutes();
-            const filtered = getFilteredHorarios(currentFilter);
-
-            // Separar futuros e passados
-            const futuros = [];
-            const passados = [];
-            filtered.forEach(h => {
-                const hm = getMinutesFromTime(h.horario);
-                if (hm >= nowMinutes) futuros.push(h);
-                else passados.push(h);
-            });
-
-            // Ordenar futuros por horário, passados por horário
+        function renderCards() {
+            const nowMin = getCurrentMinutes();
+            const filtered = currentFilter === 'all' ? [...allHorarios] : allHorarios.filter(h => h.dias.includes(currentFilter));
+            const futuros = filtered.filter(h => getMinutesFromTime(h.horario) >= nowMin);
+            const passados = filtered.filter(h => getMinutesFromTime(h.horario) < nowMin);
             futuros.sort((a, b) => a.horario.localeCompare(b.horario));
             passados.sort((a, b) => a.horario.localeCompare(b.horario));
-
-            // Montar lista final: futuros primeiro, depois passados
             const sorted = [...futuros, ...passados];
 
-            // Renderizar cards
             if (sorted.length === 0) {
-                container.innerHTML = `
-                    <div class="empty">
-                        <i class="far fa-calendar-times"></i>
-                        Nenhum horário encontrado para este dia.
-                    </div>
-                `;
+                container.innerHTML = `<div class="empty"><i class="far fa-calendar-times"></i> Nenhum horário para este dia.</div>`;
             } else {
                 let html = '';
-                sorted.forEach((h, index) => {
-                    const hm = getMinutesFromTime(h.horario);
-                    const passed = hm < nowMinutes;
-                    const isNext = (index === 0 && !passed); // o primeiro da lista se for futuro
-                    const classes = `card${passed ? ' passed' : ''}${isNext ? ' next' : ''}`;
+                sorted.forEach((h, idx) => {
+                    const passed = getMinutesFromTime(h.horario) < nowMin;
+                    const isNext = idx === 0 && !passed;
+                    const cls = `card${passed ? ' passed' : ''}${isNext ? ' next' : ''}`;
                     html += `
-                        <div class="${classes}" style="animation-delay: ${index * 0.04}s">
+                        <div class="${cls}" style="animation-delay:${idx*0.04}s">
                             <div class="destino"><i class="fas fa-map-pin"></i> ${h.destino}</div>
                             <div class="horario">${h.horario}</div>
                             <div class="embarque"><i class="fas fa-location-dot"></i> ${h.embarque}</div>
-                            <div class="dias">
-                                ${h.dias.map(d => `<span>${d}</span>`).join('')}
-                            </div>
+                            <div class="dias">${h.dias.map(d=>`<span>${d}</span>`).join('')}</div>
                         </div>
                     `;
                 });
                 container.innerHTML = html;
             }
 
-            // Atualizar próximo ônibus
-            updateNextBus(futuros, passados);
-        }
-
-        function updateNextBus(futuros, passados) {
-            const nowMinutes = getCurrentMinutes();
-            let next = null;
+            // Próximo
             if (futuros.length > 0) {
-                next = futuros[0];
-            }
-
-            if (next) {
-                const hm = getMinutesFromTime(next.horario);
-                const diff = hm - nowMinutes;
-                const countdownText = formatCountdown(diff);
-                const isPassed = diff < 0;
-
+                const nxt = futuros[0];
+                const diff = getMinutesFromTime(nxt.horario) - nowMin;
+                const txt = formatCountdown(diff);
+                const cls = diff < 0 ? 'passed' : '';
                 nextBusInfo.innerHTML = `
-                    <span class="destino">${next.destino}</span>
-                    <span class="horario">${next.horario}</span>
-                    <span class="countdown${isPassed ? ' passed' : ''}">${countdownText}</span>
+                    <span class="destino">${nxt.destino}</span>
+                    <span class="horario">${nxt.horario}</span>
+                    <span class="countdown ${cls}">${txt}</span>
                 `;
             } else {
-                // Nenhum futuro: mostrar próximo amanhã ou mensagem
-                const nextTomorrow = findNextTomorrow();
-                if (nextTomorrow) {
+                const amanha = findNextTomorrow();
+                if (amanha) {
                     nextBusInfo.innerHTML = `
-                        <span class="destino">${nextTomorrow.destino}</span>
-                        <span class="horario">${nextTomorrow.horario}</span>
+                        <span class="destino">${amanha.destino}</span>
+                        <span class="horario">${amanha.horario}</span>
                         <span class="countdown" style="color:#ffaa00;">Amanhã</span>
                     `;
                 } else {
-                    nextBusInfo.innerHTML = `
-                        <span class="empty-msg">Nenhum ônibus programado para hoje</span>
-                    `;
+                    nextBusInfo.innerHTML = `<span class="empty-msg">Nenhum ônibus programado</span>`;
                 }
             }
         }
@@ -884,93 +1116,257 @@ async function fetchWeather() {
         function findNextTomorrow() {
             const today = new Date().getDay();
             const tomorrow = (today + 1) % 7;
-            const dayMap = {
-                0: 'Domingo',
-                1: 'Segunda a Sexta',
-                2: 'Segunda a Sexta',
-                3: 'Segunda a Sexta',
-                4: 'Segunda a Sexta',
-                5: 'Segunda a Sexta',
-                6: 'Sábado'
-            };
-            const tomorrowLabel = dayMap[tomorrow];
-            const allNext = allHorarios.filter(h => h.dias.includes(tomorrowLabel));
-            if (allNext.length === 0) return null;
-            allNext.sort((a, b) => a.horario.localeCompare(b.horario));
-            return allNext[0];
+            const map = { 0: 'Domingo', 1: 'Segunda a Sexta', 2: 'Segunda a Sexta', 3: 'Segunda a Sexta', 4: 'Segunda a Sexta',
+                5: 'Segunda a Sexta', 6: 'Sábado' };
+            const label = map[tomorrow];
+            const list = allHorarios.filter(h => h.dias.includes(label));
+            if (!list.length) return null;
+            list.sort((a, b) => a.horario.localeCompare(b.horario));
+            return list[0];
         }
 
         // ================================================================
-        //  SERVE PARA: Atualização periódica
+        //  ALERTAS – CADASTRO E LISTA
         //  ================================================================
-        function updateAll() {
-            renderAll();
-            updateClock();
-            updateDateAndGreeting();
-        }
-
-        // ================================================================
-        //  SERVE PARA: Inicialização
-        //  ================================================================
-        function init() {
-            // Definir filtro automático
-            const today = getCurrentDay();
-            const allBtns = document.querySelectorAll('.filter-btn');
-            let found = false;
-            allBtns.forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.filter === today) {
-                    btn.classList.add('active');
-                    currentFilter = today;
-                    found = true;
-                }
+        function loadAlertas() {
+            try {
+                const raw = localStorage.getItem('vtm_alertas');
+                alertas = raw ? JSON.parse(raw) : [];
+            } catch { alertas = []; }
+            // Inicializa disparos
+            alertaDisparado = {};
+            alertas.forEach(a => {
+                const key = a.destino + '|' + a.horario;
+                alertaDisparado[key] = false;
             });
-            if (!found) {
-                document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
-                currentFilter = 'all';
-            }
+            renderAlertList();
+            populateDestinos();
+        }
 
-            // Configurar eventos dos filtros
-            allBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    allBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentFilter = btn.dataset.filter;
-                    renderAll();
+        function saveAlertas() {
+            localStorage.setItem('vtm_alertas', JSON.stringify(alertas));
+            renderAlertList();
+        }
+
+        function populateDestinos() {
+            const destinos = [...new Set(allHorarios.map(h => h.destino))];
+            alertDestino.innerHTML = `<option value="">Selecione...</option>${destinos.map(d=>`<option value="${d}">${d}</option>`).join('')}`;
+        }
+
+        function renderAlertList() {
+            if (alertas.length === 0) {
+                alertListContainer.innerHTML = `<div class="no-alerts">Nenhum alerta cadastrado.</div>`;
+                return;
+            }
+            let html = '<div class="alert-list">';
+            alertas.forEach((a, idx) => {
+                const key = a.destino + '|' + a.horario;
+                const triggered = alertaDisparado[key] || false;
+                const statusClass = triggered ? 'alerted' : '';
+                const statusText = triggered ? '⏰ Disparado' : '⏳ Aguardando';
+                html += `
+                    <div class="alert-item">
+                        <span class="name">${a.nome}</span>
+                        <span class="dest">${a.destino}</span>
+                        <span class="phone">${a.telefone}</span>
+                        <span class="status ${statusClass}">${statusText}</span>
+                        <button class="remove-btn" data-idx="${idx}" title="Remover"><i class="fas fa-times"></i></button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            alertListContainer.innerHTML = html;
+
+            // Eventos de remover
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.idx);
+                    alertas.splice(idx, 1);
+                    saveAlertas();
+                    loadAlertas();
                 });
             });
+        }
 
-            // Iniciar atualizações
-            updateAll();
-            setInterval(updateAll, 60000); // a cada 60s atualiza lista e relógio
-            setInterval(updateClock, 1000); // relógio a cada segundo
+        function addAlerta() {
+            const nome = alertName.value.trim();
+            const telefone = alertPhone.value.trim();
+            const destino = alertDestino.value;
+
+            if (!nome || !telefone || !destino) {
+                alert('Preencha nome, telefone e destino.');
+                return;
+            }
+            // Telefone simples
+            if (telefone.length < 10) {
+                alert('Número de telefone inválido (mínimo 10 dígitos).');
+                return;
+            }
+            // Procura o próximo horário desse destino hoje
+            const hoje = getCurrentDay();
+            const horariosHoje = allHorarios.filter(h => h.dias.includes(hoje) && h.destino === destino);
+            if (!horariosHoje.length) {
+                alert(`Nenhum ônibus para "${destino}" hoje (${hoje}).`);
+                return;
+            }
+            const agora = getCurrentMinutes();
+            const futuro = horariosHoje.filter(h => getMinutesFromTime(h.horario) >= agora);
+            if (!futuro.length) {
+                alert(`Todos os ônibus para "${destino}" já passaram hoje.`);
+                return;
+            }
+            // Pega o primeiro horário futuro
+            futuro.sort((a, b) => a.horario.localeCompare(b.horario));
+            const horarioEscolhido = futuro[0].horario;
+
+            // Verifica se já existe alerta para esse destino+horário
+            const existe = alertas.some(a => a.destino === destino && a.horario === horarioEscolhido);
+            if (existe) {
+                alert(`Já existe um alerta para "${destino}" às ${horarioEscolhido}.`);
+                return;
+            }
+
+            const novo = {
+                nome,
+                telefone,
+                destino,
+                horario: horarioEscolhido,
+                embarque: futuro[0].embarque
+            };
+            alertas.push(novo);
+            const key = destino + '|' + horarioEscolhido;
+            alertaDisparado[key] = false;
+            saveAlertas();
+            renderAlertList();
+
+            alertName.value = '';
+            alertPhone.value = '';
+            alertDestino.value = '';
+            alert(`✅ Alerta cadastrado para "${destino}" às ${horarioEscolhido}. Você será avisado 30 minutos antes.`);
+        }
+
+        // ================================================================
+        //  VERIFICAÇÃO DE ALERTAS (a cada 30s)
+        //  ================================================================
+        function verificarAlertas() {
+            const agora = getCurrentMinutes();
+            alertas.forEach(a => {
+                const key = a.destino + '|' + a.horario;
+                const hm = getMinutesFromTime(a.horario);
+                const diff = hm - agora;
+                // Se já foi disparado, não repetir
+                if (alertaDisparado[key]) return;
+                // Se faltar 30 minutos ou menos (e ainda não passou)
+                if (diff <= 30 && diff >= -2) {
+                    // Dispara
+                    alertaDisparado[key] = true;
+                    const msg =
+                        `Olá ${a.nome}! Faltam ${Math.round(diff)} minutos para o seu VTM da linha "${a.destino}" passar na parada "${a.embarque || 'terminal'}". Programa-se!`;
+                    // Mostra modal
+                    alertMessage.innerHTML = `📢 <strong>${a.nome}</strong>, faltam <strong>${Math.round(diff)} minutos</strong> para o <strong>VTM "${a.destino}"</strong> passar na parada <strong>${a.embarque || 'terminal'}</strong>.`;
+                    alertSubMsg.textContent = `🔔 Alerta disparado às ${new Date().toLocaleTimeString()}`;
+                    alertModal.classList.add('active');
+                    // Sintetiza voz (IA)
+                    speak(msg);
+                    // Salva estado
+                    saveAlertas();
+                    renderAlertList();
+                }
+            });
+        }
+
+        // ================================================================
+        //  FILTROS
+        //  ================================================================
+        function initFilters() {
+            const btns = document.querySelectorAll('.filter-btn');
+            const hoje = getCurrentDay();
+            btns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === hoje) btn.classList.add('active');
+            });
+            // Se não achou, ativa "Todos"
+            if (!document.querySelector('.filter-btn.active')) {
+                document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+                currentFilter = 'all';
+            } else {
+                currentFilter = document.querySelector('.filter-btn.active').dataset.filter;
+            }
+
+            btns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    btns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.dataset.filter;
+                    renderCards();
+                });
+            });
+        }
+
+        // ================================================================
+        //  INICIALIZAÇÃO
+        //  ================================================================
+        function init() {
+            // Data / relógio
+            updateDateAndGreeting();
+            updateClock();
+            setInterval(updateClock, 1000);
 
             // Clima
             fetchWeather();
-            setInterval(fetchWeather, 600000); // a cada 10 min
+            setInterval(fetchWeather, 600000);
 
-            // Modal
-            const modal = document.getElementById('welcomeModal');
-            const closeBtn = document.getElementById('closeModalBtn');
-            window.addEventListener('load', () => {
-                modal.classList.add('active');
+            // Filtros
+            initFilters();
+
+            // Renderização inicial
+            renderCards();
+
+            // Alertas
+            loadAlertas();
+            addBtn.addEventListener('click', addAlerta);
+
+            // Modal de boas-vindas
+            const welcomeModal = document.getElementById('welcomeModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            window.addEventListener('load', () => welcomeModal.classList.add('active'));
+            closeModalBtn.addEventListener('click', () => welcomeModal.classList.remove('active'));
+            welcomeModal.addEventListener('click', (e) => { if (e.target === welcomeModal) welcomeModal.classList.remove(
+                    'active'); });
+
+            // Modal de alerta
+            closeAlertBtn.addEventListener('click', () => {
+                alertModal.classList.remove('active');
+                window.speechSynthesis.cancel();
             });
-            closeBtn.addEventListener('click', () => {
-                modal.classList.remove('active');
-            });
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) modal.classList.remove('active');
+            alertModal.addEventListener('click', (e) => {
+                if (e.target === alertModal) {
+                    alertModal.classList.remove('active');
+                    window.speechSynthesis.cancel();
+                }
             });
 
-            // Registrar Service Worker (PWA) – ignore erros 404 se ainda não criou os arquivos
+            // Verificação periódica (a cada 30s)
+            setInterval(() => {
+                verificarAlertas();
+                // também atualiza cards e contagem
+                renderCards();
+            }, 30000);
+
+            // Atualização completa a cada 60s
+            setInterval(() => {
+                updateDateAndGreeting();
+                renderCards();
+            }, 60000);
+
+            // PWA (service worker) - opcional
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('/sw.js')
-                    .then(() => console.log('SW registrado!'))
-                    .catch(err => console.warn('SW falhou (ignore se ainda não criou os arquivos):', err));
+                    .then(() => console.log('SW registrado'))
+                    .catch(() => console.warn('SW não disponível'));
             }
         }
 
-        // Iniciar quando o DOM estiver pronto
         document.addEventListener('DOMContentLoaded', init);
     </script>
 
