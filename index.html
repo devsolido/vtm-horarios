@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>VTM Integração - Horários</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ============================================================
+           SERVE PARA: Reset e estilos base de todo o sistema
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 30%, #0b0e1a, #03050b);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .app {
+            max-width: 1200px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 24px 24px 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #00c6fb, #005bea);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 8px 24px rgba(0, 91, 234, 0.4);
+            flex-shrink: 0;
+        }
+
+        .logo-text .main {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(to right, #f0f4ff, #b0caff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text .sub {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        .info-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 6px 14px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(4px);
+            min-height: 40px;
+        }
+
+        .info-item i {
+            color: #00c6fb;
+            font-size: 15px;
+        }
+
+        .info-item .value {
+            font-weight: 500;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        .version {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            white-space: nowrap;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            backdrop-filter: blur(4px);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #00c6fb, #005bea);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(0, 91, 234, 0.35);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 18px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+            touch-action: manipulation;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00c6fb, #005bea);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card .destino {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card .destino i {
+            color: #00c6fb;
+            font-size: 16px;
+        }
+
+        .card .horario {
+            font-size: 26px;
+            font-weight: 700;
+            color: #b0caff;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .card .embarque {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .card .embarque i {
+            font-size: 12px;
+            color: #00c6fb;
+        }
+
+        .card .dias {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .card .dias span {
+            background: rgba(0, 198, 251, 0.12);
+            color: #00c6fb;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 198, 251, 0.15);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 15px;
+        }
+
+        .empty i {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-top: 14px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .footer .version {
+            font-size: 11px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background: rgba(20, 30, 50, 0.95);
+            border-radius: 36px;
+            padding: 40px 32px 32px;
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+            transform: scale(0.9) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-overlay.active .modal-box {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-box .icon-big {
+            font-size: 48px;
+            background: linear-gradient(135deg, #00c6fb, #005bea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .modal-box h2 {
+            color: #fff;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .modal-box p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .modal-box .btn-primary {
+            background: linear-gradient(135deg, #00c6fb, #005bea);
+            border: none;
+            color: #fff;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 14px 36px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4);
+            touch-action: manipulation;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-box .btn-primary:hover {
+            transform: scale(1.03);
+            box-shadow: 0 12px 40px rgba(0, 91, 234, 0.6);
+        }
+
+        .modal-box .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        @media (max-width: 768px) {
+            .app { padding: 16px 14px 12px; border-radius: 28px; }
+            .header { flex-direction: column; align-items: stretch; gap: 12px; }
+            .logo-area { justify-content: center; }
+            .info-bar { justify-content: center; }
+            .cards-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .card .horario { font-size: 22px; }
+            .card .destino { font-size: 16px; }
+        }
+
+        @media (max-width: 550px) {
+            .cards-grid { grid-template-columns: 1fr; gap: 12px; }
+            .info-bar { flex-wrap: wrap; justify-content: center; gap: 8px; }
+            .info-item { font-size: 13px; padding: 4px 12px; min-height: 36px; }
+            .filter-btn { font-size: 12px; padding: 6px 14px; min-height: 40px; }
+            .modal-box { padding: 28px 20px 24px; }
+            .modal-box h2 { font-size: 22px; }
+            .logo-text .main { font-size: 18px; }
+            .logo-icon { width: 40px; height: 40px; font-size: 20px; }
+            .version { font-size: 10px; }
+            .card { padding: 14px 16px; }
+            .card .horario { font-size: 24px; }
+            .footer { font-size: 11px; flex-direction: column; text-align: center; }
+        }
+
+        @media (max-width: 380px) {
+            .info-item { font-size: 11px; padding: 3px 10px; }
+            .filter-btn { font-size: 11px; padding: 4px 10px; }
+            .modal-box .btn-primary { font-size: 15px; padding: 12px 28px; }
+        }
+
+        .card {
+            animation: fadeUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeUp {
+            0% { opacity: 0; transform: translateY(16px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .card:nth-child(1)  { animation-delay: 0.02s; }
+        .card:nth-child(2)  { animation-delay: 0.06s; }
+        .card:nth-child(3)  { animation-delay: 0.10s; }
+        .card:nth-child(4)  { animation-delay: 0.14s; }
+        .card:nth-child(5)  { animation-delay: 0.18s; }
+        .card:nth-child(6)  { animation-delay: 0.22s; }
+        .card:nth-child(7)  { animation-delay: 0.26s; }
+        .card:nth-child(8)  { animation-delay: 0.30s; }
+        .card:nth-child(9)  { animation-delay: 0.34s; }
+        .card:nth-child(10) { animation-delay: 0.38s; }
+        .card:nth-child(11) { animation-delay: 0.42s; }
+        .card:nth-child(12) { animation-delay: 0.46s; }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.02); }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 198, 251, 0.3); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 198, 251, 0.6); }
+    </style>
+</head>
+<body>
+
+    <!-- MODAL DE BOAS-VINDAS -->
+    <div class="modal-overlay" id="welcomeModal">
+        <div class="modal-box">
+            <div class="icon-big"><i class="fas fa-bus"></i></div>
+            <h2>BEM VINDO AO HELP VTM</h2>
+            <p>Consulte os horários de ônibus da <strong>Vale Transporte Marabá</strong> de forma rápida e moderna.</p>
+            <button class="btn-primary" id="closeModalBtn"><i class="fas fa-arrow-right"></i> Entrar</button>
+        </div>
+    </div>
+
+    <!-- APP PRINCIPAL -->
+    <div class="app">
+        <header class="header">
+            <div class="logo-area">
+                <div class="logo-icon"><i class="fas fa-bus"></i></div>
+                <div class="logo-text">
+                    <span class="main">VTM Integração</span>
+                    <span class="sub">Vale Transporte Marabá</span>
+                </div>
+            </div>
+
+            <div class="info-bar">
+                <div class="info-item" id="clock">
+                    <i class="far fa-clock"></i>
+                    <span class="value" id="clockValue">--:--:--</span>
+                </div>
+                <div class="info-item" id="weather">
+                    <i class="fas fa-cloud-sun"></i>
+                    <span class="value" id="weatherValue">-- °C</span>
+                </div>
+                <span class="version"><i class="fas fa-code-branch"></i> v1.0.0</span>
+            </div>
+        </header>
+
+        <div class="filters" id="filtersContainer">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="Segunda a Sexta">Seg–Sex</button>
+            <button class="filter-btn" data-filter="Sábado">Sábado</button>
+            <button class="filter-btn" data-filter="Domingo">Domingo</button>
+        </div>
+
+        <div class="cards-grid" id="cardsContainer"></div>
+
+        <div class="footer">
+            <span>© 2026 VTM Integração – Todos os direitos reservados</span>
+            <span class="version">v1.0.0</span>
+        </div>
+    </div>
+
+    <script>
+        // ================================================================
+        //  ⭐ ALTERE AQUI OS HORÁRIOS – Adicione ou remova objetos neste array
+        //  ================================================================
+        const horarios = [
+            // FORMATO:
+            // { destino: "Nome do Destino", horario: "HH:MM", embarque: "Local", dias: ["Dia1", "Dia2"] }
+            // Dias permitidos: "Segunda a Sexta", "Sábado" ou "Domingo"
+            { destino: "Morada Nova", horario: "11:35", embarque: "Antônio Vilhena", dias: ["Sábado"] },
+            { destino: "Morada Nova", horario: "16:48", embarque: "Antônio Vilhena", dias: ["Domingo"] },
+            { destino: "Morada Nova", horario: "17:42", embarque: "Antônio Vilhena", dias: ["Domingo"] },
+            { destino: "Liberdade", horario: "07:15", embarque: "Terminal de Integração", dias: ["Segunda a Sexta"] },
+            { destino: "Bela Vista", horario: "13:40", embarque: "Terminal", dias: ["Segunda a Sexta"] },
+            { destino: "Liberdade", horario: "13:09", embarque: "Praça São Francisco", dias: ["Sábado"] },
+            { destino: "Liberdade", horario: "12:41", embarque: "Terminal", dias: ["Sábado"] },
+            { destino: "São Félix", horario: "06:10", embarque: "Antônio Vilhena", dias: ["Segunda a Sexta"] },
+            { destino: "Liberdade", horario: "12:18", embarque: "Cidade Nova - Praça", dias: ["Segunda a Sexta"] },
+            { destino: "Liberdade", horario: "16:00", embarque: "Praça", dias: ["Segunda a Sexta"] }
+        ];
+
+        // ================================================================
+        //  SERVE PARA: Ordenar os horários do mais cedo para o mais tarde
+        // ================================================================
+        horarios.sort((a, b) => a.horario.localeCompare(b.horario));
+
+        // ================================================================
+        //  SERVE PARA: Gerenciar o modal de boas-vindas
+        // ================================================================
+        const modal = document.getElementById('welcomeModal');
+        const closeBtn = document.getElementById('closeModalBtn');
+
+        window.addEventListener('load', () => {
+            modal.classList.add('active');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // ================================================================
+        //  SERVE PARA: Renderizar os cards na tela
+        // ================================================================
+        const container = document.getElementById('cardsContainer');
+        let currentFilter = 'all';
+
+        function renderCards(filter) {
+            const filtered = filter === 'all' ?
+                horarios :
+                horarios.filter(h => h.dias.includes(filter));
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty">
+                        <i class="far fa-calendar-times"></i>
+                        Nenhum horário encontrado para este dia.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach((h, index) => {
+                html += `
+                    <div class="card" style="animation-delay: ${index * 0.04}s">
+                        <div class="destino"><i class="fas fa-map-pin"></i> ${h.destino}</div>
+                        <div class="horario">${h.horario}</div>
+                        <div class="embarque"><i class="fas fa-location-dot"></i> ${h.embarque}</div>
+                        <div class="dias">
+                            ${h.dias.map(d => `<span>${d}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // ================================================================
+        //  SERVE PARA: Filtrar os cards ao clicar nos botões
+        // ================================================================
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderCards(currentFilter);
+            });
+        });
+
+        // ================================================================
+        //  SERVE PARA: Relógio em tempo real
+        // ================================================================
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clockValue').textContent = `${h}:${m}:${s}`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // ================================================================
+        //  SERVE PARA: Clima de Marabá (PA) – substitua a chave se quiser
+        // ================================================================
+        const WEATHER_API_KEY = 'SUA_CHAVE_AQUI'; // Insira sua chave do OpenWeatherMap
+        const CITY = 'Maraba';
+        const COUNTRY = 'BR';
+
+        async function fetchWeather() {
+            const weatherEl = document.getElementById('weatherValue');
+            if (WEATHER_API_KEY === 'SUA_CHAVE_AQUI') {
+                weatherEl.textContent = '🌤️ 28 °C';
+                return;
+            }
+            try {
+                const url =
+                    `https://api.openweathermap.org/data/2.5/weather?q=${CITY},${COUNTRY}&appid=${WEATHER_API_KEY}&units=metric&lang=pt_br`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('Erro na API');
+                const data = await res.json();
+                const temp = Math.round(data.main.temp);
+                const iconMap = {
+                    '01d': '☀️', '01n': '🌙', '02d': '⛅', '02n': '☁️',
+                    '03d': '☁️', '03n': '☁️', '04d': '☁️', '04n': '☁️',
+                    '09d': '🌧️', '09n': '🌧️', '10d': '🌦️', '10n': '🌧️',
+                    '11d': '⛈️', '11n': '⛈️', '13d': '❄️', '13n': '❄️',
+                    '50d': '🌫️', '50n': '🌫️'
+                };
+                const emoji = iconMap[data.weather[0].icon] || '🌤️';
+                weatherEl.textContent = `${emoji} ${temp} °C`;
+            } catch {
+                weatherEl.textContent = '🌤️ 28 °C';
+            }
+        }
+        fetchWeather();
+        setInterval(fetchWeather, 600000);
+
+        // ================================================================
+        //  SERVE PARA: Inicializar o sistema
+        // ================================================================
+        renderCards('all');
+    </script>
+
+</body>
+</html>
