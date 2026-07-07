@@ -257,6 +257,30 @@
       color: #aaa;
     }
 
+    /* ===== CARDS DE OUTRO DIA (não operam hoje) ===== */
+    .card.outro-dia {
+      opacity: 0.45;
+      filter: grayscale(0.3);
+    }
+    .card.outro-dia .horario {
+      color: #888;
+    }
+    .card.outro-dia .destino {
+      color: #aaa;
+    }
+    .card.outro-dia .dias span {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .card.outro-dia .share-btn {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+    .card.outro-dia .embarque {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
     .card.next {
       border-color: rgba(0, 198, 251, 0.5);
       box-shadow: 0 0 30px rgba(0, 198, 251, 0.08);
@@ -1099,7 +1123,7 @@
           <i class="fas fa-cloud-sun"></i>
           <span class="value" id="weatherValue">-- °C</span>
         </div>
-        <span class="version"><i class="fas fa-code-branch"></i> v2.6.0</span>
+        <span class="version"><i class="fas fa-code-branch"></i> v2.6.1</span>
       </div>
     </header>
 
@@ -1170,28 +1194,29 @@
     </div>
 
     <div class="footer">
-      <span>© 2026 VTM Integração – Todos os direitos reservados</span>
-      <span class="version">2.6.0</span>
+      <span>&copy; 2026 VTM Integração – Tecnologia em mobilidade</span>
+      <span class="version">2.6.1</span>
     </div>
   </div>
 
   <script>
     // ================================================================
-      // 🛠️ CONTROLE DE MANUTENÇÃO (via JSON)
-      // ================================================================
-      fetch('manutencao-status.json?' + new Date().getTime())
-        .then(res => res.json())
-        .then(data => {
-          if (data.ativo) {
-            localStorage.setItem('manutencao_ativa', 'true');
-            window.location.href = 'manutencao.html';
-          } else {
-            localStorage.removeItem('manutencao_ativa');
-          }
-        })
-        .catch(() => {
+    // 🛠️ CONTROLE DE MANUTENÇÃO (via JSON)
+    // ================================================================
+    fetch('manutencao-status.json?' + new Date().getTime())
+      .then(res => res.json())
+      .then(data => {
+        if (data.ativo) {
+          localStorage.setItem('manutencao_ativa', 'true');
+          window.location.href = 'manutencao.html';
+        } else {
           localStorage.removeItem('manutencao_ativa');
-        });
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('manutencao_ativa');
+      });
+
     // ================================================================
     //  HORÁRIOS
     //  ================================================================
@@ -1365,16 +1390,27 @@
     }
 
     // ================================================================
-    //  RENDER CARDS E PRÓXIMO (com botão compartilhar)
+    //  RENDER CARDS E PRÓXIMO (corrigido)
     //  ================================================================
     function renderCards() {
       const nowMin = getCurrentMinutes();
+      const diaAtual = getCurrentDay(); // "Segunda a Sexta", "Sábado" ou "Domingo"
+
+      // Filtra os horários de acordo com o filtro selecionado
       const filtered = currentFilter === 'all' ? [...allHorarios] : allHorarios.filter(h => h.dias.includes(currentFilter));
-      const futuros = filtered.filter(h => getMinutesFromTime(h.horario) >= nowMin);
-      const passados = filtered.filter(h => getMinutesFromTime(h.horario) < nowMin);
-      futuros.sort((a, b) => a.horario.localeCompare(b.horario));
-      passados.sort((a, b) => a.horario.localeCompare(b.horario));
-      const sorted = [...futuros, ...passados];
+
+      // Separa os horários disponíveis HOJE (para calcular o próximo)
+      const disponiveisHoje = filtered.filter(h => h.dias.includes(diaAtual));
+      const futurosHoje = disponiveisHoje.filter(h => getMinutesFromTime(h.horario) >= nowMin);
+      futurosHoje.sort((a, b) => a.horario.localeCompare(b.horario));
+
+      // Para exibição, separamos futuros e passados considerando TODOS os horários (inclusive os de outros dias)
+      const futurosTodos = filtered.filter(h => getMinutesFromTime(h.horario) >= nowMin);
+      const passadosTodos = filtered.filter(h => getMinutesFromTime(h.horario) < nowMin);
+      futurosTodos.sort((a, b) => a.horario.localeCompare(b.horario));
+      passadosTodos.sort((a, b) => a.horario.localeCompare(b.horario));
+
+      const sorted = [...futurosTodos, ...passadosTodos];
 
       if (sorted.length === 0) {
         container.innerHTML = `<div class="empty"><i class="far fa-calendar-times"></i> Nenhum horário para este dia.</div>`;
@@ -1382,8 +1418,20 @@
         let html = '';
         sorted.forEach((h, idx) => {
           const passed = getMinutesFromTime(h.horario) < nowMin;
-          const isNext = idx === 0 && !passed;
-          const cls = `card${passed ? ' passed' : ''}${isNext ? ' next' : ''}`;
+          // Verifica se o horário opera HOJE
+          const operaHoje = h.dias.includes(diaAtual);
+          // Se o filtro for "all" e NÃO opera hoje, adiciona classe 'outro-dia'
+          const isOutroDia = (currentFilter === 'all' && !operaHoje);
+          // O "próximo" é o primeiro da lista que opera hoje (se filtro "all") ou o primeiro da lista (se filtro específico)
+          let isNext = false;
+          if (currentFilter === 'all') {
+            // Se for o primeiro da lista E opera hoje E não passou
+            isNext = (idx === 0 && !passed && operaHoje);
+          } else {
+            // Em filtros específicos, todos os horários são do dia selecionado
+            isNext = (idx === 0 && !passed);
+          }
+          const cls = `card${passed ? ' passed' : ''}${isNext ? ' next' : ''}${isOutroDia ? ' outro-dia' : ''}`;
           const shareMsg = encodeURIComponent(
             `🚌 Ônibus para ${h.destino} às ${h.horario} - Embarque: ${h.embarque}. Emitido via Help VTM`
           );
@@ -1409,14 +1457,12 @@
             const msg =
               `🚌 Ônibus para ${destino} às ${horario} - Embarque: ${embarque}. Emitido via Help VTM`;
 
-            // Usa Web Share API se disponível (mobile/desktop com suporte)
             if (navigator.share) {
               navigator.share({
                 title: 'VTM Integração - Horário',
                 text: msg,
               }).catch(() => { });
             } else {
-              // Fallback: WhatsApp
               const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
               window.open(url, '_blank');
             }
@@ -1424,9 +1470,9 @@
         });
       }
 
-      // Próximo ônibus
-      if (futuros.length > 0) {
-        const nxt = futuros[0];
+      // ===== Atualização do "Próximo ônibus" =====
+      if (futurosHoje.length > 0) {
+        const nxt = futurosHoje[0]; // primeiro horário futuro disponível HOJE
         const diff = getMinutesFromTime(nxt.horario) - nowMin;
         const txt = formatCountdown(diff);
         const cls = diff < 0 ? 'passed' : '';
@@ -1436,6 +1482,7 @@
                     <span class="countdown ${cls}">${txt}</span>
                 `;
       } else {
+        // Se não há horários hoje, verifica amanhã
         const amanha = findNextTomorrow();
         if (amanha) {
           nextBusInfo.innerHTML = `
@@ -1444,7 +1491,7 @@
                         <span class="countdown" style="color:#ffaa00;">Amanhã</span>
                     `;
         } else {
-          nextBusInfo.innerHTML = `<span class="empty-msg">Nenhum ônibus programado</span>`;
+          nextBusInfo.innerHTML = `<span class="empty-msg">Nenhum ônibus programado para hoje</span>`;
         }
       }
     }
@@ -1464,19 +1511,10 @@
     }
 
     // ================================================================
-    //  ALERTAS (simulação – sem cadastro ativo)
-    //  ================================================================
-
-    // ================================================================
     //  VERIFICAÇÃO DE ALERTAS (com beep e modal)
     //  ================================================================
     function verificarAlertas() {
       const agora = getCurrentMinutes();
-      // Simula um alerta de exemplo para demonstrar o som e o modal
-      // Na prática, você usaria a lista de alertas cadastrados
-      // Aqui criamos um alerta de demonstração para o próximo ônibus
-
-      // Pega o próximo ônibus futuro
       const filtered = currentFilter === 'all' ? [...allHorarios] : allHorarios.filter(h => h.dias.includes(currentFilter));
       const futuros = filtered.filter(h => getMinutesFromTime(h.horario) >= agora);
       futuros.sort((a, b) => a.horario.localeCompare(b.horario));
@@ -1488,29 +1526,21 @@
       const diff = hm - agora;
       const key = proximo.destino + '|' + proximo.horario;
 
-      // Se já disparou, não repete
       if (alertaDisparado[key]) return;
 
-      // Se faltar 30 minutos ou menos (e ainda não passou)
       if (diff <= 30 && diff >= -2) {
         alertaDisparado[key] = true;
         const minutos = Math.round(diff);
 
-        // 1. 🔔 Toca o beep
         playBeep();
 
-        // 2. Mostra modal
         alertMessage.innerHTML =
           `📢 <strong>Atenção!</strong> Faltam <strong>${minutos} minutos</strong> para o <strong>VTM "${proximo.destino}"</strong> passar na parada <strong>${proximo.embarque}</strong>.`;
         alertSubMsg.textContent = `⏰ Alerta às ${new Date().toLocaleTimeString()} - ${proximo.destino} às ${proximo.horario}`;
         alertModal.classList.add('active');
 
-        // 3. Fala local (simulação)
         const msg = `Olá! Faltam ${minutos} minutos para o VTM da linha ${proximo.destino} passar na parada ${proximo.embarque}. Programa-se!`;
         speak(msg);
-
-        // 4. Opcional: enviar para backend (se implementado)
-        // enviarAlertaBackend(proximo, minutos);
       }
     }
 
