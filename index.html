@@ -9,6 +9,60 @@
   <meta name="theme-color" content="#005bea" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
+    /* ===== VARIÁVEIS (TEMA ESCURO PADRÃO) ===== */
+    :root {
+      --bg-body: #0b0e1a;
+      --bg-app: rgba(255, 255, 255, 0.03);
+      --border-app: rgba(255, 255, 255, 0.06);
+      --text-primary: #fff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.3);
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.05);
+      --card-hover-bg: rgba(255, 255, 255, 0.06);
+      --input-bg: rgba(255, 255, 255, 0.05);
+      --input-border: rgba(255, 255, 255, 0.08);
+      --input-color: #fff;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      --badge-bg: rgba(0, 198, 251, 0.1);
+      --badge-color: #00c6fb;
+      --filter-btn-bg: rgba(255, 255, 255, 0.04);
+      --filter-btn-color: rgba(255, 255, 255, 0.6);
+      --filter-btn-hover-bg: rgba(255, 255, 255, 0.08);
+      --filter-btn-active: linear-gradient(135deg, #00c6fb, #005bea);
+      --note-bg: #fff3cd;
+      --note-color: #856404;
+      --note-border: #ffe69c;
+      --note-border-left: #ffc107;
+    }
+
+    /* ===== TEMA CLARO ===== */
+    body.light-mode {
+      --bg-body: #f0f2f5;
+      --bg-app: rgba(255, 255, 255, 0.7);
+      --border-app: rgba(0, 0, 0, 0.1);
+      --text-primary: #1a1a2e;
+      --text-secondary: rgba(0, 0, 0, 0.7);
+      --text-muted: rgba(0, 0, 0, 0.4);
+      --card-bg: rgba(255, 255, 255, 0.7);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-hover-bg: rgba(255, 255, 255, 0.9);
+      --input-bg: rgba(255, 255, 255, 0.8);
+      --input-border: rgba(0, 0, 0, 0.15);
+      --input-color: #1a1a2e;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      --badge-bg: rgba(0, 198, 251, 0.15);
+      --badge-color: #005bea;
+      --filter-btn-bg: rgba(0, 0, 0, 0.05);
+      --filter-btn-color: rgba(0, 0, 0, 0.6);
+      --filter-btn-hover-bg: rgba(0, 0, 0, 0.08);
+      --filter-btn-active: linear-gradient(135deg, #00c6fb, #005bea);
+      --note-bg: #fff3cd;
+      --note-color: #856404;
+      --note-border: #ffe69c;
+      --note-border-left: #ffc107;
+    }
+
     /* ===== RESET ===== */
     * {
       margin: 0;
@@ -19,23 +73,25 @@
 
     body {
       min-height: 100vh;
-      background: radial-gradient(circle at 20% 30%, #0b0e1a, #03050b);
+      background: var(--bg-body);
       display: flex;
       justify-content: center;
       align-items: flex-start;
       padding: 16px;
+      transition: background 0.4s ease, color 0.4s ease;
     }
 
     .app {
       max-width: 1200px;
       width: 100%;
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--bg-app);
       backdrop-filter: blur(12px);
       border-radius: 32px;
       padding: 20px 20px 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-app);
       will-change: transform;
+      transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
     }
 
     /* ===== HEADER ===== */
@@ -47,7 +103,7 @@
       gap: 12px;
       margin-bottom: 16px;
       padding-bottom: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid var(--border-app);
     }
 
     .logo-area {
@@ -75,13 +131,14 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      color: rgba(255, 255, 255, 0.8);
+      color: var(--text-secondary);
       font-size: 13px;
-      background: rgba(255, 255, 255, 0.04);
+      background: var(--filter-btn-bg);
       padding: 4px 12px;
       border-radius: 40px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--input-border);
       min-height: 36px;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
     }
 
     .info-item i {
@@ -91,27 +148,52 @@
 
     .info-item .value {
       font-weight: 500;
-      color: #fff;
+      color: var(--text-primary);
       white-space: nowrap;
     }
 
     .version {
       font-size: 10px;
-      color: rgba(255, 255, 255, 0.25);
-      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      background: var(--filter-btn-bg);
       padding: 4px 10px;
       border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--input-border);
+    }
+
+    /* ===== BOTÃO DE TEMA ===== */
+    .theme-toggle {
+      background: var(--filter-btn-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-primary);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.3s;
+      touch-action: manipulation;
+    }
+    .theme-toggle:hover {
+      background: var(--filter-btn-hover-bg);
+      transform: scale(1.05);
+    }
+    .theme-toggle:active {
+      transform: scale(0.95);
     }
 
     /* ===== DATE ===== */
     .date-display {
       text-align: center;
       font-size: 15px;
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--text-secondary);
       padding: 6px 0 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--border-app);
       margin-bottom: 14px;
+      transition: color 0.3s, border-color 0.3s;
     }
 
     /* ===== FILTER BAR ===== */
@@ -131,18 +213,18 @@
 
     .filter-bar .filter-indicator {
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.4);
-      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      background: var(--filter-btn-bg);
       padding: 4px 12px;
       border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--input-border);
       white-space: nowrap;
     }
 
     .filter-btn {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: rgba(255, 255, 255, 0.6);
+      background: var(--filter-btn-bg);
+      border: 1px solid var(--input-border);
+      color: var(--filter-btn-color);
       padding: 6px 16px;
       border-radius: 40px;
       font-size: 12px;
@@ -157,13 +239,13 @@
     }
 
     .filter-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.15);
+      background: var(--filter-btn-hover-bg);
+      color: var(--text-primary);
+      border-color: var(--text-muted);
     }
 
     .filter-btn.active {
-      background: linear-gradient(135deg, #00c6fb, #005bea);
+      background: var(--filter-btn-active);
       border-color: transparent;
       color: #fff;
       box-shadow: 0 6px 20px rgba(0, 91, 234, 0.35);
@@ -181,10 +263,11 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+      transition: background 0.3s, border-color 0.3s;
     }
 
     .next-bus .label {
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--text-secondary);
       font-size: 13px;
       display: flex;
       align-items: center;
@@ -205,7 +288,7 @@
     .next-bus .destino {
       font-size: 18px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-primary);
     }
 
     .next-bus .horario {
@@ -233,7 +316,7 @@
     }
 
     .next-bus .empty-msg {
-      color: rgba(255, 255, 255, 0.5);
+      color: var(--text-muted);
       font-size: 14px;
     }
 
@@ -246,10 +329,10 @@
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--card-bg);
       border-radius: 20px;
       padding: 16px 18px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
@@ -270,7 +353,6 @@
       color: #aaa;
     }
 
-    /* ===== CARDS DE OUTRO DIA ===== */
     .card.outro-dia {
       opacity: 0.5 !important;
       filter: grayscale(0.4);
@@ -345,15 +427,15 @@
 
     .card:hover {
       transform: translateY(-3px);
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 255, 255, 0.12);
+      background: var(--card-hover-bg);
+      border-color: var(--text-muted);
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
 
     .card .destino {
       font-size: 17px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-primary);
       margin-bottom: 4px;
       display: flex;
       align-items: center;
@@ -372,7 +454,7 @@
     }
     .card .embarque {
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--text-secondary);
       margin-bottom: 8px;
       display: flex;
       align-items: center;
@@ -389,8 +471,8 @@
       margin-bottom: 4px;
     }
     .card .dias span {
-      background: rgba(0, 198, 251, 0.1);
-      color: #00c6fb;
+      background: var(--badge-bg);
+      color: var(--badge-color);
       font-size: 9px;
       font-weight: 600;
       padding: 2px 10px;
@@ -400,14 +482,13 @@
       letter-spacing: 0.5px;
     }
 
-    /* ===== BOTÃO COMPARTILHAR ===== */
     .card .share-btn {
       position: absolute;
       bottom: 12px;
       right: 12px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: rgba(255, 255, 255, 0.5);
+      background: var(--filter-btn-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-muted);
       width: 30px;
       height: 30px;
       border-radius: 50%;
@@ -431,27 +512,13 @@
       pointer-events: none;
     }
 
-    .empty {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 40px 20px;
-      color: rgba(255, 255, 255, 0.3);
-      font-size: 14px;
-    }
-    .empty i {
-      font-size: 32px;
-      display: block;
-      margin-bottom: 10px;
-      opacity: 0.4;
-    }
-
-    /* ===== ALERTS SECTION (EM CONSTRUÇÃO) ===== */
+    /* ===== ALERTS SECTION ===== */
     .alerts-section {
-      background: rgba(255, 255, 255, 0.04);
+      background: var(--card-bg);
       border-radius: 20px;
       padding: 18px 16px 14px;
       margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
       position: relative;
       overflow: hidden;
       opacity: 0.7;
@@ -508,7 +575,7 @@
     }
 
     .alerts-section h3 {
-      color: #fff;
+      color: var(--text-primary);
       font-size: 17px;
       font-weight: 600;
       margin-bottom: 12px;
@@ -533,7 +600,7 @@
     }
     .alert-form label {
       display: block;
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--text-secondary);
       font-size: 11px;
       font-weight: 500;
       margin-bottom: 3px;
@@ -544,9 +611,9 @@
       width: 100%;
       padding: 8px 12px;
       border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--input-color);
       font-size: 13px;
       transition: 0.3s;
       outline: none;
@@ -581,7 +648,7 @@
       cursor: not-allowed;
     }
     .no-alerts {
-      color: rgba(255, 255, 255, 0.3);
+      color: var(--text-muted);
       font-size: 13px;
       padding: 4px 0;
       font-style: italic;
@@ -591,14 +658,15 @@
     .note {
       margin: 16px 0;
       padding: 12px 16px;
-      background-color: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffe69c;
-      border-left: 5px solid #ffc107;
+      background-color: var(--note-bg);
+      color: var(--note-color);
+      border: 1px solid var(--note-border);
+      border-left: 5px solid var(--note-border-left);
       border-radius: 8px;
       font-size: 13px;
       line-height: 1.5;
       font-weight: 500;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
     }
     .note strong {
       color: #b45309;
@@ -629,14 +697,15 @@
     }
 
     .modal-box {
-      background: rgba(20, 30, 50, 0.95);
+      background: var(--bg-app);
+      backdrop-filter: blur(12px);
       border-radius: 32px;
       padding: 36px 28px 28px;
       max-width: 420px;
       width: 100%;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--border-app);
+      box-shadow: var(--shadow);
       transform: scale(0.9) translateY(20px);
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -653,14 +722,14 @@
       margin-bottom: 8px;
     }
     .modal-box h2 {
-      color: #fff;
+      color: var(--text-primary);
       font-size: 22px;
       font-weight: 700;
       letter-spacing: -0.5px;
       margin-bottom: 4px;
     }
     .modal-box p {
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--text-secondary);
       font-size: 14px;
       margin-bottom: 20px;
       line-height: 1.5;
@@ -705,14 +774,15 @@
       display: flex;
     }
     .alert-modal .modal-box {
-      background: rgba(20, 30, 50, 0.97);
+      background: var(--bg-app);
+      backdrop-filter: blur(12px);
       border-radius: 32px;
       padding: 36px 28px 28px;
       max-width: 440px;
       width: 100%;
       text-align: center;
       border: 1px solid rgba(0, 198, 251, 0.25);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+      box-shadow: var(--shadow);
       transform: scale(0.95) translateY(10px);
       animation: alertPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
@@ -729,13 +799,13 @@
       margin-bottom: 4px;
     }
     .alert-modal h2 {
-      color: #fff;
+      color: var(--text-primary);
       font-size: 22px;
       font-weight: 700;
       margin-bottom: 4px;
     }
     .alert-modal .msg {
-      color: rgba(255, 255, 255, 0.85);
+      color: var(--text-secondary);
       font-size: 16px;
       line-height: 1.6;
       margin-bottom: 6px;
@@ -744,7 +814,7 @@
       color: #00c6fb;
     }
     .alert-modal .sub-msg {
-      color: rgba(255, 255, 255, 0.35);
+      color: var(--text-muted);
       font-size: 13px;
       margin-bottom: 20px;
     }
@@ -757,12 +827,84 @@
       flex-wrap: wrap;
       gap: 8px;
       padding-top: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      border-top: 1px solid var(--border-app);
       font-size: 11px;
-      color: rgba(255, 255, 255, 0.2);
+      color: var(--text-muted);
     }
     .footer .version {
       font-size: 10px;
+    }
+    .footer a {
+      color: #00c6fb;
+      text-decoration: none;
+      transition: opacity 0.3s;
+    }
+    .footer a:hover {
+      opacity: 0.7;
+    }
+
+    /* ===== ADMIN PANEL (modal) ===== */
+    .admin-panel .modal-box {
+      max-width: 600px;
+      text-align: left;
+    }
+    .admin-panel .modal-box h2 {
+      text-align: center;
+    }
+    .admin-panel .modal-box .admin-form {
+      margin-top: 16px;
+    }
+    .admin-panel .modal-box .admin-form .field {
+      margin-bottom: 12px;
+    }
+    .admin-panel .modal-box .admin-form label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .admin-panel .modal-box .admin-form input {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--input-color);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .admin-panel .modal-box .admin-form input:focus {
+      border-color: #00c6fb;
+    }
+    .admin-panel .modal-box .admin-form .btn-save {
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      padding: 10px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+      margin-top: 8px;
+      width: 100%;
+    }
+    .admin-panel .modal-box .admin-form .btn-save:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 91, 234, 0.35);
+    }
+    .admin-panel .modal-box .admin-form .btn-save:active {
+      transform: scale(0.98);
+    }
+    .admin-panel .modal-box .admin-form .msg {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #00c6fb;
+      text-align: center;
+    }
+    .admin-panel .modal-box .admin-form .msg.error {
+      color: #ff6b6b;
     }
 
     /* ===== ANIMAÇÕES DOS CARDS ===== */
@@ -826,6 +968,7 @@
       .date-display { font-size: 14px; }
       .version { font-size: 9px; }
       .card .share-btn { width: 26px; height: 26px; font-size: 11px; bottom: 8px; right: 8px; }
+      .admin-panel .modal-box { max-width: 95%; }
     }
 
     @media (max-width: 550px) {
@@ -882,6 +1025,28 @@
     </div>
   </div>
 
+  <!-- MODAL ADMIN -->
+  <div class="modal-overlay admin-panel" id="adminModal">
+    <div class="modal-box">
+      <div class="icon-big"><i class="fas fa-cog"></i></div>
+      <h2>Painel Administrativo</h2>
+      <p>Gerencie os horários dos ônibus.</p>
+      <div class="admin-form">
+        <div class="field">
+          <label>Senha de acesso</label>
+          <input type="password" id="adminPassword" placeholder="Digite a senha" />
+        </div>
+        <button class="btn-save" id="adminLoginBtn">Entrar</button>
+        <div id="adminMsg" class="msg"></div>
+        <div id="adminContent" style="display:none; margin-top:16px;">
+          <p style="color:var(--text-secondary); font-size:14px; margin-bottom:12px;">Edite os horários abaixo:</p>
+          <div id="adminHorariosList"></div>
+          <button class="btn-save" id="adminSaveBtn" style="margin-top:12px;">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- APP PRINCIPAL -->
   <div class="app">
     <header class="header">
@@ -901,7 +1066,10 @@
           <i class="fas fa-cloud-sun"></i>
           <span class="value" id="weatherValue">-- °C</span>
         </div>
-        <span class="version"><i class="fas fa-code-branch"></i> v2.7.2</span>
+        <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+          <i class="fas fa-moon"></i>
+        </button>
+        <span class="version"><i class="fas fa-code-branch"></i> v2.8.0</span>
       </div>
     </header>
 
@@ -919,7 +1087,6 @@
       </div>
     </div>
 
-    <!-- FILTER BAR COM INDICADOR -->
     <div class="filter-bar">
       <div class="filters">
         <button class="filter-btn" data-filter="all">Todos</button>
@@ -974,8 +1141,11 @@
     </div>
 
     <div class="footer">
-      <span>&copy; 2026 VTM Integração – Tecnologia em mobilidade</span>
-      <span class="version">2.7.2</span>
+      <span>
+        &copy; 2026 VTM Integração – Tecnologia em mobilidade &bull;
+        <a href="#" id="adminLink">Admin</a>
+      </span>
+      <span class="version">2.8.0</span>
     </div>
   </div>
 
@@ -1036,6 +1206,44 @@
     const WEATHER_CACHE_TTL = 600000;
 
     // ================================================================
+    //  🌓 TEMA (Dark/Light com persistência)
+    //  ================================================================
+    const themeToggle = document.getElementById('themeToggle');
+    const iconTheme = themeToggle.querySelector('i');
+
+    function setTheme(theme) {
+      if (theme === 'light') {
+        document.body.classList.add('light-mode');
+        iconTheme.className = 'fas fa-sun';
+        localStorage.setItem('vtm_theme', 'light');
+      } else {
+        document.body.classList.remove('light-mode');
+        iconTheme.className = 'fas fa-moon';
+        localStorage.setItem('vtm_theme', 'dark');
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+      setTheme(current === 'light' ? 'dark' : 'light');
+    }
+
+    // Carrega tema salvo
+    const savedTheme = localStorage.getItem('vtm_theme') || 'dark';
+    setTheme(savedTheme);
+
+    themeToggle.addEventListener('click', toggleTheme);
+
+    // ================================================================
+    //  OFFLINE FIRST – Service Worker (registro)
+    //  ================================================================
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ Service Worker registrado com sucesso.'))
+        .catch(err => console.warn('⚠️ SW falhou:', err));
+    }
+
+    // ================================================================
     //  HORÁRIOS
     //  ================================================================
     const horarios = [
@@ -1073,6 +1281,16 @@
     const alertSubMsg = document.getElementById('alertSubMsg');
     const closeAlertBtn = document.getElementById('closeAlertBtn');
     const filterIndicator = document.getElementById('filterIndicator');
+
+    // Admin
+    const adminModal = document.getElementById('adminModal');
+    const adminLink = document.getElementById('adminLink');
+    const adminPassword = document.getElementById('adminPassword');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const adminMsg = document.getElementById('adminMsg');
+    const adminContent = document.getElementById('adminContent');
+    const adminHorariosList = document.getElementById('adminHorariosList');
+    const adminSaveBtn = document.getElementById('adminSaveBtn');
 
     // ================================================================
     //  UTILITÁRIOS
@@ -1219,14 +1437,7 @@
       const nowMin = getCurrentMinutes();
       const diaAtual = getCurrentDay();
 
-      // Atualiza indicador do filtro
-      const filterNames = {
-        'all': 'Todos',
-        'Segunda a Sexta': 'Segunda a Sexta',
-        'Sábado': 'Sábado',
-        'Domingo': 'Domingo'
-      };
-      filterIndicator.textContent = `Filtro: ${filterNames[currentFilter] || currentFilter}`;
+      filterIndicator.textContent = `Filtro: ${currentFilter === 'all' ? 'Todos' : currentFilter}`;
 
       const filtered = currentFilter === 'all' ? [...allHorarios] : allHorarios.filter(h => h.dias.includes(currentFilter));
 
@@ -1257,10 +1468,9 @@
           }
           const cls = `card${passed ? ' passed' : ''}${isNext ? ' next' : ''}${isOutroDia ? ' outro-dia' : ''}`;
 
-          // Monta o badge de dias alternativos
           let diaBadge = '';
           if (isOutroDia) {
-            const dia = h.dias[0]; // pega o primeiro dia (pode ter mais de um)
+            const dia = h.dias[0];
             const label = getDiaLabel(dia);
             diaBadge = `<div class="dia-badge"><i class="fas fa-calendar-day"></i> Apenas ${label}</div>`;
           }
@@ -1284,7 +1494,6 @@
         });
       }
 
-      // Atualiza próximo ônibus
       if (futurosHoje.length > 0) {
         const nxt = futurosHoje[0];
         const diff = getMinutesFromTime(nxt.horario) - nowMin;
@@ -1410,6 +1619,113 @@
     }
 
     // ================================================================
+    //  PAINEL ADMINISTRATIVO (simples)
+    //  ================================================================
+    adminLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      adminModal.classList.add('active');
+      adminMsg.textContent = '';
+      adminMsg.className = 'msg';
+      adminContent.style.display = 'none';
+      adminPassword.value = '';
+    });
+
+    adminModal.addEventListener('click', (e) => {
+      if (e.target === adminModal) {
+        adminModal.classList.remove('active');
+      }
+    });
+
+    adminLoginBtn.addEventListener('click', () => {
+      const pass = adminPassword.value.trim();
+      if (pass === 'admin123') {
+        adminMsg.textContent = '✅ Acesso concedido!';
+        adminMsg.className = 'msg';
+        adminContent.style.display = 'block';
+        loadAdminHorarios();
+      } else {
+        adminMsg.textContent = '❌ Senha incorreta. Tente novamente.';
+        adminMsg.className = 'msg error';
+      }
+    });
+
+    function loadAdminHorarios() {
+      let html = '';
+      allHorarios.forEach((h, idx) => {
+        html += `
+          <div style="margin-bottom:10px; padding:10px; border:1px solid var(--card-border); border-radius:8px;">
+            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+              <input type="text" id="admin_destino_${idx}" value="${h.destino}" style="flex:2; min-width:100px;" />
+              <input type="time" id="admin_horario_${idx}" value="${h.horario}" style="flex:1; min-width:80px;" />
+              <input type="text" id="admin_embarque_${idx}" value="${h.embarque}" style="flex:2; min-width:100px;" />
+              <select id="admin_dias_${idx}" multiple style="flex:2; min-width:120px; height:50px;">
+                <option value="Segunda a Sexta" ${h.dias.includes('Segunda a Sexta') ? 'selected' : ''}>Segunda–Sexta</option>
+                <option value="Sábado" ${h.dias.includes('Sábado') ? 'selected' : ''}>Sábado</option>
+                <option value="Domingo" ${h.dias.includes('Domingo') ? 'selected' : ''}>Domingo</option>
+              </select>
+              <button class="btn-save" style="flex:0 0 60px; padding:4px 8px; font-size:12px;" onclick="removerHorario(${idx})">🗑️</button>
+            </div>
+          </div>
+        `;
+      });
+      html += `<button class="btn-save" style="margin-top:8px;" onclick="adicionarHorario()">➕ Adicionar horário</button>`;
+      adminHorariosList.innerHTML = html;
+    }
+
+    // Funções globais para o admin (serão chamadas via onclick)
+    window.removerHorario = function(idx) {
+      if (confirm('Remover este horário?')) {
+        allHorarios.splice(idx, 1);
+        loadAdminHorarios();
+      }
+    };
+
+    window.adicionarHorario = function() {
+      allHorarios.push({
+        destino: 'Novo destino',
+        horario: '12:00',
+        embarque: 'Local',
+        dias: ['Segunda a Sexta']
+      });
+      loadAdminHorarios();
+    };
+
+    adminSaveBtn.addEventListener('click', () => {
+      // Salvar as alterações
+      const novos = [];
+      const inputs = adminHorariosList.querySelectorAll('div[style*="margin-bottom:10px;"]');
+      inputs.forEach((div, idx) => {
+        const destino = document.getElementById(`admin_destino_${idx}`).value.trim();
+        const horario = document.getElementById(`admin_horario_${idx}`).value.trim();
+        const embarque = document.getElementById(`admin_embarque_${idx}`).value.trim();
+        const select = document.getElementById(`admin_dias_${idx}`);
+        const selected = Array.from(select.selectedOptions).map(opt => opt.value);
+        if (destino && horario && embarque && selected.length) {
+          novos.push({ destino, horario, embarque, dias: selected });
+        }
+      });
+      allHorarios = novos;
+      allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
+      // Salvar no localStorage (simulação de persistência)
+      localStorage.setItem('vtm_horarios_custom', JSON.stringify(allHorarios));
+      adminMsg.textContent = '✅ Horários salvos com sucesso!';
+      adminMsg.className = 'msg';
+      loadAdminHorarios();
+      renderCards();
+    });
+
+    // Carregar horários do localStorage (se houver personalização)
+    const customHorarios = localStorage.getItem('vtm_horarios_custom');
+    if (customHorarios) {
+      try {
+        const parsed = JSON.parse(customHorarios);
+        if (Array.isArray(parsed) && parsed.length) {
+          allHorarios = parsed;
+        }
+      } catch (e) {}
+    }
+
+    // ================================================================
     //  INICIALIZAÇÃO
     //  ================================================================
     function init() {
@@ -1453,12 +1769,6 @@
         updateDateAndGreeting();
         renderCards();
       }, 60000);
-
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-          .then(() => console.log('SW registrado'))
-          .catch(() => console.warn('SW não disponível'));
-      }
     }
 
     document.addEventListener('DOMContentLoaded', init);
