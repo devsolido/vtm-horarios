@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,6 +42,48 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+    }
+
+    /* ===== ESTILOS PARA ACESSO NÃO AUTORIZADO ===== */
+    .icon-danger {
+      font-size: 80px;
+      margin-bottom: 20px;
+      color: #ff6b6b;
+    }
+
+    .error-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #ff6b6b;
+    }
+
+    .error-sub {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .btn-voltar {
+      display: inline-block;
+      padding: 12px 32px;
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.3s;
+    }
+    .btn-voltar:hover {
+      transform: scale(1.05);
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     h1 {
@@ -90,24 +131,57 @@
       h1 {
         font-size: 26px;
       }
-
       .container {
         padding: 30px 20px;
       }
     }
   </style>
 </head>
-
 <body>
-  <div class="container">
-    <div class="icon">🔧</div>
-    <h1>Em Manutenção</h1>
-    <p>Estamos realizando melhorias no sistema. <br />Voltaremos em breve com novidades!</p>
-    <span class="badge">⚠️ Manutenção programada</span>
-    <div class="footer">
-      &copy; 2026 VTM Integração – Tecnologia em mobilidade
+
+  <div class="container" id="mainContainer">
+    <!-- CONTEÚDO NORMAL DA MANUTENÇÃO -->
+    <div id="contentManutencao">
+      <div class="icon">🔧</div>
+      <h1>Em Manutenção</h1>
+      <p>Estamos realizando melhorias no sistema. <br />Voltaremos em breve com novidades!</p>
+      <span class="badge">⚠️ Manutenção programada</span>
+      <div class="footer">
+        &copy; 2026 VTM Integração – Tecnologia em mobilidade
+      </div>
+    </div>
+
+    <!-- CONTEÚDO DE ACESSO NÃO AUTORIZADO -->
+    <div id="contentNaoAutorizado" class="hidden">
+      <div class="icon-danger">🚫</div>
+      <h1 class="error-title">Acesso não autorizado</h1>
+      <p class="error-sub">Esta página está disponível apenas durante o período de manutenção.</p>
+      <a href="/" class="btn-voltar">← Voltar para o início</a>
     </div>
   </div>
-</body>
 
+  <script>
+    // ================================================================
+    // 🛡️ CONTROLE DE ACESSO
+    // Verifica se a manutenção está ativa (flag no localStorage)
+    // ================================================================
+    (function() {
+      const isManutencaoAtiva = localStorage.getItem('manutencao_ativa') === 'true';
+
+      const contentManutencao = document.getElementById('contentManutencao');
+      const contentNaoAutorizado = document.getElementById('contentNaoAutorizado');
+
+      if (!isManutencaoAtiva) {
+        // Esconde o conteúdo de manutenção e mostra o de "não autorizado"
+        contentManutencao.classList.add('hidden');
+        contentNaoAutorizado.classList.remove('hidden');
+      } else {
+        // Mostra o conteúdo normal de manutenção
+        contentManutencao.classList.remove('hidden');
+        contentNaoAutorizado.classList.add('hidden');
+      }
+    })();
+  </script>
+
+</body>
 </html>
