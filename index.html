@@ -1,1483 +1,1600 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
-    <title>VTM Integração - Horários</title>
-    <link rel="manifest" href="manifest.json" />
-    <link rel="apple-touch-icon" href="icon-192.png" />
-    <meta name="theme-color" content="#005bea" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <style>
-        /* ===== RESET ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+  <title>VTM Integração - Horários</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="theme-color" content="#005bea" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* ===== RESET ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
 
-        body {
-            min-height: 100vh;
-            background: radial-gradient(circle at 20% 30%, #0b0e1a, #03050b);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 16px;
-        }
+    body {
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 30%, #0b0e1a, #03050b);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 16px;
+    }
 
-        .app {
-            max-width: 1200px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border-radius: 32px;
-            padding: 20px 20px 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            will-change: transform;
-        }
+    .app {
+      max-width: 1200px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(12px);
+      border-radius: 32px;
+      padding: 20px 20px 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      will-change: transform;
+    }
 
-        /* ===== HEADER ===== */
-        .header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
+    /* ===== HEADER ===== */
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .logo-img {
-            height: 44px;
-            width: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 4px 12px rgba(0, 91, 234, 0.3));
-            border-radius: 8px;
-        }
+    .logo-img {
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(0, 91, 234, 0.3));
+      border-radius: 8px;
+    }
 
-        .info-bar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px;
-        }
+    .info-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
 
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 13px;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 4px 12px;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            min-height: 36px;
-        }
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px 12px;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      min-height: 36px;
+    }
 
-        .info-item i {
-            color: #00c6fb;
-            font-size: 14px;
-        }
+    .info-item i {
+      color: #00c6fb;
+      font-size: 14px;
+    }
 
-        .info-item .value {
-            font-weight: 500;
-            color: #fff;
-            white-space: nowrap;
-        }
+    .info-item .value {
+      font-weight: 500;
+      color: #fff;
+      white-space: nowrap;
+    }
 
-        .version {
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.25);
-            background: rgba(255, 255, 255, 0.04);
-            padding: 4px 10px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
+    .version {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
 
-        /* ===== DATE ===== */
-        .date-display {
-            text-align: center;
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.7);
-            padding: 6px 0 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            margin-bottom: 14px;
-        }
+    /* ===== DATE ===== */
+    .date-display {
+      text-align: center;
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.7);
+      padding: 6px 0 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      margin-bottom: 14px;
+    }
 
-        /* ===== NEXT BUS ===== */
-        .next-bus {
-            background: rgba(0, 198, 251, 0.06);
-            border: 1px solid rgba(0, 198, 251, 0.2);
-            border-radius: 16px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
+    /* ===== NEXT BUS ===== */
+    .next-bus {
+      background: rgba(0, 198, 251, 0.06);
+      border: 1px solid rgba(0, 198, 251, 0.2);
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
 
-        .next-bus .label {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
+    .next-bus .label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .next-bus .label i {
-            color: #00c6fb;
-        }
+    .next-bus .label i {
+      color: #00c6fb;
+    }
 
-        .next-bus .bus-info {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 8px 14px;
-        }
+    .next-bus .bus-info {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 14px;
+    }
 
-        .next-bus .destino {
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-        }
+    .next-bus .destino {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
 
-        .next-bus .horario {
-            font-size: 16px;
-            font-weight: 600;
-            color: #b0caff;
-        }
+    .next-bus .horario {
+      font-size: 16px;
+      font-weight: 600;
+      color: #b0caff;
+    }
 
-        .next-bus .countdown {
-            font-size: 14px;
-            font-weight: 600;
-            color: #00c6fb;
-            background: rgba(0, 198, 251, 0.12);
-            padding: 2px 14px;
-            border-radius: 30px;
-            border: 1px solid rgba(0, 198, 251, 0.15);
-            min-width: 70px;
-            text-align: center;
-        }
+    .next-bus .countdown {
+      font-size: 14px;
+      font-weight: 600;
+      color: #00c6fb;
+      background: rgba(0, 198, 251, 0.12);
+      padding: 2px 14px;
+      border-radius: 30px;
+      border: 1px solid rgba(0, 198, 251, 0.15);
+      min-width: 70px;
+      text-align: center;
+    }
 
-        .next-bus .countdown.passed {
-            color: #ff6b6b;
-            border-color: rgba(255, 107, 107, 0.3);
-            background: rgba(255, 107, 107, 0.08);
-        }
+    .next-bus .countdown.passed {
+      color: #ff6b6b;
+      border-color: rgba(255, 107, 107, 0.3);
+      background: rgba(255, 107, 107, 0.08);
+    }
 
-        .next-bus .empty-msg {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 14px;
-        }
+    .next-bus .empty-msg {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
 
-        /* ===== FILTERS ===== */
-        .filters {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 20px;
-        }
+    /* ===== FILTERS ===== */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
 
-        .filter-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.6);
-            padding: 6px 16px;
-            border-radius: 40px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.25s;
-            min-height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: manipulation;
-            flex: 0 1 auto;
-        }
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.6);
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+      flex: 0 1 auto;
+    }
 
-        .filter-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.15);
-        }
+    .filter-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
 
-        .filter-btn.active {
-            background: linear-gradient(135deg, #00c6fb, #005bea);
-            border-color: transparent;
-            color: #fff;
-            box-shadow: 0 6px 20px rgba(0, 91, 234, 0.35);
-        }
+    .filter-btn.active {
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(0, 91, 234, 0.35);
+    }
 
-        /* ===== CARDS ===== */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 14px;
-            margin-bottom: 20px;
-        }
+    /* ===== CARDS ===== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
 
-        .card {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 20px;
-            padding: 16px 18px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            cursor: default;
-            opacity: 1;
-            transform: translateY(0);
-            will-change: transform, opacity;
-        }
+    .card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      padding: 16px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+      opacity: 1;
+      transform: translateY(0);
+      will-change: transform, opacity;
+    }
 
-        .card.passed {
-            opacity: 0.4;
-            filter: grayscale(0.5);
-        }
-        .card.passed .horario {
-            color: #888;
-        }
-        .card.passed .destino {
-            color: #aaa;
-        }
+    .card.passed {
+      opacity: 0.4;
+      filter: grayscale(0.5);
+    }
 
-        .card.next {
-            border-color: rgba(0, 198, 251, 0.5);
-            box-shadow: 0 0 30px rgba(0, 198, 251, 0.08);
-        }
-        .card.next::after {
-            content: '⬇ PRÓXIMO';
-            position: absolute;
-            top: 8px;
-            right: 10px;
-            font-size: 9px;
-            font-weight: 700;
-            color: #00c6fb;
-            background: rgba(0, 198, 251, 0.12);
-            padding: 2px 8px;
-            border-radius: 20px;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(0, 198, 251, 0.15);
-        }
+    .card.passed .horario {
+      color: #888;
+    }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #00c6fb, #005bea);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .card.next::before {
-            opacity: 1;
-        }
+    .card.passed .destino {
+      color: #aaa;
+    }
 
-        .card:hover {
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.06);
-            border-color: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
+    .card.next {
+      border-color: rgba(0, 198, 251, 0.5);
+      box-shadow: 0 0 30px rgba(0, 198, 251, 0.08);
+    }
 
-        .card .destino {
-            font-size: 17px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .card .destino i {
-            color: #00c6fb;
-            font-size: 15px;
-        }
-        .card .horario {
-            font-size: 24px;
-            font-weight: 700;
-            color: #b0caff;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-        }
-        .card .embarque {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-        .card .embarque i {
-            font-size: 11px;
-            color: #00c6fb;
-        }
-        .card .dias {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-        .card .dias span {
-            background: rgba(0, 198, 251, 0.1);
-            color: #00c6fb;
-            font-size: 9px;
-            font-weight: 600;
-            padding: 2px 10px;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 198, 251, 0.12);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+    .card.next::after {
+      content: '⬇ PRÓXIMO';
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 9px;
+      font-weight: 700;
+      color: #00c6fb;
+      background: rgba(0, 198, 251, 0.12);
+      padding: 2px 8px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(0, 198, 251, 0.15);
+    }
 
-        /* ===== BOTÃO COMPARTILHAR ===== */
-        .card .share-btn {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: rgba(255, 255, 255, 0.5);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 13px;
-            touch-action: manipulation;
-            z-index: 2;
-        }
-        .card .share-btn:hover {
-            background: rgba(0, 198, 251, 0.15);
-            color: #00c6fb;
-            border-color: rgba(0, 198, 251, 0.3);
-            transform: scale(1.1);
-        }
-        .card.passed .share-btn {
-            opacity: 0.3;
-            pointer-events: none;
-        }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00c6fb, #005bea);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
 
-        .empty {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 40px 20px;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 14px;
-        }
-        .empty i {
-            font-size: 32px;
-            display: block;
-            margin-bottom: 10px;
-            opacity: 0.4;
-        }
+    .card.next::before {
+      opacity: 1;
+    }
 
-        /* ===== ALERTS SECTION (EM CONSTRUÇÃO) ===== */
-        .alerts-section {
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 20px;
-            padding: 18px 16px 14px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            position: relative;
-            overflow: hidden;
-            opacity: 0.7;
-            pointer-events: none;
-        }
-        .alerts-section .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            padding: 20px;
-            text-align: center;
-        }
-        .alerts-section .overlay .badge {
-            background: linear-gradient(135deg, #00c6fb, #005bea);
-            padding: 12px 20px;
-            border-radius: 60px;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4);
-            margin-bottom: 10px;
-        }
-        .alerts-section .overlay .badge i {
-            color: #fff;
-            font-size: 22px;
-        }
-        .alerts-section .overlay .badge span {
-            color: #fff;
-            font-weight: 700;
-            font-size: 17px;
-            letter-spacing: 0.5px;
-        }
-        .alerts-section .overlay p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 14px;
-            max-width: 400px;
-            margin: 0;
-        }
-        .alerts-section .overlay p small {
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 13px;
-            display: block;
-            margin-top: 4px;
-        }
+    .card:hover {
+      transform: translateY(-3px);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
 
-        .alerts-section h3 {
-            color: #fff;
-            font-size: 17px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .alerts-section h3 i {
-            color: #00c6fb;
-        }
+    .card .destino {
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .alert-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-items: flex-end;
-            margin-bottom: 14px;
-        }
-        .alert-form .field {
-            flex: 1 1 140px;
-            min-width: 120px;
-        }
-        .alert-form label {
-            display: block;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 11px;
-            font-weight: 500;
-            margin-bottom: 3px;
-            letter-spacing: 0.3px;
-        }
-        .alert-form input,
-        .alert-form select {
-            width: 100%;
-            padding: 8px 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            font-size: 13px;
-            transition: 0.3s;
-            outline: none;
-            height: 38px;
-        }
-        .alert-form input:disabled,
-        .alert-form select:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        .alert-form .btn-add {
-            background: linear-gradient(135deg, #00c6fb, #005bea);
-            border: none;
-            color: #fff;
-            font-weight: 600;
-            padding: 0 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-            height: 38px;
-            min-width: 100px;
-            justify-content: center;
-            flex: 0 1 auto;
-        }
-        .alert-form .btn-add:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        .no-alerts {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 13px;
-            padding: 4px 0;
-            font-style: italic;
-        }
+    .card .destino i {
+      color: #00c6fb;
+      font-size: 15px;
+    }
 
-        /* ===== NOTE ===== */
-        .note {
-            margin: 16px 0;
-            padding: 12px 16px;
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffe69c;
-            border-left: 5px solid #ffc107;
-            border-radius: 8px;
-            font-size: 13px;
-            line-height: 1.5;
-            font-weight: 500;
-        }
-        .note strong {
-            color: #b45309;
-        }
+    .card .horario {
+      font-size: 24px;
+      font-weight: 700;
+      color: #b0caff;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
 
-        /* ===== MODAL GERAL ===== */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s, visibility 0.4s;
-            padding: 16px;
-            will-change: opacity, visibility;
-        }
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+    .card .embarque {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-        .modal-box {
-            background: rgba(20, 30, 50, 0.95);
-            border-radius: 32px;
-            padding: 36px 28px 28px;
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
-            transform: scale(0.9) translateY(20px);
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .modal-overlay.active .modal-box {
-            transform: scale(1) translateY(0);
-        }
+    .card .embarque i {
+      font-size: 11px;
+      color: #00c6fb;
+    }
 
-        .modal-box .icon-big {
-            font-size: 44px;
-            background: linear-gradient(135deg, #00c6fb, #005bea);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-        .modal-box h2 {
-            color: #fff;
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-bottom: 4px;
-        }
-        .modal-box p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        .modal-box .btn-primary {
-            background: linear-gradient(135deg, #00c6fb, #005bea);
-            border: none;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            padding: 12px 32px;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .modal-box .btn-primary:hover {
-            transform: scale(1.03);
-            box-shadow: 0 12px 40px rgba(0, 91, 234, 0.6);
-        }
+    .card .dias {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
 
-        /* ===== ALERT MODAL ===== */
-        .alert-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(10px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            padding: 20px;
-            will-change: opacity;
-        }
-        .alert-modal.active {
-            display: flex;
-        }
-        .alert-modal .modal-box {
-            background: rgba(20, 30, 50, 0.97);
-            border-radius: 32px;
-            padding: 36px 28px 28px;
-            max-width: 440px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid rgba(0, 198, 251, 0.25);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
-            transform: scale(0.95) translateY(10px);
-            animation: alertPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-        }
-        @keyframes alertPop {
-            0% {
-                opacity: 0;
-                transform: scale(0.9) translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-        .alert-modal .icon-big {
-            font-size: 48px;
-            background: linear-gradient(135deg, #00c6fb, #005bea);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 4px;
-        }
-        .alert-modal h2 {
-            color: #fff;
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .alert-modal .msg {
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 6px;
-        }
-        .alert-modal .msg strong {
-            color: #00c6fb;
-        }
-        .alert-modal .sub-msg {
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
+    .card .dias span {
+      background: rgba(0, 198, 251, 0.1);
+      color: #00c6fb;
+      font-size: 9px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 198, 251, 0.12);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
 
-        /* ===== FOOTER ===== */
-        .footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.2);
-        }
-        .footer .version {
-            font-size: 10px;
-        }
+    /* ===== BOTÃO COMPARTILHAR ===== */
+    .card .share-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.5);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 13px;
+      touch-action: manipulation;
+      z-index: 2;
+    }
 
-        /* ===== ANIMAÇÕES DOS CARDS ===== */
-        .card {
-            animation: fadeUp 0.4s ease forwards;
-            opacity: 0;
-        }
-        .card.passed {
-            animation: fadeUp 0.4s ease forwards, fadeGray 0.4s ease forwards;
-        }
-        @keyframes fadeUp {
-            0% {
-                opacity: 0;
-                transform: translateY(12px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        @keyframes fadeGray {
-            0% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0.4;
-            }
-        }
-        .card:nth-child(1) {
-            animation-delay: 0.02s;
-        }
-        .card:nth-child(2) {
-            animation-delay: 0.06s;
-        }
-        .card:nth-child(3) {
-            animation-delay: 0.10s;
-        }
-        .card:nth-child(4) {
-            animation-delay: 0.14s;
-        }
-        .card:nth-child(5) {
-            animation-delay: 0.18s;
-        }
-        .card:nth-child(6) {
-            animation-delay: 0.22s;
-        }
-        .card:nth-child(7) {
-            animation-delay: 0.26s;
-        }
-        .card:nth-child(8) {
-            animation-delay: 0.30s;
-        }
-        .card:nth-child(9) {
-            animation-delay: 0.34s;
-        }
-        .card:nth-child(10) {
-            animation-delay: 0.38s;
-        }
-        .card:nth-child(11) {
-            animation-delay: 0.42s;
-        }
-        .card:nth-child(12) {
-            animation-delay: 0.46s;
-        }
+    .card .share-btn:hover {
+      background: rgba(0, 198, 251, 0.15);
+      color: #00c6fb;
+      border-color: rgba(0, 198, 251, 0.3);
+      transform: scale(1.1);
+    }
 
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.02);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0, 198, 251, 0.3);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 198, 251, 0.6);
-        }
+    .card.passed .share-btn {
+      opacity: 0.3;
+      pointer-events: none;
+    }
 
-        /* ===== RESPONSIVIDADE ===== */
-        @media (max-width: 768px) {
-            body {
-                padding: 12px;
-            }
-            .app {
-                padding: 16px;
-                border-radius: 24px;
-            }
-            .header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 8px;
-            }
-            .logo-area {
-                justify-content: center;
-            }
-            .info-bar {
-                justify-content: center;
-                gap: 6px;
-            }
-            .info-item {
-                font-size: 12px;
-                padding: 4px 10px;
-                min-height: 32px;
-            }
-            .next-bus {
-                flex-direction: column;
-                align-items: stretch;
-                text-align: center;
-            }
-            .next-bus .bus-info {
-                justify-content: center;
-            }
-            .cards-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-            .card .horario {
-                font-size: 20px;
-            }
-            .card .destino {
-                font-size: 15px;
-            }
-            .logo-img {
-                height: 38px;
-            }
-            .date-display {
-                font-size: 14px;
-            }
-            .version {
-                font-size: 9px;
-            }
-            .card .share-btn {
-                width: 26px;
-                height: 26px;
-                font-size: 11px;
-                bottom: 8px;
-                right: 8px;
-            }
-        }
+    .empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 14px;
+    }
 
-        @media (max-width: 550px) {
-            .cards-grid {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-            .info-bar {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .info-item {
-                font-size: 11px;
-                padding: 3px 8px;
-                min-height: 28px;
-            }
-            .filter-btn {
-                font-size: 11px;
-                padding: 4px 12px;
-                min-height: 32px;
-            }
-            .logo-img {
-                height: 32px;
-            }
-            .version {
-                font-size: 8px;
-            }
-            .card {
-                padding: 12px 14px;
-            }
-            .card .horario {
-                font-size: 20px;
-            }
-            .footer {
-                font-size: 10px;
-                flex-direction: column;
-                text-align: center;
-            }
-            .next-bus .destino {
-                font-size: 16px;
-            }
-            .next-bus .countdown {
-                font-size: 12px;
-                min-width: 60px;
-            }
-            .date-display {
-                font-size: 13px;
-            }
-            .alert-modal .modal-box {
-                padding: 28px 20px 24px;
-            }
-            .alert-modal h2 {
-                font-size: 20px;
-            }
-            .alert-modal .msg {
-                font-size: 15px;
-            }
-            .modal-box {
-                padding: 28px 20px 24px;
-            }
-            .modal-box h2 {
-                font-size: 20px;
-            }
-            .card .share-btn {
-                width: 24px;
-                height: 24px;
-                font-size: 10px;
-                bottom: 6px;
-                right: 6px;
-            }
-        }
+    .empty i {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 10px;
+      opacity: 0.4;
+    }
 
-        @media (max-width: 380px) {
-            .info-item {
-                font-size: 10px;
-                padding: 2px 6px;
-            }
-            .filter-btn {
-                font-size: 10px;
-                padding: 3px 10px;
-                min-height: 28px;
-            }
-            .logo-img {
-                height: 28px;
-            }
-            .card .horario {
-                font-size: 18px;
-            }
-            .card .destino {
-                font-size: 14px;
-            }
-            .card .share-btn {
-                width: 20px;
-                height: 20px;
-                font-size: 9px;
-                bottom: 4px;
-                right: 4px;
-            }
-        }
-    </style>
+    /* ===== ALERTS SECTION (EM CONSTRUÇÃO) ===== */
+    .alerts-section {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
+      padding: 18px 16px 14px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      position: relative;
+      overflow: hidden;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .alerts-section .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .alerts-section .overlay .badge {
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      padding: 12px 20px;
+      border-radius: 60px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4);
+      margin-bottom: 10px;
+    }
+
+    .alerts-section .overlay .badge i {
+      color: #fff;
+      font-size: 22px;
+    }
+
+    .alerts-section .overlay .badge span {
+      color: #fff;
+      font-weight: 700;
+      font-size: 17px;
+      letter-spacing: 0.5px;
+    }
+
+    .alerts-section .overlay p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      max-width: 400px;
+      margin: 0;
+    }
+
+    .alerts-section .overlay p small {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 13px;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .alerts-section h3 {
+      color: #fff;
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alerts-section h3 i {
+      color: #00c6fb;
+    }
+
+    .alert-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: flex-end;
+      margin-bottom: 14px;
+    }
+
+    .alert-form .field {
+      flex: 1 1 140px;
+      min-width: 120px;
+    }
+
+    .alert-form label {
+      display: block;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 3px;
+      letter-spacing: 0.3px;
+    }
+
+    .alert-form input,
+    .alert-form select {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-size: 13px;
+      transition: 0.3s;
+      outline: none;
+      height: 38px;
+    }
+
+    .alert-form input:disabled,
+    .alert-form select:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .alert-form .btn-add {
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      padding: 0 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      height: 38px;
+      min-width: 100px;
+      justify-content: center;
+      flex: 0 1 auto;
+    }
+
+    .alert-form .btn-add:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .no-alerts {
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 13px;
+      padding: 4px 0;
+      font-style: italic;
+    }
+
+    /* ===== NOTE ===== */
+    .note {
+      margin: 16px 0;
+      padding: 12px 16px;
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffe69c;
+      border-left: 5px solid #ffc107;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 500;
+    }
+
+    .note strong {
+      color: #b45309;
+    }
+
+    /* ===== MODAL GERAL ===== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s, visibility 0.4s;
+      padding: 16px;
+      will-change: opacity, visibility;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-box {
+      background: rgba(20, 30, 50, 0.95);
+      border-radius: 32px;
+      padding: 36px 28px 28px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-overlay.active .modal-box {
+      transform: scale(1) translateY(0);
+    }
+
+    .modal-box .icon-big {
+      font-size: 44px;
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .modal-box h2 {
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+
+    .modal-box p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .modal-box .btn-primary {
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 32px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-box .btn-primary:hover {
+      transform: scale(1.03);
+      box-shadow: 0 12px 40px rgba(0, 91, 234, 0.6);
+    }
+
+    /* ===== ALERT MODAL ===== */
+    .alert-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(10px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 20px;
+      will-change: opacity;
+    }
+
+    .alert-modal.active {
+      display: flex;
+    }
+
+    .alert-modal .modal-box {
+      background: rgba(20, 30, 50, 0.97);
+      border-radius: 32px;
+      padding: 36px 28px 28px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      border: 1px solid rgba(0, 198, 251, 0.25);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+      transform: scale(0.95) translateY(10px);
+      animation: alertPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes alertPop {
+      0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .alert-modal .icon-big {
+      font-size: 48px;
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    .alert-modal h2 {
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .alert-modal .msg {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+
+    .alert-modal .msg strong {
+      color: #00c6fb;
+    }
+
+    .alert-modal .sub-msg {
+      color: rgba(255, 255, 255, 0.35);
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .footer .version {
+      font-size: 10px;
+    }
+
+    /* ===== ANIMAÇÕES DOS CARDS ===== */
+    .card {
+      animation: fadeUp 0.4s ease forwards;
+      opacity: 0;
+    }
+
+    .card.passed {
+      animation: fadeUp 0.4s ease forwards, fadeGray 0.4s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      0% {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeGray {
+      0% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.4;
+      }
+    }
+
+    .card:nth-child(1) {
+      animation-delay: 0.02s;
+    }
+
+    .card:nth-child(2) {
+      animation-delay: 0.06s;
+    }
+
+    .card:nth-child(3) {
+      animation-delay: 0.10s;
+    }
+
+    .card:nth-child(4) {
+      animation-delay: 0.14s;
+    }
+
+    .card:nth-child(5) {
+      animation-delay: 0.18s;
+    }
+
+    .card:nth-child(6) {
+      animation-delay: 0.22s;
+    }
+
+    .card:nth-child(7) {
+      animation-delay: 0.26s;
+    }
+
+    .card:nth-child(8) {
+      animation-delay: 0.30s;
+    }
+
+    .card:nth-child(9) {
+      animation-delay: 0.34s;
+    }
+
+    .card:nth-child(10) {
+      animation-delay: 0.38s;
+    }
+
+    .card:nth-child(11) {
+      animation-delay: 0.42s;
+    }
+
+    .card:nth-child(12) {
+      animation-delay: 0.46s;
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 198, 251, 0.3);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 198, 251, 0.6);
+    }
+
+    /* ===== RESPONSIVIDADE ===== */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+
+      .app {
+        padding: 16px;
+        border-radius: 24px;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .logo-area {
+        justify-content: center;
+      }
+
+      .info-bar {
+        justify-content: center;
+        gap: 6px;
+      }
+
+      .info-item {
+        font-size: 12px;
+        padding: 4px 10px;
+        min-height: 32px;
+      }
+
+      .next-bus {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+
+      .next-bus .bus-info {
+        justify-content: center;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .card .horario {
+        font-size: 20px;
+      }
+
+      .card .destino {
+        font-size: 15px;
+      }
+
+      .logo-img {
+        height: 38px;
+      }
+
+      .date-display {
+        font-size: 14px;
+      }
+
+      .version {
+        font-size: 9px;
+      }
+
+      .card .share-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
+        bottom: 8px;
+        right: 8px;
+      }
+    }
+
+    @media (max-width: 550px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .info-bar {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .info-item {
+        font-size: 11px;
+        padding: 3px 8px;
+        min-height: 28px;
+      }
+
+      .filter-btn {
+        font-size: 11px;
+        padding: 4px 12px;
+        min-height: 32px;
+      }
+
+      .logo-img {
+        height: 32px;
+      }
+
+      .version {
+        font-size: 8px;
+      }
+
+      .card {
+        padding: 12px 14px;
+      }
+
+      .card .horario {
+        font-size: 20px;
+      }
+
+      .footer {
+        font-size: 10px;
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .next-bus .destino {
+        font-size: 16px;
+      }
+
+      .next-bus .countdown {
+        font-size: 12px;
+        min-width: 60px;
+      }
+
+      .date-display {
+        font-size: 13px;
+      }
+
+      .alert-modal .modal-box {
+        padding: 28px 20px 24px;
+      }
+
+      .alert-modal h2 {
+        font-size: 20px;
+      }
+
+      .alert-modal .msg {
+        font-size: 15px;
+      }
+
+      .modal-box {
+        padding: 28px 20px 24px;
+      }
+
+      .modal-box h2 {
+        font-size: 20px;
+      }
+
+      .card .share-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+        bottom: 6px;
+        right: 6px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .info-item {
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+
+      .filter-btn {
+        font-size: 10px;
+        padding: 3px 10px;
+        min-height: 28px;
+      }
+
+      .logo-img {
+        height: 28px;
+      }
+
+      .card .horario {
+        font-size: 18px;
+      }
+
+      .card .destino {
+        font-size: 14px;
+      }
+
+      .card .share-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 9px;
+        bottom: 4px;
+        right: 4px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-    <!-- MODAL BOAS-VINDAS -->
-    <div class="modal-overlay" id="welcomeModal">
-        <div class="modal-box">
-            <div class="icon-big"><i class="fas fa-bus"></i></div>
-            <h2>BEM VINDO AO HELP VTM</h2>
-            <p>Consulte os horários de ônibus da <strong>Integração - Vale Transporte Marabá</strong> de forma rápida e moderna.</p>
-            <button class="btn-primary" id="closeModalBtn"><i class="fas fa-arrow-right"></i> Entrar</button>
+  <!-- MODAL BOAS-VINDAS -->
+  <div class="modal-overlay" id="welcomeModal">
+    <div class="modal-box">
+      <div class="icon-big"><i class="fas fa-bus"></i></div>
+      <h2>BEM VINDO AO HELP VTM</h2>
+      <p>Consulte os horários de ônibus da <strong>Integração - Vale Transporte Marabá</strong> de forma rápida e
+        moderna.</p>
+      <button class="btn-primary" id="closeModalBtn"><i class="fas fa-arrow-right"></i> Entrar</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE ALERTA -->
+  <div class="alert-modal" id="alertModal">
+    <div class="modal-box">
+      <div class="icon-big"><i class="fas fa-phone-volume"></i></div>
+      <h2>📞 Alerta VTM</h2>
+      <div class="msg" id="alertMessage">--</div>
+      <div class="sub-msg" id="alertSubMsg">Ligação simulada com IA</div>
+      <button class="btn-primary" id="closeAlertBtn"><i class="fas fa-check"></i> Entendi</button>
+    </div>
+  </div>
+
+  <!-- APP PRINCIPAL -->
+  <div class="app">
+    <header class="header">
+      <div class="logo-area">
+        <img src="logo-nova.png" alt="VTM Integração" class="logo-img" />
+      </div>
+      <div class="info-bar">
+        <div class="info-item" id="greeting">
+          <i class="fas fa-hand-peace"></i>
+          <span class="value" id="greetingValue">Bom dia!</span>
         </div>
+        <div class="info-item" id="clock">
+          <i class="far fa-clock"></i>
+          <span class="value" id="clockValue">--:--:--</span>
+        </div>
+        <div class="info-item" id="weather">
+          <i class="fas fa-cloud-sun"></i>
+          <span class="value" id="weatherValue">-- °C</span>
+        </div>
+        <span class="version"><i class="fas fa-code-branch"></i> v2.6.0</span>
+      </div>
+    </header>
+
+    <div class="date-display">
+      <i class="far fa-calendar-alt" style="margin-right:6px; color:#00c6fb;"></i>
+      <span id="fullDate">--</span>
     </div>
 
-    <!-- MODAL DE ALERTA -->
-    <div class="alert-modal" id="alertModal">
-        <div class="modal-box">
-            <div class="icon-big"><i class="fas fa-phone-volume"></i></div>
-            <h2>📞 Alerta VTM</h2>
-            <div class="msg" id="alertMessage">--</div>
-            <div class="sub-msg" id="alertSubMsg">Ligação simulada com IA</div>
-            <button class="btn-primary" id="closeAlertBtn"><i class="fas fa-check"></i> Entendi</button>
-        </div>
+    <div class="next-bus" id="nextBus">
+      <div class="label"><i class="fas fa-bus"></i> Próximo ônibus</div>
+      <div class="bus-info" id="nextBusInfo">
+        <span class="destino">--</span>
+        <span class="horario">--:--</span>
+        <span class="countdown" id="countdown">--</span>
+      </div>
     </div>
 
-    <!-- APP PRINCIPAL -->
-    <div class="app">
-        <header class="header">
-            <div class="logo-area">
-                <img src="logo-nova.png" alt="VTM Integração" class="logo-img" />
-            </div>
-            <div class="info-bar">
-                <div class="info-item" id="greeting">
-                    <i class="fas fa-hand-peace"></i>
-                    <span class="value" id="greetingValue">Bom dia!</span>
-                </div>
-                <div class="info-item" id="clock">
-                    <i class="far fa-clock"></i>
-                    <span class="value" id="clockValue">--:--:--</span>
-                </div>
-                <div class="info-item" id="weather">
-                    <i class="fas fa-cloud-sun"></i>
-                    <span class="value" id="weatherValue">-- °C</span>
-                </div>
-                <span class="version"><i class="fas fa-code-branch"></i> v2.6.0</span>
-            </div>
-        </header>
-
-        <div class="date-display">
-            <i class="far fa-calendar-alt" style="margin-right:6px; color:#00c6fb;"></i>
-            <span id="fullDate">--</span>
-        </div>
-
-        <div class="next-bus" id="nextBus">
-            <div class="label"><i class="fas fa-bus"></i> Próximo ônibus</div>
-            <div class="bus-info" id="nextBusInfo">
-                <span class="destino">--</span>
-                <span class="horario">--:--</span>
-                <span class="countdown" id="countdown">--</span>
-            </div>
-        </div>
-
-        <div class="filters">
-            <button class="filter-btn" data-filter="all">Todos</button>
-            <button class="filter-btn" data-filter="Segunda a Sexta">Segunda–Sexta</button>
-            <button class="filter-btn" data-filter="Sábado">Sábado</button>
-            <button class="filter-btn" data-filter="Domingo">Domingo</button>
-        </div>
-
-        <div class="cards-grid" id="cardsContainer"></div>
-
-        <!-- SEÇÃO DE ALERTAS (EM CONSTRUÇÃO) -->
-        <div class="alerts-section">
-            <div class="overlay">
-                <div class="badge">
-                    <i class="fas fa-tools"></i>
-                    <span>EM CONSTRUÇÃO</span>
-                </div>
-                <p>
-                    Estamos desenvolvendo a funcionalidade de alertas por ligação com IA.<br />
-                    <small>Em breve você receberá avisos diretamente no seu telefone!</small>
-                </p>
-            </div>
-
-            <h3><i class="fas fa-bell"></i> Alertas de Ônibus</h3>
-            <div class="alert-form" id="alertForm">
-                <div class="field">
-                    <label>Seu nome</label>
-                    <input type="text" id="alertName" placeholder="Ex: João Silva" disabled />
-                </div>
-                <div class="field">
-                    <label>Telefone (com DDD)</label>
-                    <input type="tel" id="alertPhone" placeholder="(91) 99999-9999" disabled />
-                </div>
-                <div class="field">
-                    <label>Destino</label>
-                    <select id="alertDestino" disabled>
-                        <option value="">Selecione...</option>
-                    </select>
-                </div>
-                <button class="btn-add" id="addAlertBtn" disabled>
-                    <i class="fas fa-plus"></i> Cadastrar
-                </button>
-            </div>
-            <div id="alertListContainer">
-                <div class="no-alerts">Funcionalidade em desenvolvimento</div>
-            </div>
-        </div>
-
-        <div class="note">
-            <strong>⚠ Nota:</strong> Os horários podem sofrer alterações. O alerta é ativado 30 minutos antes do horário programado.
-        </div>
-
-        <div class="footer">
-            <span>© 2026 VTM Integração – Todos os direitos reservados</span>
-            <span class="version">2.6.0</span>
-        </div>
+    <div class="filters">
+      <button class="filter-btn" data-filter="all">Todos</button>
+      <button class="filter-btn" data-filter="Segunda a Sexta">Segunda–Sexta</button>
+      <button class="filter-btn" data-filter="Sábado">Sábado</button>
+      <button class="filter-btn" data-filter="Domingo">Domingo</button>
     </div>
 
-    <script>
-        // ================================================================
-        //  HORÁRIOS
-        //  ================================================================
-        const horarios = [
-            { destino: "Morada Nova", horario: "11:35", embarque: "Antônio Vilhena", dias: ["Sábado"] },
-            { destino: "Morada Nova", horario: "16:48", embarque: "Antônio Vilhena", dias: ["Domingo"] },
-            { destino: "Morada Nova", horario: "17:42", embarque: "Antônio Vilhena", dias: ["Domingo"] },
-            { destino: "Liberdade", horario: "07:15", embarque: "Terminal de Integração", dias: ["Segunda a Sexta"] },
-            { destino: "Bela Vista", horario: "13:40", embarque: "Terminal", dias: ["Segunda a Sexta"] },
-            { destino: "Liberdade", horario: "13:09", embarque: "Praça São Francisco", dias: ["Sábado"] },
-            { destino: "Liberdade", horario: "12:41", embarque: "Terminal", dias: ["Sábado"] },
-            { destino: "São Félix", horario: "06:10", embarque: "Antônio Vilhena", dias: ["Segunda a Sexta"] },
-            { destino: "Liberdade", horario: "12:18", embarque: "Cidade Nova - Praça", dias: ["Segunda a Sexta"] },
-            { destino: "Liberdade", horario: "16:00", embarque: "Praça", dias: ["Segunda a Sexta"] }
-        ];
+    <div class="cards-grid" id="cardsContainer"></div>
 
-        horarios.sort((a, b) => a.horario.localeCompare(b.horario));
+    <!-- SEÇÃO DE ALERTAS (EM CONSTRUÇÃO) -->
+    <div class="alerts-section">
+      <div class="overlay">
+        <div class="badge">
+          <i class="fas fa-tools"></i>
+          <span>EM CONSTRUÇÃO</span>
+        </div>
+        <p>
+          Estamos desenvolvendo a funcionalidade de alertas por ligação com IA.<br />
+          <small>Em breve você receberá avisos diretamente no seu telefone!</small>
+        </p>
+      </div>
 
-        // ================================================================
-        //  VARIÁVEIS GLOBAIS
-        //  ================================================================
-        let currentFilter = 'all';
-        let allHorarios = [...horarios];
-        let alertas = [];
-        let alertaDisparado = {};
+      <h3><i class="fas fa-bell"></i> Alertas de Ônibus</h3>
+      <div class="alert-form" id="alertForm">
+        <div class="field">
+          <label>Seu nome</label>
+          <input type="text" id="alertName" placeholder="Ex: João Silva" disabled />
+        </div>
+        <div class="field">
+          <label>Telefone (com DDD)</label>
+          <input type="tel" id="alertPhone" placeholder="(91) 99999-9999" disabled />
+        </div>
+        <div class="field">
+          <label>Destino</label>
+          <select id="alertDestino" disabled>
+            <option value="">Selecione...</option>
+          </select>
+        </div>
+        <button class="btn-add" id="addAlertBtn" disabled>
+          <i class="fas fa-plus"></i> Cadastrar
+        </button>
+      </div>
+      <div id="alertListContainer">
+        <div class="no-alerts">Funcionalidade em desenvolvimento</div>
+      </div>
+    </div>
 
-        // ================================================================
-        //  DOM REFS
-        //  ================================================================
-        const container = document.getElementById('cardsContainer');
-        const nextBusInfo = document.getElementById('nextBusInfo');
-        const fullDateSpan = document.getElementById('fullDate');
-        const alertModal = document.getElementById('alertModal');
-        const alertMessage = document.getElementById('alertMessage');
-        const alertSubMsg = document.getElementById('alertSubMsg');
-        const closeAlertBtn = document.getElementById('closeAlertBtn');
+    <div class="note">
+      <strong>⚠ Nota:</strong> Os horários podem sofrer alterações. O alerta é ativado 30 minutos antes do horário
+      programado.
+    </div>
 
-        // ================================================================
-        //  UTILITÁRIOS
-        //  ================================================================
-        function getCurrentDay() {
-            const days = ['Domingo', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta',
-                'Sábado'
-            ];
-            return days[new Date().getDay()];
-        }
+    <div class="footer">
+      <span>© 2026 VTM Integração – Todos os direitos reservados</span>
+      <span class="version">2.6.0</span>
+    </div>
+  </div>
 
-        function getMinutesFromTime(t) {
-            const [h, m] = t.split(':').map(Number);
-            return h * 60 + m;
-        }
+  <script>
+    // ================================================================
+    // 🛠️ CONTROLE DE MANUTENÇÃO
+    // Altere esta variável para TRUE quando quiser ativar a página de manutenção
+    // ================================================================
+    const EM_MANUTENCAO = false; // ← mude para true para ativar
 
-        function getCurrentMinutes() {
-            const n = new Date();
-            return n.getHours() * 60 + n.getMinutes();
-        }
+    if (EM_MANUTENCAO) {
+      window.location.href = 'manutencao.html';
+    }
 
-        function formatDateFull(d) {
-            return d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
-                .replace(/^(\d+)\s+de\s+(\w+)/, (_, day, month) => day + ' de ' + month.charAt(0).toUpperCase() + month.slice(
-                1));
-        }
+    // ================================================================
+    //  HORÁRIOS
+    //  ================================================================
+    const horarios = [
+      { destino: "Morada Nova", horario: "11:35", embarque: "Antônio Vilhena", dias: ["Sábado"] },
+      { destino: "Morada Nova", horario: "16:48", embarque: "Antônio Vilhena", dias: ["Domingo"] },
+      { destino: "Morada Nova", horario: "17:42", embarque: "Antônio Vilhena", dias: ["Domingo"] },
+      { destino: "Liberdade", horario: "07:15", embarque: "Terminal de Integração", dias: ["Segunda a Sexta"] },
+      { destino: "Bela Vista", horario: "13:40", embarque: "Terminal", dias: ["Segunda a Sexta"] },
+      { destino: "Liberdade", horario: "13:09", embarque: "Praça São Francisco", dias: ["Sábado"] },
+      { destino: "Liberdade", horario: "12:41", embarque: "Terminal", dias: ["Sábado"] },
+      { destino: "São Félix", horario: "06:10", embarque: "Antônio Vilhena", dias: ["Segunda a Sexta"] },
+      { destino: "Liberdade", horario: "12:18", embarque: "Cidade Nova - Praça", dias: ["Segunda a Sexta"] },
+      { destino: "Liberdade", horario: "16:00", embarque: "Praça", dias: ["Segunda a Sexta"] }
+    ];
 
-        function formatCountdown(minDiff) {
-            if (minDiff < 0) return 'Já passou';
-            if (minDiff < 1) return 'Agora!';
-            const h = Math.floor(minDiff / 60);
-            const m = Math.round(minDiff % 60);
-            return h > 0 ? `${h}h ${m}min` : `${m} min`;
-        }
+    horarios.sort((a, b) => a.horario.localeCompare(b.horario));
 
-        // ===== SIMULAÇÃO DE VOZ LOCAL (fallback) =====
-        function speak(text) {
-            if (!window.speechSynthesis) return;
-            window.speechSynthesis.cancel();
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = 'pt-BR';
-            utter.rate = 0.9;
-            utter.pitch = 1.0;
-            const voices = window.speechSynthesis.getVoices();
-            const brVoice = voices.find(v => v.lang === 'pt-BR');
-            if (brVoice) utter.voice = brVoice;
-            window.speechSynthesis.speak(utter);
-        }
+    // ================================================================
+    //  VARIÁVEIS GLOBAIS
+    //  ================================================================
+    let currentFilter = 'all';
+    let allHorarios = [...horarios];
+    let alertas = [];
+    let alertaDisparado = {};
 
-        // ================================================================
-        //  🎵 SOM DE NOTIFICAÇÃO (BEEP) – via Web Audio API
-        //  ================================================================
-        function playBeep() {
-            try {
-                const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
+    // ================================================================
+    //  DOM REFS
+    //  ================================================================
+    const container = document.getElementById('cardsContainer');
+    const nextBusInfo = document.getElementById('nextBusInfo');
+    const fullDateSpan = document.getElementById('fullDate');
+    const alertModal = document.getElementById('alertModal');
+    const alertMessage = document.getElementById('alertMessage');
+    const alertSubMsg = document.getElementById('alertSubMsg');
+    const closeAlertBtn = document.getElementById('closeAlertBtn');
 
-                oscillator.type = 'sine';
-                oscillator.frequency.value = 880; // 880 Hz (beep agudo)
-                gainNode.gain.value = 0.3; // volume moderado
+    // ================================================================
+    //  UTILITÁRIOS
+    //  ================================================================
+    function getCurrentDay() {
+      const days = ['Domingo', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta',
+        'Sábado'
+      ];
+      return days[new Date().getDay()];
+    }
 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
+    function getMinutesFromTime(t) {
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
+    }
 
-                oscillator.start();
+    function getCurrentMinutes() {
+      const n = new Date();
+      return n.getHours() * 60 + n.getMinutes();
+    }
 
-                // Beep curto: 200ms de duração
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
-                oscillator.stop(audioCtx.currentTime + 0.2);
+    function formatDateFull(d) {
+      return d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+        .replace(/^(\d+)\s+de\s+(\w+)/, (_, day, month) => day + ' de ' + month.charAt(0).toUpperCase() + month.slice(
+          1));
+    }
 
-                // Fecha o contexto após o som para liberar recursos
-                setTimeout(() => {
-                    audioCtx.close();
-                }, 300);
-            } catch (e) {
-                console.warn('Erro ao tocar beep:', e);
-            }
-        }
+    function formatCountdown(minDiff) {
+      if (minDiff < 0) return 'Já passou';
+      if (minDiff < 1) return 'Agora!';
+      const h = Math.floor(minDiff / 60);
+      const m = Math.round(minDiff % 60);
+      return h > 0 ? `${h}h ${m}min` : `${m} min`;
+    }
 
-        // ================================================================
-        //  RELÓGIO, DATA, SAUDAÇÃO
-        //  ================================================================
-        function updateClock() {
-            const n = new Date();
-            document.getElementById('clockValue').textContent =
-                `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`;
-        }
+    // ===== SIMULAÇÃO DE VOZ LOCAL (fallback) =====
+    function speak(text) {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'pt-BR';
+      utter.rate = 0.9;
+      utter.pitch = 1.0;
+      const voices = window.speechSynthesis.getVoices();
+      const brVoice = voices.find(v => v.lang === 'pt-BR');
+      if (brVoice) utter.voice = brVoice;
+      window.speechSynthesis.speak(utter);
+    }
 
-        function updateDateAndGreeting() {
-            const n = new Date();
-            fullDateSpan.textContent = formatDateFull(n);
-            const h = n.getHours();
-            let g = h < 12 ? 'Bom dia!' : h < 18 ? 'Boa tarde!' : 'Boa noite!';
-            document.getElementById('greetingValue').textContent = g;
-        }
+    // ================================================================
+    //  🎵 SOM DE NOTIFICAÇÃO (BEEP) – via Web Audio API
+    //  ================================================================
+    function playBeep() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
 
-        // ================================================================
-        //  CLIMA
-        //  ================================================================
-        const WEATHER_API_KEY = '84ac546d';
-        const CITY = 'Maraba';
-        const STATE = 'PA';
+        oscillator.type = 'sine';
+        oscillator.frequency.value = 880; // 880 Hz (beep agudo)
+        gainNode.gain.value = 0.3; // volume moderado
 
-        async function fetchWeather() {
-            const el = document.getElementById('weatherValue');
-            if (!el) return;
-            el.textContent = '⏳ Carregando...';
-            try {
-                const url =
-                    `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt&format=json-cors`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                if (!data.results || data.results.temp === undefined) throw new Error('Dados incompletos');
-                const temp = Math.round(data.results.temp);
-                const slug = data.results.condition_slug || '';
-                const emojiMap = {
-                    'clear_day': '☀️',
-                    'clear_night': '🌙',
-                    'cloud': '☁️',
-                    'cloudly_day': '⛅',
-                    'cloudly_night': '☁️',
-                    'rain': '🌧️',
-                    'storm': '⛈️',
-                    'snow': '❄️',
-                    'fog': '🌫️'
-                };
-                const emoji = emojiMap[slug] || '🌤️';
-                el.textContent = `${emoji} ${temp} °C`;
-            } catch (e) {
-                console.warn('Clima:', e);
-                el.textContent = '⚠️ Sem dados';
-            }
-        }
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
 
-        // ================================================================
-        //  RENDER CARDS E PRÓXIMO (com botão compartilhar)
-        //  ================================================================
-        function renderCards() {
-            const nowMin = getCurrentMinutes();
-            const filtered = currentFilter === 'all' ? [...allHorarios] : allHorarios.filter(h => h.dias.includes(currentFilter));
-            const futuros = filtered.filter(h => getMinutesFromTime(h.horario) >= nowMin);
-            const passados = filtered.filter(h => getMinutesFromTime(h.horario) < nowMin);
-            futuros.sort((a, b) => a.horario.localeCompare(b.horario));
-            passados.sort((a, b) => a.horario.localeCompare(b.horario));
-            const sorted = [...futuros, ...passados];
+        oscillator.start();
 
-            if (sorted.length === 0) {
-                container.innerHTML = `<div class="empty"><i class="far fa-calendar-times"></i> Nenhum horário para este dia.</div>`;
-            } else {
-                let html = '';
-                sorted.forEach((h, idx) => {
-                    const passed = getMinutesFromTime(h.horario) < nowMin;
-                    const isNext = idx === 0 && !passed;
-                    const cls = `card${passed ? ' passed' : ''}${isNext ? ' next' : ''}`;
-                    const shareMsg = encodeURIComponent(
-                        `🚌 Ônibus para ${h.destino} às ${h.horario} - Embarque: ${h.embarque}. Emitido via Help VTM`
-                    );
-                    html += `
-                        <div class="${cls}" style="animation-delay:${idx*0.04}s">
+        // Beep curto: 200ms de duração
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+        oscillator.stop(audioCtx.currentTime + 0.2);
+
+        // Fecha o contexto após o som para liberar recursos
+        setTimeout(() => {
+          audioCtx.close();
+        }, 300);
+      } catch (e) {
+        console.warn('Erro ao tocar beep:', e);
+      }
+    }
+
+    // ================================================================
+    //  RELÓGIO, DATA, SAUDAÇÃO
+    //  ================================================================
+    function updateClock() {
+      const n = new Date();
+      document.getElementById('clockValue').textContent =
+        `${String(n.getHours()).padStart(2, '0')}:${String(n.getMinutes()).padStart(2, '0')}:${String(n.getSeconds()).padStart(2, '0')}`;
+    }
+
+    function updateDateAndGreeting() {
+      const n = new Date();
+      fullDateSpan.textContent = formatDateFull(n);
+      const h = n.getHours();
+      let g = h < 12 ? 'Bom dia!' : h < 18 ? 'Boa tarde!' : 'Boa noite!';
+      document.getElementById('greetingValue').textContent = g;
+    }
+
+    // ================================================================
+    //  CLIMA
+    //  ================================================================
+    const WEATHER_API_KEY = '84ac546d';
+    const CITY = 'Maraba';
+    const STATE = 'PA';
+
+    async function fetchWeather() {
+      const el = document.getElementById('weatherValue');
+      if (!el) return;
+      el.textContent = '⏳ Carregando...';
+      try {
+        const url =
+          `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt&format=json-cors`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data.results || data.results.temp === undefined) throw new Error('Dados incompletos');
+        const temp = Math.round(data.results.temp);
+        const slug = data.results.condition_slug || '';
+        const emojiMap = {
+          'clear_day': '☀️',
+          'clear_night': '🌙',
+          'cloud': '☁️',
+          'cloudly_day': '⛅',
+          'cloudly_night': '☁️',
+          'rain': '🌧️',
+          'storm': '⛈️',
+          'snow': '❄️',
+          'fog': '🌫️'
+        };
+        const emoji = emojiMap[slug] || '🌤️';
+        el.textContent = `${emoji} ${temp} °C`;
+      } catch (e) {
+        console.warn('Clima:', e);
+        el.textContent = '⚠️ Sem dados';
+      }
+    }
+
+    // ================================================================
+    //  RENDER CARDS E PRÓXIMO (com botão compartilhar)
+    //  ================================================================
+    function renderCards() {
+      const nowMin = getCurrentMinutes();
+      const filtered = currentFilter === 'all' ? [...allHorarios] : allHorarios.filter(h => h.dias.includes(currentFilter));
+      const futuros = filtered.filter(h => getMinutesFromTime(h.horario) >= nowMin);
+      const passados = filtered.filter(h => getMinutesFromTime(h.horario) < nowMin);
+      futuros.sort((a, b) => a.horario.localeCompare(b.horario));
+      passados.sort((a, b) => a.horario.localeCompare(b.horario));
+      const sorted = [...futuros, ...passados];
+
+      if (sorted.length === 0) {
+        container.innerHTML = `<div class="empty"><i class="far fa-calendar-times"></i> Nenhum horário para este dia.</div>`;
+      } else {
+        let html = '';
+        sorted.forEach((h, idx) => {
+          const passed = getMinutesFromTime(h.horario) < nowMin;
+          const isNext = idx === 0 && !passed;
+          const cls = `card${passed ? ' passed' : ''}${isNext ? ' next' : ''}`;
+          const shareMsg = encodeURIComponent(
+            `🚌 Ônibus para ${h.destino} às ${h.horario} - Embarque: ${h.embarque}. Emitido via Help VTM`
+          );
+          html += `
+                        <div class="${cls}" style="animation-delay:${idx * 0.04}s">
                             <div class="destino"><i class="fas fa-map-pin"></i> ${h.destino}</div>
                             <div class="horario">${h.horario}</div>
                             <div class="embarque"><i class="fas fa-location-dot"></i> ${h.embarque}</div>
-                            <div class="dias">${h.dias.map(d=>`<span>${d}</span>`).join('')}</div>
+                            <div class="dias">${h.dias.map(d => `<span>${d}</span>`).join('')}</div>
                             <button class="share-btn" data-destino="${h.destino}" data-horario="${h.horario}" data-embarque="${h.embarque}" title="Compartilhar"><i class="fas fa-share-alt"></i></button>
                         </div>
                     `;
-                });
-                container.innerHTML = html;
+        });
+        container.innerHTML = html;
 
-                // ===== Eventos de compartilhamento =====
-                document.querySelectorAll('.share-btn').forEach(btn => {
-                    btn.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        const destino = this.dataset.destino;
-                        const horario = this.dataset.horario;
-                        const embarque = this.dataset.embarque;
-                        const msg =
-                            `🚌 Ônibus para ${destino} às ${horario} - Embarque: ${embarque}. Emitido via Help VTM`;
+        // ===== Eventos de compartilhamento =====
+        document.querySelectorAll('.share-btn').forEach(btn => {
+          btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const destino = this.dataset.destino;
+            const horario = this.dataset.horario;
+            const embarque = this.dataset.embarque;
+            const msg =
+              `🚌 Ônibus para ${destino} às ${horario} - Embarque: ${embarque}. Emitido via Help VTM`;
 
-                        // Usa Web Share API se disponível (mobile/desktop com suporte)
-                        if (navigator.share) {
-                            navigator.share({
-                                title: 'VTM Integração - Horário',
-                                text: msg,
-                            }).catch(() => {});
-                        } else {
-                            // Fallback: WhatsApp
-                            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
-                            window.open(url, '_blank');
-                        }
-                    });
-                });
+            // Usa Web Share API se disponível (mobile/desktop com suporte)
+            if (navigator.share) {
+              navigator.share({
+                title: 'VTM Integração - Horário',
+                text: msg,
+              }).catch(() => { });
+            } else {
+              // Fallback: WhatsApp
+              const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+              window.open(url, '_blank');
             }
+          });
+        });
+      }
 
-            // Próximo ônibus
-            if (futuros.length > 0) {
-                const nxt = futuros[0];
-                const diff = getMinutesFromTime(nxt.horario) - nowMin;
-                const txt = formatCountdown(diff);
-                const cls = diff < 0 ? 'passed' : '';
-                nextBusInfo.innerHTML = `
+      // Próximo ônibus
+      if (futuros.length > 0) {
+        const nxt = futuros[0];
+        const diff = getMinutesFromTime(nxt.horario) - nowMin;
+        const txt = formatCountdown(diff);
+        const cls = diff < 0 ? 'passed' : '';
+        nextBusInfo.innerHTML = `
                     <span class="destino">${nxt.destino}</span>
                     <span class="horario">${nxt.horario}</span>
                     <span class="countdown ${cls}">${txt}</span>
                 `;
-            } else {
-                const amanha = findNextTomorrow();
-                if (amanha) {
-                    nextBusInfo.innerHTML = `
+      } else {
+        const amanha = findNextTomorrow();
+        if (amanha) {
+          nextBusInfo.innerHTML = `
                         <span class="destino">${amanha.destino}</span>
                         <span class="horario">${amanha.horario}</span>
                         <span class="countdown" style="color:#ffaa00;">Amanhã</span>
                     `;
-                } else {
-                    nextBusInfo.innerHTML = `<span class="empty-msg">Nenhum ônibus programado</span>`;
-                }
-            }
+        } else {
+          nextBusInfo.innerHTML = `<span class="empty-msg">Nenhum ônibus programado</span>`;
         }
+      }
+    }
 
-        function findNextTomorrow() {
-            const today = new Date().getDay();
-            const tomorrow = (today + 1) % 7;
-            const map = { 0: 'Domingo', 1: 'Segunda a Sexta', 2: 'Segunda a Sexta', 3: 'Segunda a Sexta', 4: 'Segunda a Sexta',
-                5: 'Segunda a Sexta', 6: 'Sábado' };
-            const label = map[tomorrow];
-            const list = allHorarios.filter(h => h.dias.includes(label));
-            if (!list.length) return null;
-            list.sort((a, b) => a.horario.localeCompare(b.horario));
-            return list[0];
+    function findNextTomorrow() {
+      const today = new Date().getDay();
+      const tomorrow = (today + 1) % 7;
+      const map = {
+        0: 'Domingo', 1: 'Segunda a Sexta', 2: 'Segunda a Sexta', 3: 'Segunda a Sexta', 4: 'Segunda a Sexta',
+        5: 'Segunda a Sexta', 6: 'Sábado'
+      };
+      const label = map[tomorrow];
+      const list = allHorarios.filter(h => h.dias.includes(label));
+      if (!list.length) return null;
+      list.sort((a, b) => a.horario.localeCompare(b.horario));
+      return list[0];
+    }
+
+    // ================================================================
+    //  ALERTAS (simulação – sem cadastro ativo)
+    //  ================================================================
+
+    // ================================================================
+    //  VERIFICAÇÃO DE ALERTAS (com beep e modal)
+    //  ================================================================
+    function verificarAlertas() {
+      const agora = getCurrentMinutes();
+      // Simula um alerta de exemplo para demonstrar o som e o modal
+      // Na prática, você usaria a lista de alertas cadastrados
+      // Aqui criamos um alerta de demonstração para o próximo ônibus
+
+      // Pega o próximo ônibus futuro
+      const filtered = currentFilter === 'all' ? [...allHorarios] : allHorarios.filter(h => h.dias.includes(currentFilter));
+      const futuros = filtered.filter(h => getMinutesFromTime(h.horario) >= agora);
+      futuros.sort((a, b) => a.horario.localeCompare(b.horario));
+
+      if (futuros.length === 0) return;
+
+      const proximo = futuros[0];
+      const hm = getMinutesFromTime(proximo.horario);
+      const diff = hm - agora;
+      const key = proximo.destino + '|' + proximo.horario;
+
+      // Se já disparou, não repete
+      if (alertaDisparado[key]) return;
+
+      // Se faltar 30 minutos ou menos (e ainda não passou)
+      if (diff <= 30 && diff >= -2) {
+        alertaDisparado[key] = true;
+        const minutos = Math.round(diff);
+
+        // 1. 🔔 Toca o beep
+        playBeep();
+
+        // 2. Mostra modal
+        alertMessage.innerHTML =
+          `📢 <strong>Atenção!</strong> Faltam <strong>${minutos} minutos</strong> para o <strong>VTM "${proximo.destino}"</strong> passar na parada <strong>${proximo.embarque}</strong>.`;
+        alertSubMsg.textContent = `⏰ Alerta às ${new Date().toLocaleTimeString()} - ${proximo.destino} às ${proximo.horario}`;
+        alertModal.classList.add('active');
+
+        // 3. Fala local (simulação)
+        const msg = `Olá! Faltam ${minutos} minutos para o VTM da linha ${proximo.destino} passar na parada ${proximo.embarque}. Programa-se!`;
+        speak(msg);
+
+        // 4. Opcional: enviar para backend (se implementado)
+        // enviarAlertaBackend(proximo, minutos);
+      }
+    }
+
+    // ================================================================
+    //  FILTROS
+    //  ================================================================
+    function initFilters() {
+      const btns = document.querySelectorAll('.filter-btn');
+      const hoje = getCurrentDay();
+      btns.forEach(btn => btn.classList.remove('active'));
+      let found = false;
+      btns.forEach(btn => {
+        if (btn.dataset.filter === hoje) {
+          btn.classList.add('active');
+          currentFilter = hoje;
+          found = true;
         }
+      });
+      if (!found) {
+        document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+        currentFilter = 'all';
+      }
 
-        // ================================================================
-        //  ALERTAS (simulação – sem cadastro ativo)
-        //  ================================================================
+      btns.forEach(btn => {
+        btn.addEventListener('click', function () {
+          btns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          currentFilter = this.dataset.filter;
+          renderCards();
+        });
+      });
+    }
 
-        // ================================================================
-        //  VERIFICAÇÃO DE ALERTAS (com beep e modal)
-        //  ================================================================
-        function verificarAlertas() {
-            const agora = getCurrentMinutes();
-            // Simula um alerta de exemplo para demonstrar o som e o modal
-            // Na prática, você usaria a lista de alertas cadastrados
-            // Aqui criamos um alerta de demonstração para o próximo ônibus
+    // ================================================================
+    //  INICIALIZAÇÃO
+    //  ================================================================
+    function init() {
+      updateDateAndGreeting();
+      updateClock();
+      setInterval(updateClock, 1000);
 
-            // Pega o próximo ônibus futuro
-            const filtered = currentFilter === 'all' ? [...allHorarios] : allHorarios.filter(h => h.dias.includes(currentFilter));
-            const futuros = filtered.filter(h => getMinutesFromTime(h.horario) >= agora);
-            futuros.sort((a, b) => a.horario.localeCompare(b.horario));
+      fetchWeather();
+      setInterval(fetchWeather, 600000);
 
-            if (futuros.length === 0) return;
+      initFilters();
+      renderCards();
 
-            const proximo = futuros[0];
-            const hm = getMinutesFromTime(proximo.horario);
-            const diff = hm - agora;
-            const key = proximo.destino + '|' + proximo.horario;
+      // Modal boas-vindas
+      const welcomeModal = document.getElementById('welcomeModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      window.addEventListener('load', () => welcomeModal.classList.add('active'));
+      closeModalBtn.addEventListener('click', () => welcomeModal.classList.remove('active'));
+      welcomeModal.addEventListener('click', (e) => {
+        if (e.target === welcomeModal) welcomeModal.classList.remove('active');
+      });
 
-            // Se já disparou, não repete
-            if (alertaDisparado[key]) return;
-
-            // Se faltar 30 minutos ou menos (e ainda não passou)
-            if (diff <= 30 && diff >= -2) {
-                alertaDisparado[key] = true;
-                const minutos = Math.round(diff);
-
-                // 1. 🔔 Toca o beep
-                playBeep();
-
-                // 2. Mostra modal
-                alertMessage.innerHTML =
-                    `📢 <strong>Atenção!</strong> Faltam <strong>${minutos} minutos</strong> para o <strong>VTM "${proximo.destino}"</strong> passar na parada <strong>${proximo.embarque}</strong>.`;
-                alertSubMsg.textContent = `⏰ Alerta às ${new Date().toLocaleTimeString()} - ${proximo.destino} às ${proximo.horario}`;
-                alertModal.classList.add('active');
-
-                // 3. Fala local (simulação)
-                const msg = `Olá! Faltam ${minutos} minutos para o VTM da linha ${proximo.destino} passar na parada ${proximo.embarque}. Programa-se!`;
-                speak(msg);
-
-                // 4. Opcional: enviar para backend (se implementado)
-                // enviarAlertaBackend(proximo, minutos);
-            }
+      // Modal alerta
+      closeAlertBtn.addEventListener('click', () => {
+        alertModal.classList.remove('active');
+        window.speechSynthesis.cancel();
+      });
+      alertModal.addEventListener('click', (e) => {
+        if (e.target === alertModal) {
+          alertModal.classList.remove('active');
+          window.speechSynthesis.cancel();
         }
+      });
 
-        // ================================================================
-        //  FILTROS
-        //  ================================================================
-        function initFilters() {
-            const btns = document.querySelectorAll('.filter-btn');
-            const hoje = getCurrentDay();
-            btns.forEach(btn => btn.classList.remove('active'));
-            let found = false;
-            btns.forEach(btn => {
-                if (btn.dataset.filter === hoje) {
-                    btn.classList.add('active');
-                    currentFilter = hoje;
-                    found = true;
-                }
-            });
-            if (!found) {
-                document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
-                currentFilter = 'all';
-            }
+      // Verificação de alertas (a cada 30 segundos)
+      setInterval(() => {
+        verificarAlertas();
+        renderCards();
+      }, 30000);
 
-            btns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    btns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    currentFilter = this.dataset.filter;
-                    renderCards();
-                });
-            });
-        }
+      // Atualização geral
+      setInterval(() => {
+        updateDateAndGreeting();
+        renderCards();
+      }, 60000);
 
-        // ================================================================
-        //  INICIALIZAÇÃO
-        //  ================================================================
-        function init() {
-            updateDateAndGreeting();
-            updateClock();
-            setInterval(updateClock, 1000);
+      // PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(() => console.log('SW registrado'))
+          .catch(() => console.warn('SW não disponível'));
+      }
+    }
 
-            fetchWeather();
-            setInterval(fetchWeather, 600000);
-
-            initFilters();
-            renderCards();
-
-            // Modal boas-vindas
-            const welcomeModal = document.getElementById('welcomeModal');
-            const closeModalBtn = document.getElementById('closeModalBtn');
-            window.addEventListener('load', () => welcomeModal.classList.add('active'));
-            closeModalBtn.addEventListener('click', () => welcomeModal.classList.remove('active'));
-            welcomeModal.addEventListener('click', (e) => {
-                if (e.target === welcomeModal) welcomeModal.classList.remove('active');
-            });
-
-            // Modal alerta
-            closeAlertBtn.addEventListener('click', () => {
-                alertModal.classList.remove('active');
-                window.speechSynthesis.cancel();
-            });
-            alertModal.addEventListener('click', (e) => {
-                if (e.target === alertModal) {
-                    alertModal.classList.remove('active');
-                    window.speechSynthesis.cancel();
-                }
-            });
-
-            // Verificação de alertas (a cada 30 segundos)
-            setInterval(() => {
-                verificarAlertas();
-                renderCards();
-            }, 30000);
-
-            // Atualização geral
-            setInterval(() => {
-                updateDateAndGreeting();
-                renderCards();
-            }, 60000);
-
-            // PWA
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(() => console.log('SW registrado'))
-                    .catch(() => console.warn('SW não disponível'));
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
 </body>
+
 </html>
