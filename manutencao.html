@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -129,22 +130,18 @@
       display: none !important;
     }
 
-    #countdown {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 14px;
-      margin-top: 15px;
-    }
-
     @media (max-width: 480px) {
       h1 {
         font-size: 26px;
       }
+
       .container {
         padding: 30px 20px;
       }
     }
   </style>
 </head>
+
 <body>
 
   <div class="container" id="mainContainer">
@@ -158,7 +155,6 @@
         <a href="/" class="btn">← Voltar ao início</a>
         <button class="btn btn-secondary" onclick="sairManutencao()">Sair da manutenção</button>
       </div>
-      <div id="countdown"></div>
       <div class="footer">
         &copy; 2026 VTM Integração – Tecnologia em mobilidade
       </div>
@@ -175,77 +171,38 @@
 
   <script>
     // ================================================================
-    // 🛡️ CONTROLE DE ACESSO + VERIFICAÇÃO ATIVA
+    // 🛡️ CONTROLE DE ACESSO (via JSON)
     // ================================================================
-
-    // 1. Verifica a flag local
-    const isManutencaoAtivaLocal = localStorage.getItem('manutencao_ativa') === 'true';
-
-    // 2. Se a flag não existir, exibe "não autorizado"
-    if (!isManutencaoAtivaLocal) {
-      document.getElementById('contentManutencao').classList.add('hidden');
-      document.getElementById('contentNaoAutorizado').classList.remove('hidden');
-    } else {
-      // Se a flag existe, faz uma requisição para o index.html para verificar se a manutenção ainda está ativa
-      fetch('/')
-        .then(response => response.text())
-        .then(html => {
-          // Procura pela variável EM_MANUTENCAO no script do index.html
-          const match = html.match(/const EM_MANUTENCAO\s*=\s*(true|false)/);
-          if (match) {
-            const isManutencaoAtivaServer = match[1] === 'true';
-            if (!isManutencaoAtivaServer) {
-              // Manutenção desativada no servidor -> remove a flag e redireciona
-              localStorage.removeItem('manutencao_ativa');
-              window.location.href = '/';
-            }
-          }
-        })
-        .catch(() => {
-          // Se não conseguir buscar, mantém a página (fallback)
-          console.warn('Não foi possível verificar o status da manutenção no servidor.');
-        });
-
-      // 3. Mostra o conteúdo normal da manutenção
-      document.getElementById('contentManutencao').classList.remove('hidden');
-      document.getElementById('contentNaoAutorizado').classList.add('hidden');
-
-      // 4. Opcional: contagem regressiva para redirecionamento automático
-      let seconds = 15;
-      const countdownEl = document.getElementById('countdown');
-      countdownEl.textContent = `Redirecionando para o início em ${seconds}s...`;
-
-      const timer = setInterval(() => {
-        seconds--;
-        if (seconds <= 0) {
-          clearInterval(timer);
-          // Tenta novamente verificar o status antes de redirecionar
-          fetch('/')
-            .then(res => res.text())
-            .then(html => {
-              const match = html.match(/const EM_MANUTENCAO\s*=\s*(true|false)/);
-              if (match && match[1] === 'false') {
-                localStorage.removeItem('manutencao_ativa');
-                window.location.href = '/';
-              } else {
-                // Se ainda estiver em manutenção, recarrega a página para reiniciar o contador
-                window.location.reload();
-              }
-            })
-            .catch(() => {
-              window.location.href = '/';
-            });
+    fetch('manutencao-status.json?' + new Date().getTime())
+      .then(res => {
+        if (!res.ok) throw new Error('JSON não encontrado');
+        return res.json();
+      })
+      .then(data => {
+        const isAtivo = data.ativo;
+        if (!isAtivo) {
+          // Manutenção desativada no servidor -> remove flag e redireciona
+          localStorage.removeItem('manutencao_ativa');
+          window.location.href = '/';
         } else {
-          countdownEl.textContent = `Redirecionando para o início em ${seconds}s...`;
+          // Manutenção ativa -> mostra o conteúdo normal
+          localStorage.setItem('manutencao_ativa', 'true');
+          document.getElementById('contentManutencao').classList.remove('hidden');
+          document.getElementById('contentNaoAutorizado').classList.add('hidden');
         }
-      }, 1000);
-    }
+      })
+      .catch(() => {
+        // Fallback: se não conseguir carregar, assume desativado
+        localStorage.removeItem('manutencao_ativa');
+        window.location.href = '/';
+      });
 
-    // ===== Função para sair manualmente =====
+    // ===== Função para sair manualmente (usada pelo botão) =====
     function sairManutencao() {
       localStorage.removeItem('manutencao_ativa');
       window.location.href = '/';
     }
   </script>
 </body>
+
 </html>
