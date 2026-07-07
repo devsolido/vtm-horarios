@@ -44,7 +44,6 @@
       background-clip: text;
     }
 
-    /* ===== ESTILOS PARA ACESSO NÃO AUTORIZADO ===== */
     .icon-danger {
       font-size: 80px;
       margin-bottom: 20px;
@@ -63,27 +62,6 @@
       font-size: 18px;
       line-height: 1.6;
       margin-bottom: 20px;
-    }
-
-    .btn-voltar {
-      display: inline-block;
-      padding: 12px 32px;
-      background: linear-gradient(135deg, #00c6fb, #005bea);
-      border: none;
-      border-radius: 50px;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.3s;
-    }
-    .btn-voltar:hover {
-      transform: scale(1.05);
-    }
-
-    .hidden {
-      display: none !important;
     }
 
     h1 {
@@ -116,15 +94,45 @@
       text-transform: uppercase;
     }
 
+    .btn {
+      display: inline-block;
+      padding: 12px 32px;
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-left: 10px;
+    }
+
     .footer {
       margin-top: 30px;
       font-size: 14px;
       color: rgba(255, 255, 255, 0.3);
     }
 
-    .footer a {
-      color: #00c6fb;
-      text-decoration: none;
+    .hidden {
+      display: none !important;
+    }
+
+    #countdown {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+      margin-top: 15px;
     }
 
     @media (max-width: 480px) {
@@ -146,6 +154,11 @@
       <h1>Em Manutenção</h1>
       <p>Estamos realizando melhorias no sistema. <br />Voltaremos em breve com novidades!</p>
       <span class="badge">⚠️ Manutenção programada</span>
+      <div style="margin-top: 20px;">
+        <a href="/" class="btn">← Voltar ao início</a>
+        <button class="btn btn-secondary" onclick="sairManutencao()">Sair da manutenção</button>
+      </div>
+      <div id="countdown"></div>
       <div class="footer">
         &copy; 2026 VTM Integração – Tecnologia em mobilidade
       </div>
@@ -156,32 +169,83 @@
       <div class="icon-danger">🚫</div>
       <h1 class="error-title">Acesso não autorizado</h1>
       <p class="error-sub">Esta página está disponível apenas durante o período de manutenção.</p>
-      <a href="/" class="btn-voltar">← Voltar para o início</a>
+      <a href="/" class="btn">← Voltar para o início</a>
     </div>
   </div>
 
   <script>
     // ================================================================
-    // 🛡️ CONTROLE DE ACESSO
-    // Verifica se a manutenção está ativa (flag no localStorage)
+    // 🛡️ CONTROLE DE ACESSO + VERIFICAÇÃO ATIVA
     // ================================================================
-    (function() {
-      const isManutencaoAtiva = localStorage.getItem('manutencao_ativa') === 'true';
 
-      const contentManutencao = document.getElementById('contentManutencao');
-      const contentNaoAutorizado = document.getElementById('contentNaoAutorizado');
+    // 1. Verifica a flag local
+    const isManutencaoAtivaLocal = localStorage.getItem('manutencao_ativa') === 'true';
 
-      if (!isManutencaoAtiva) {
-        // Esconde o conteúdo de manutenção e mostra o de "não autorizado"
-        contentManutencao.classList.add('hidden');
-        contentNaoAutorizado.classList.remove('hidden');
-      } else {
-        // Mostra o conteúdo normal de manutenção
-        contentManutencao.classList.remove('hidden');
-        contentNaoAutorizado.classList.add('hidden');
-      }
-    })();
+    // 2. Se a flag não existir, exibe "não autorizado"
+    if (!isManutencaoAtivaLocal) {
+      document.getElementById('contentManutencao').classList.add('hidden');
+      document.getElementById('contentNaoAutorizado').classList.remove('hidden');
+    } else {
+      // Se a flag existe, faz uma requisição para o index.html para verificar se a manutenção ainda está ativa
+      fetch('/')
+        .then(response => response.text())
+        .then(html => {
+          // Procura pela variável EM_MANUTENCAO no script do index.html
+          const match = html.match(/const EM_MANUTENCAO\s*=\s*(true|false)/);
+          if (match) {
+            const isManutencaoAtivaServer = match[1] === 'true';
+            if (!isManutencaoAtivaServer) {
+              // Manutenção desativada no servidor -> remove a flag e redireciona
+              localStorage.removeItem('manutencao_ativa');
+              window.location.href = '/';
+            }
+          }
+        })
+        .catch(() => {
+          // Se não conseguir buscar, mantém a página (fallback)
+          console.warn('Não foi possível verificar o status da manutenção no servidor.');
+        });
+
+      // 3. Mostra o conteúdo normal da manutenção
+      document.getElementById('contentManutencao').classList.remove('hidden');
+      document.getElementById('contentNaoAutorizado').classList.add('hidden');
+
+      // 4. Opcional: contagem regressiva para redirecionamento automático
+      let seconds = 15;
+      const countdownEl = document.getElementById('countdown');
+      countdownEl.textContent = `Redirecionando para o início em ${seconds}s...`;
+
+      const timer = setInterval(() => {
+        seconds--;
+        if (seconds <= 0) {
+          clearInterval(timer);
+          // Tenta novamente verificar o status antes de redirecionar
+          fetch('/')
+            .then(res => res.text())
+            .then(html => {
+              const match = html.match(/const EM_MANUTENCAO\s*=\s*(true|false)/);
+              if (match && match[1] === 'false') {
+                localStorage.removeItem('manutencao_ativa');
+                window.location.href = '/';
+              } else {
+                // Se ainda estiver em manutenção, recarrega a página para reiniciar o contador
+                window.location.reload();
+              }
+            })
+            .catch(() => {
+              window.location.href = '/';
+            });
+        } else {
+          countdownEl.textContent = `Redirecionando para o início em ${seconds}s...`;
+        }
+      }, 1000);
+    }
+
+    // ===== Função para sair manualmente =====
+    function sairManutencao() {
+      localStorage.removeItem('manutencao_ativa');
+      window.location.href = '/';
+    }
   </script>
-
 </body>
 </html>
