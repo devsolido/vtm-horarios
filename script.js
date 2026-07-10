@@ -46,19 +46,26 @@ let weatherCacheTime = 0;
 const WEATHER_CACHE_TTL = 600000;
 
 // ================================================================
-//  TEMA (DARK / LIGHT)
+//  VARIÁVEIS GLOBAIS (DECLARADAS ANTES DE TUDO)
+// ================================================================
+let currentFilter = 'all';
+let allHorarios = [];
+let alertaDisparado = {};
+
+// ================================================================
+//  TEMA (DARK / LIGHT) – com verificação de existência
 // ================================================================
 const themeToggle = document.getElementById('themeToggle');
-const iconTheme = themeToggle.querySelector('i');
+const iconTheme = themeToggle ? themeToggle.querySelector('i') : null;
 
 function setTheme(theme) {
   if (theme === 'light') {
     document.body.classList.add('light-mode');
-    iconTheme.className = 'fas fa-sun';
+    if (iconTheme) iconTheme.className = 'fas fa-sun';
     localStorage.setItem('vtm_theme', 'light');
   } else {
     document.body.classList.remove('light-mode');
-    iconTheme.className = 'fas fa-moon';
+    if (iconTheme) iconTheme.className = 'fas fa-moon';
     localStorage.setItem('vtm_theme', 'dark');
   }
 }
@@ -70,7 +77,10 @@ function toggleTheme() {
 
 const savedTheme = localStorage.getItem('vtm_theme') || 'dark';
 setTheme(savedTheme);
-themeToggle.addEventListener('click', toggleTheme);
+
+if (themeToggle) {
+  themeToggle.addEventListener('click', toggleTheme);
+}
 
 // ================================================================
 //  SERVICE WORKER
@@ -99,13 +109,6 @@ const horariosFallback = [
   { destino: 'Liberdade', horario: '18:30', embarque: 'Praça São Francisco', dias: ['Segunda a Sexta'] },
 ];
 horariosFallback.sort((a, b) => a.horario.localeCompare(b.horario));
-
-// ================================================================
-//  VARIÁVEIS GLOBAIS
-// ================================================================
-let currentFilter = 'all';
-let allHorarios = [];
-let alertaDisparado = {};
 
 // ================================================================
 //  DOM REFS (apenas elementos da página principal)
@@ -207,7 +210,6 @@ function updateClock() {
   const clockEl = document.getElementById('clockValue');
   if (clockEl) clockEl.textContent = timeStr;
 
-  // Atualiza também o admin, se os elementos existirem (na página /admin/)
   const adminClock = document.getElementById('adminClockValue');
   if (adminClock) adminClock.textContent = timeStr;
 }
@@ -302,7 +304,6 @@ async function carregarHorariosDoBanco() {
     allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
     renderCards();
 
-    // Se a página admin estiver carregada (elemento adminContent existe), recarrega a tabela
     const adminContent = document.getElementById('adminContent');
     if (adminContent && adminContent.style.display === 'block') {
       loadAdminTable();
