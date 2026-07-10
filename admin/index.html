@@ -7,7 +7,62 @@
   <title>VTM Integração - Painel Administrativo</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="../style.css" />
-  <link rel="stylesheet" href="admin.css" />
+  <!-- CSS do admin com cache-busting (força recarregar) -->
+  <link rel="stylesheet" href="admin.css?v=2" />
+
+  <!-- CSS INLINE DE GARANTIA – assegura o estilo do botão salvar mesmo se admin.css falhar -->
+  <style>
+    /* ===== GARANTIA DE ESTILO DO BOTÃO SALVAR ===== */
+    #adminSaveBtn,
+    .btn-save {
+      background: linear-gradient(135deg, #00c6fb, #005bea) !important;
+      border: none !important;
+      color: #fff !important;
+      font-weight: 600 !important;
+      padding: 12px 28px !important;
+      border-radius: 12px !important;
+      cursor: pointer !important;
+      font-size: 15px !important;
+      width: 100% !important;
+      box-shadow: 0 4px 16px rgba(0, 91, 234, 0.25) !important;
+      transition: all 0.3s !important;
+    }
+
+    #adminSaveBtn:hover,
+    .btn-save:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 28px rgba(0, 91, 234, 0.4) !important;
+    }
+
+    #adminSaveBtn:active,
+    .btn-save:active {
+      transform: scale(0.98) !important;
+    }
+
+    /* Pequeno ajuste para o botão "Entrar" também usar o mesmo estilo */
+    #adminLoginBtn {
+      background: linear-gradient(135deg, #00c6fb, #005bea) !important;
+      border: none !important;
+      color: #fff !important;
+      font-weight: 600 !important;
+      padding: 12px 28px !important;
+      border-radius: 12px !important;
+      cursor: pointer !important;
+      font-size: 16px !important;
+      width: 100% !important;
+      box-shadow: 0 4px 16px rgba(0, 91, 234, 0.25) !important;
+      transition: all 0.3s !important;
+    }
+
+    #adminLoginBtn:hover {
+      transform: translateY(-2px) !important;
+      box-shadow: 0 8px 28px rgba(0, 91, 234, 0.4) !important;
+    }
+
+    #adminLoginBtn:active {
+      transform: scale(0.98) !important;
+    }
+  </style>
 </head>
 
 <body>
@@ -46,9 +101,7 @@
       </span>
     </div>
 
-    <!-- ========================================================== -->
-    <!-- ÁREA DE LOGIN (com a estrutura que você enviou)             -->
-    <!-- ========================================================== -->
+    <!-- ÁREA DE LOGIN -->
     <div id="adminLoginArea">
       <div class="field">
         <label for="adminPassword">Senha de acesso</label>
@@ -62,7 +115,6 @@
       <button class="btn-save" id="adminLoginBtn">Entrar</button>
       <div id="adminMsg" class="msg"></div>
     </div>
-    <!-- ========================================================== -->
 
     <!-- Conteúdo (visível após login) -->
     <div id="adminContent" style="display:none;">
@@ -84,7 +136,9 @@
           <tbody id="adminTableBody"></tbody>
         </table>
       </div>
-      <button class="btn-save" id="adminSaveBtn"><i class="fas fa-save"></i> Salvar alterações</button>
+      <button class="btn-save" id="adminSaveBtn">
+        <i class="fas fa-save"></i> Salvar alterações
+      </button>
     </div>
 
     <!-- Rodapé -->
