@@ -126,7 +126,11 @@ const filterIndicator = document.getElementById('filterIndicator');
 //  UTILITÁRIOS
 // ================================================================
 function getCurrentDay() {
-  const days = ['Domingo', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta', 'Sábado'];
+  const days = [
+    'Domingo', 'Segunda a Sexta', 'Segunda a Sexta',
+    'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta',
+    'Sábado'
+  ];
   return days[new Date().getDay()];
 }
 
@@ -320,7 +324,6 @@ async function carregarHorariosDoBanco() {
 //  RENDER CARDS (com verificações de existência)
 // ================================================================
 function renderCards() {
-  // Se não houver container, não faz nada (página admin)
   if (!container) return;
 
   const nowMin = getCurrentMinutes();
@@ -412,7 +415,6 @@ function renderCards() {
     });
   }
 
-  // Atualiza próximo ônibus – só se o elemento existir
   if (nextBusInfo) {
     if (futurosHoje.length > 0) {
       const nxt = futurosHoje[0];
@@ -789,10 +791,8 @@ function init() {
 
   initFilters();
 
-  // Carrega os horários do banco (ou fallback)
   carregarHorariosDoBanco();
 
-  // Modal boas-vindas – só se existir
   const welcomeModal = document.getElementById('welcomeModal');
   if (welcomeModal) {
     const closeModalBtn = document.getElementById('closeModalBtn');
@@ -805,7 +805,6 @@ function init() {
     });
   }
 
-  // Modal alerta – só se existir
   if (closeAlertBtn) {
     closeAlertBtn.addEventListener('click', () => {
       if (alertModal) alertModal.classList.remove('active');
