@@ -1,7 +1,7 @@
 // ================================================================
-//  CONTROLE DE MANUTENÇÃO
+//  CONTROLE DE MANUTENÇÃO (caminho absoluto)
 // ================================================================
-fetch('manutencao-status.json?' + new Date().getTime())
+fetch('/manutencao-status.json?' + new Date().getTime())
   .then((res) => res.json())
   .then((data) => {
     if (data.ativo) {
@@ -46,14 +46,14 @@ let weatherCacheTime = 0;
 const WEATHER_CACHE_TTL = 600000;
 
 // ================================================================
-//  VARIÁVEIS GLOBAIS (DECLARADAS ANTES DE TUDO)
+//  VARIÁVEIS GLOBAIS
 // ================================================================
 let currentFilter = 'all';
 let allHorarios = [];
 let alertaDisparado = {};
 
 // ================================================================
-//  TEMA (DARK / LIGHT) – com verificação de existência
+//  TEMA – com verificação
 // ================================================================
 const themeToggle = document.getElementById('themeToggle');
 const iconTheme = themeToggle ? themeToggle.querySelector('i') : null;
@@ -111,7 +111,7 @@ const horariosFallback = [
 horariosFallback.sort((a, b) => a.horario.localeCompare(b.horario));
 
 // ================================================================
-//  DOM REFS (apenas elementos da página principal)
+//  DOM REFS (com verificação para páginas que não têm esses elementos)
 // ================================================================
 const container = document.getElementById('cardsContainer');
 const nextBusInfo = document.getElementById('nextBusInfo');
@@ -196,7 +196,7 @@ function playBeep() {
 }
 
 // ================================================================
-//  RELÓGIO, DATA, SAUDAÇÃO (COM ATUALIZAÇÃO NO ADMIN)
+//  RELÓGIO, DATA, SAUDAÇÃO
 // ================================================================
 function updateClock() {
   const n = new Date();
@@ -231,7 +231,7 @@ function updateDateAndGreeting() {
 }
 
 // ================================================================
-//  CLIMA (proxy local) – COM ATUALIZAÇÃO NO ADMIN
+//  CLIMA (proxy local)
 // ================================================================
 async function fetchWeather() {
   const el = document.getElementById('weatherValue');
@@ -296,7 +296,6 @@ async function carregarHorariosDoBanco() {
     if (!res.ok) throw new Error('Erro ao carregar horários: ' + res.status);
     const data = await res.json();
 
-    // Remove 'id' e 'created_at', formata horário para HH:MM
     allHorarios = data.map(({ id, created_at, horario, ...rest }) => ({
       ...rest,
       horario: horario.substring(0, 5)
@@ -318,13 +317,18 @@ async function carregarHorariosDoBanco() {
 }
 
 // ================================================================
-//  RENDER CARDS
+//  RENDER CARDS (com verificações de existência)
 // ================================================================
 function renderCards() {
+  // Se não houver container, não faz nada (página admin)
+  if (!container) return;
+
   const nowMin = getCurrentMinutes();
   const diaAtual = getCurrentDay();
 
-  filterIndicator.textContent = 'Filtro: ' + (currentFilter === 'all' ? 'Todos' : currentFilter);
+  if (filterIndicator) {
+    filterIndicator.textContent = 'Filtro: ' + (currentFilter === 'all' ? 'Todos' : currentFilter);
+  }
 
   const filtered =
     currentFilter === 'all'
@@ -408,36 +412,39 @@ function renderCards() {
     });
   }
 
-  if (futurosHoje.length > 0) {
-    const nxt = futurosHoje[0];
-    const diff = getMinutesFromTime(nxt.horario) - nowMin;
-    const txt = formatCountdown(diff);
-    const cls = diff < 0 ? 'passed' : '';
-    nextBusInfo.innerHTML =
-      '<span class="destino">' +
-      sanitize(nxt.destino) +
-      '</span>' +
-      '<span class="horario">' +
-      sanitize(nxt.horario) +
-      '</span>' +
-      '<span class="countdown ' +
-      cls +
-      '">' +
-      txt +
-      '</span>';
-  } else {
-    const amanha = findNextTomorrow();
-    if (amanha) {
+  // Atualiza próximo ônibus – só se o elemento existir
+  if (nextBusInfo) {
+    if (futurosHoje.length > 0) {
+      const nxt = futurosHoje[0];
+      const diff = getMinutesFromTime(nxt.horario) - nowMin;
+      const txt = formatCountdown(diff);
+      const cls = diff < 0 ? 'passed' : '';
       nextBusInfo.innerHTML =
         '<span class="destino">' +
-        sanitize(amanha.destino) +
+        sanitize(nxt.destino) +
         '</span>' +
         '<span class="horario">' +
-        sanitize(amanha.horario) +
+        sanitize(nxt.horario) +
         '</span>' +
-        '<span class="countdown" style="color:#ffaa00;">Amanhã</span>';
+        '<span class="countdown ' +
+        cls +
+        '">' +
+        txt +
+        '</span>';
     } else {
-      nextBusInfo.innerHTML = '<span class="empty-msg">Nenhum ônibus programado para hoje</span>';
+      const amanha = findNextTomorrow();
+      if (amanha) {
+        nextBusInfo.innerHTML =
+          '<span class="destino">' +
+          sanitize(amanha.destino) +
+          '</span>' +
+          '<span class="horario">' +
+          sanitize(amanha.horario) +
+          '</span>' +
+          '<span class="countdown" style="color:#ffaa00;">Amanhã</span>';
+      } else {
+        nextBusInfo.innerHTML = '<span class="empty-msg">Nenhum ônibus programado para hoje</span>';
+      }
     }
   }
 }
@@ -484,7 +491,7 @@ function findNextTomorrow() {
 }
 
 // ================================================================
-//  VERIFICAÇÃO DE ALERTAS
+//  VERIFICAÇÃO DE ALERTAS (com verificação)
 // ================================================================
 function verificarAlertas() {
   const agora = getCurrentMinutes();
@@ -511,22 +518,28 @@ function verificarAlertas() {
 
     playBeep();
 
-    alertMessage.innerHTML =
-      '📢 <strong>Atenção!</strong> Faltam <strong>' +
-      minutos +
-      ' minutos</strong> para o <strong>VTM "' +
-      sanitize(proximo.destino) +
-      '"</strong> passar na parada <strong>' +
-      sanitize(proximo.embarque) +
-      '</strong>.';
-    alertSubMsg.textContent =
-      '⏰ Alerta às ' +
-      new Date().toLocaleTimeString() +
-      ' - ' +
-      proximo.destino +
-      ' às ' +
-      proximo.horario;
-    alertModal.classList.add('active');
+    if (alertMessage) {
+      alertMessage.innerHTML =
+        '📢 <strong>Atenção!</strong> Faltam <strong>' +
+        minutos +
+        ' minutos</strong> para o <strong>VTM "' +
+        sanitize(proximo.destino) +
+        '"</strong> passar na parada <strong>' +
+        sanitize(proximo.embarque) +
+        '</strong>.';
+    }
+    if (alertSubMsg) {
+      alertSubMsg.textContent =
+        '⏰ Alerta às ' +
+        new Date().toLocaleTimeString() +
+        ' - ' +
+        proximo.destino +
+        ' às ' +
+        proximo.horario;
+    }
+    if (alertModal) {
+      alertModal.classList.add('active');
+    }
 
     const msg =
       'Olá! Faltam ' +
@@ -541,10 +554,15 @@ function verificarAlertas() {
 }
 
 // ================================================================
-//  FILTROS
+//  FILTROS (com verificação)
 // ================================================================
 function initFilters() {
   const btns = document.querySelectorAll('.filter-btn');
+  if (!btns || btns.length === 0) {
+    console.log('🔍 Filtros não encontrados (página admin?) – ignorando.');
+    return;
+  }
+
   const hoje = getCurrentDay();
   btns.forEach((btn) => btn.classList.remove('active'));
   let found = false;
@@ -556,7 +574,8 @@ function initFilters() {
     }
   });
   if (!found) {
-    document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+    const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+    if (allBtn) allBtn.classList.add('active');
     currentFilter = 'all';
   }
 
@@ -572,9 +591,8 @@ function initFilters() {
 }
 
 // ================================================================
-//  FUNÇÕES COMPARTILHADAS DO ADMIN (usadas pela página /admin/)
+//  FUNÇÕES COMPARTILHADAS DO ADMIN
 // ================================================================
-
 function showAdminMsg(text, type = 'info') {
   const msgDiv = document.getElementById('adminMsg');
   if (!msgDiv) return;
@@ -774,26 +792,34 @@ function init() {
   // Carrega os horários do banco (ou fallback)
   carregarHorariosDoBanco();
 
-  // Modal boas-vindas
+  // Modal boas-vindas – só se existir
   const welcomeModal = document.getElementById('welcomeModal');
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  window.addEventListener('load', () => welcomeModal.classList.add('active'));
-  closeModalBtn.addEventListener('click', () => welcomeModal.classList.remove('active'));
-  welcomeModal.addEventListener('click', (e) => {
-    if (e.target === welcomeModal) welcomeModal.classList.remove('active');
-  });
-
-  // Modal alerta
-  closeAlertBtn.addEventListener('click', () => {
-    alertModal.classList.remove('active');
-    window.speechSynthesis.cancel();
-  });
-  alertModal.addEventListener('click', (e) => {
-    if (e.target === alertModal) {
-      alertModal.classList.remove('active');
-      window.speechSynthesis.cancel();
+  if (welcomeModal) {
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    window.addEventListener('load', () => welcomeModal.classList.add('active'));
+    if (closeModalBtn) {
+      closeModalBtn.addEventListener('click', () => welcomeModal.classList.remove('active'));
     }
-  });
+    welcomeModal.addEventListener('click', (e) => {
+      if (e.target === welcomeModal) welcomeModal.classList.remove('active');
+    });
+  }
+
+  // Modal alerta – só se existir
+  if (closeAlertBtn) {
+    closeAlertBtn.addEventListener('click', () => {
+      if (alertModal) alertModal.classList.remove('active');
+      window.speechSynthesis.cancel();
+    });
+  }
+  if (alertModal) {
+    alertModal.addEventListener('click', (e) => {
+      if (e.target === alertModal) {
+        alertModal.classList.remove('active');
+        window.speechSynthesis.cancel();
+      }
+    });
+  }
 
   setInterval(() => {
     verificarAlertas();
