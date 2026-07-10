@@ -1,0 +1,11 @@
+# Arquivos de ambiente com chaves
+securite.env
+.env
+*.env
+
+# Arquivos de configuração do servidor (opcional)
+.htaccess
+
+# Cache do PHP
+*.log
+*.cache

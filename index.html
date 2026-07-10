@@ -1057,18 +1057,17 @@
 </head>
 
 <body>
-
   <!-- MODAL BOAS-VINDAS -->
   <div class="modal-overlay" id="welcomeModal">
     <div class="modal-box">
       <div class="icon-big"><i class="fas fa-bus"></i></div>
       <h2>BEM VINDO AO HELP VTM</h2>
       <p>Consulte os horários de ônibus da <strong>Integração - Vale Transporte Marabá</strong> de forma rápida e
-        moderna.</p>
+        moderna.
+      </p>
       <button class="btn-primary" id="closeModalBtn"><i class="fas fa-arrow-right"></i> Entrar</button>
     </div>
   </div>
-
   <!-- MODAL DE ALERTA -->
   <div class="alert-modal" id="alertModal">
     <div class="modal-box">
@@ -1079,7 +1078,6 @@
       <button class="btn-primary" id="closeAlertBtn"><i class="fas fa-check"></i> Entendi</button>
     </div>
   </div>
-
   <!-- APP PRINCIPAL -->
   <div class="app">
     <header class="header">
@@ -1102,12 +1100,10 @@
         <span class="version"><i class="fas fa-code-branch"></i> v2.6.0</span>
       </div>
     </header>
-
     <div class="date-display">
       <i class="far fa-calendar-alt" style="margin-right:6px; color:#00c6fb;"></i>
       <span id="fullDate">--</span>
     </div>
-
     <div class="next-bus" id="nextBus">
       <div class="label"><i class="fas fa-bus"></i> Próximo ônibus</div>
       <div class="bus-info" id="nextBusInfo">
@@ -1116,16 +1112,13 @@
         <span class="countdown" id="countdown">--</span>
       </div>
     </div>
-
     <div class="filters">
       <button class="filter-btn" data-filter="all">Todos</button>
       <button class="filter-btn" data-filter="Segunda a Sexta">Segunda–Sexta</button>
       <button class="filter-btn" data-filter="Sábado">Sábado</button>
       <button class="filter-btn" data-filter="Domingo">Domingo</button>
     </div>
-
     <div class="cards-grid" id="cardsContainer"></div>
-
     <!-- SEÇÃO DE ALERTAS (EM CONSTRUÇÃO) -->
     <div class="alerts-section">
       <div class="overlay">
@@ -1138,7 +1131,6 @@
           <small>Em breve você receberá avisos diretamente no seu telefone!</small>
         </p>
       </div>
-
       <h3><i class="fas fa-bell"></i> Alertas de Ônibus</h3>
       <div class="alert-form" id="alertForm">
         <div class="field">
@@ -1163,35 +1155,32 @@
         <div class="no-alerts">Funcionalidade em desenvolvimento</div>
       </div>
     </div>
-
     <div class="note">
       <strong>⚠ Nota:</strong> Os horários podem sofrer alterações. O alerta é ativado 30 minutos antes do horário
       programado.
     </div>
-
     <div class="footer">
       <span>© 2026 VTM Integração – Todos os direitos reservados</span>
       <span class="version">2.6.0</span>
     </div>
   </div>
-
   <script>
     // ================================================================
-      // 🛠️ CONTROLE DE MANUTENÇÃO (via JSON)
-      // ================================================================
-      fetch('manutencao-status.json?' + new Date().getTime())
-        .then(res => res.json())
-        .then(data => {
-          if (data.ativo) {
-            localStorage.setItem('manutencao_ativa', 'true');
-            window.location.href = 'manutencao.html';
-          } else {
-            localStorage.removeItem('manutencao_ativa');
-          }
-        })
-        .catch(() => {
+    // 🛠️ CONTROLE DE MANUTENÇÃO (via JSON)
+    // ================================================================
+    fetch('manutencao-status.json?' + new Date().getTime())
+      .then(res => res.json())
+      .then(data => {
+        if (data.ativo) {
+          localStorage.setItem('manutencao_ativa', 'true');
+          window.location.href = 'manutencao.html';
+        } else {
           localStorage.removeItem('manutencao_ativa');
-        });
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem('manutencao_ativa');
+      });
     // ================================================================
     //  HORÁRIOS
     //  ================================================================
@@ -1326,25 +1315,20 @@
     }
 
     // ================================================================
-    //  CLIMA
+    //  CLIMA - SEM CHAVE EXPOSTA
     //  ================================================================
-    const WEATHER_API_KEY = '84ac546d';
-    const CITY = 'Maraba';
-    const STATE = 'PA';
-
     async function fetchWeather() {
       const el = document.getElementById('weatherValue');
       if (!el) return;
       el.textContent = '⏳ Carregando...';
       try {
-        const url =
-          `https://api.hgbrasil.com/weather?key=${WEATHER_API_KEY}&city_name=${CITY},${STATE}&locale=pt&format=json-cors`;
-        const res = await fetch(url);
+        // Chama o proxy local (exemplo: /api/weather ou /api/weather.php)
+        const res = await fetch('/api/weather');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        if (!data.results || data.results.temp === undefined) throw new Error('Dados incompletos');
-        const temp = Math.round(data.results.temp);
-        const slug = data.results.condition_slug || '';
+        if (!data || data.temp === undefined) throw new Error('Dados incompletos');
+        const temp = Math.round(data.temp);
+        const slug = data.condition_slug || '';
         const emojiMap = {
           'clear_day': '☀️',
           'clear_night': '🌙',
@@ -1388,14 +1372,14 @@
             `🚌 Ônibus para ${h.destino} às ${h.horario} - Embarque: ${h.embarque}. Emitido via Help VTM`
           );
           html += `
-                        <div class="${cls}" style="animation-delay:${idx * 0.04}s">
-                            <div class="destino"><i class="fas fa-map-pin"></i> ${h.destino}</div>
-                            <div class="horario">${h.horario}</div>
-                            <div class="embarque"><i class="fas fa-location-dot"></i> ${h.embarque}</div>
-                            <div class="dias">${h.dias.map(d => `<span>${d}</span>`).join('')}</div>
-                            <button class="share-btn" data-destino="${h.destino}" data-horario="${h.horario}" data-embarque="${h.embarque}" title="Compartilhar"><i class="fas fa-share-alt"></i></button>
-                        </div>
-                    `;
+                             <div class="${cls}" style="animation-delay:${idx * 0.04}s">
+                                 <div class="destino"><i class="fas fa-map-pin"></i> ${h.destino}</div>
+                                 <div class="horario">${h.horario}</div>
+                                 <div class="embarque"><i class="fas fa-location-dot"></i> ${h.embarque}</div>
+                                 <div class="dias">${h.dias.map(d => `<span>${d}</span>`).join('')}</div>
+                                 <button class="share-btn" data-destino="${h.destino}" data-horario="${h.horario}" data-embarque="${h.embarque}" title="Compartilhar"><i class="fas fa-share-alt"></i></button>
+                             </div>
+                         `;
         });
         container.innerHTML = html;
 
@@ -1431,18 +1415,18 @@
         const txt = formatCountdown(diff);
         const cls = diff < 0 ? 'passed' : '';
         nextBusInfo.innerHTML = `
-                    <span class="destino">${nxt.destino}</span>
-                    <span class="horario">${nxt.horario}</span>
-                    <span class="countdown ${cls}">${txt}</span>
-                `;
+                         <span class="destino">${nxt.destino}</span>
+                         <span class="horario">${nxt.horario}</span>
+                         <span class="countdown ${cls}">${txt}</span>
+                     `;
       } else {
         const amanha = findNextTomorrow();
         if (amanha) {
           nextBusInfo.innerHTML = `
-                        <span class="destino">${amanha.destino}</span>
-                        <span class="horario">${amanha.horario}</span>
-                        <span class="countdown" style="color:#ffaa00;">Amanhã</span>
-                    `;
+                             <span class="destino">${amanha.destino}</span>
+                             <span class="horario">${amanha.horario}</span>
+                             <span class="countdown" style="color:#ffaa00;">Amanhã</span>
+                         `;
         } else {
           nextBusInfo.innerHTML = `<span class="empty-msg">Nenhum ônibus programado</span>`;
         }
