@@ -1,5 +1,8 @@
 // api/horarios.js
 export default async function handler(req, res) {
+  // Log para depuração
+  console.log('🔵 API /api/horarios chamada - Método:', req.method);
+
   try {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
@@ -13,12 +16,19 @@ export default async function handler(req, res) {
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
+    console.log('🔵 SUPABASE_URL:', SUPABASE_URL);
+    console.log('🔵 SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY ? '✅ Definida' : '❌ Não definida');
+
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      console.error('❌ Variáveis de ambiente não configuradas');
       return res.status(500).json({ error: 'Variáveis de ambiente não configuradas' });
     }
 
+    // Monta a URL corretamente
     const apiUrl = `${SUPABASE_URL}/rest/v1/horarios`;
+    console.log('🔵 URL do Supabase:', apiUrl);
 
+    // GET - buscar todos os horários
     if (req.method === 'GET') {
       const response = await fetch(apiUrl, {
         headers: {
@@ -26,87 +36,25 @@ export default async function handler(req, res) {
           'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
         }
       });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      console.log('🔵 Status da resposta do Supabase:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Erro do Supabase:', response.status, errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
       const data = await response.json();
+      console.log('🔵 Dados retornados:', data);
       return res.status(200).json(data);
     }
 
-    if (req.method === 'POST') {
-      const { destino, horario, embarque, dias } = req.body;
-      if (!destino || !horario || !embarque || !dias) {
-        return res.status(400).json({ error: 'Campos obrigatórios' });
-      }
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify({ destino, horario, embarque, dias })
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
-      return res.status(201).json(data[0]);
-    }
-
-    if (req.method === 'PUT') {
-      const novosHorarios = req.body;
-      if (!Array.isArray(novosHorarios)) {
-        return res.status(400).json({ error: 'Dados inválidos' });
-      }
-      // Deleta todos os registros
-      const allResponse = await fetch(apiUrl, {
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-        }
-      });
-      const existing = await allResponse.json();
-      for (const item of existing) {
-        await fetch(`${apiUrl}?id=eq.${item.id}`, {
-          method: 'DELETE',
-          headers: {
-            'apikey': SUPABASE_ANON_KEY,
-            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-          }
-        });
-      }
-      // Insere os novos
-      const inserts = novosHorarios.map(({ destino, horario, embarque, dias }) => ({ destino, horario, embarque, dias }));
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation'
-        },
-        body: JSON.stringify(inserts)
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const data = await response.json();
-      return res.status(200).json(data);
-    }
-
-    if (req.method === 'DELETE') {
-      const { id } = req.query;
-      if (!id) return res.status(400).json({ error: 'ID obrigatório' });
-      const response = await fetch(`${apiUrl}?id=eq.${id}`, {
-        method: 'DELETE',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-        }
-      });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      return res.status(204).end();
-    }
-
+    // POST, PUT, DELETE... (mantenha o restante igual, mas com logs)
+    // Se não for GET, retorna 405
     return res.status(405).json({ error: 'Método não permitido' });
   } catch (error) {
-    console.error('Erro na API:', error);
+    console.error('❌ Erro na API:', error);
     return res.status(500).json({ error: error.message });
   }
 }
