@@ -877,10 +877,300 @@
       margin-bottom: 20px;
     }
 
-    /* ===== ADMIN PANEL (modal) ===== */
+    /* ===== ADMIN PANEL ===== */
     .admin-panel .modal-box {
-      max-width: 600px;
+      max-width: 900px;
+      width: 95%;
+      padding: 30px 28px;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .admin-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-title i {
+      font-size: 28px;
+      color: #00c6fb;
+    }
+
+    .admin-title h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .admin-user {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--filter-btn-bg);
+      padding: 6px 14px;
+      border-radius: 40px;
+      border: 1px solid var(--input-border);
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    .admin-user i {
+      font-size: 20px;
+      color: #00c6fb;
+    }
+
+    .admin-user span {
+      font-weight: 500;
+    }
+
+    .admin-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-app);
+      padding-bottom: 12px;
+    }
+
+    .admin-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .btn-add-row {
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      border: none;
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s;
+    }
+
+    .btn-add-row:hover {
+      transform: scale(1.03);
+      box-shadow: 0 4px 15px rgba(0, 91, 234, 0.4);
+    }
+
+    .btn-add-row:active {
+      transform: scale(0.97);
+    }
+
+    #adminRowCount {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .admin-table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .admin-table th {
+      background: var(--filter-btn-bg);
+      color: var(--text-secondary);
+      font-weight: 600;
       text-align: left;
+      padding: 12px 12px;
+      border-bottom: 2px solid var(--border-app);
+      white-space: nowrap;
+    }
+
+    .admin-table td {
+      padding: 8px 8px;
+      border-bottom: 1px solid var(--border-app);
+      vertical-align: middle;
+    }
+
+    .admin-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .admin-table .admin-input {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--input-color);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .admin-table .admin-input:focus {
+      border-color: #00c6fb;
+    }
+
+    .admin-table .admin-input[readonly] {
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: default;
+      padding-left: 4px;
+    }
+
+    .admin-table .admin-input[readonly]:focus {
+      border-color: transparent;
+    }
+
+    .admin-table .admin-select {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--input-color);
+      font-size: 13px;
+      outline: none;
+      min-height: 36px;
+    }
+
+    .admin-table .admin-select[disabled] {
+      opacity: 0.6;
+    }
+
+    .admin-table .admin-select option {
+      background: var(--bg-body);
+      color: var(--text-primary);
+    }
+
+    .admin-table .btn-action {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 16px;
+      touch-action: manipulation;
+    }
+
+    .admin-table .btn-action:hover {
+      color: #00c6fb;
+      background: rgba(0, 198, 251, 0.1);
+    }
+
+    .admin-table .btn-action.danger:hover {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.1);
+    }
+
+    .admin-table .btn-action.edit-mode {
+      color: #ffaa00;
+    }
+
+    .admin-table .btn-action.edit-mode:hover {
+      color: #ffaa00;
+      background: rgba(255, 170, 0, 0.15);
+    }
+
+    .admin-table .dias-checkboxes {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .admin-table .dias-checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .admin-table .dias-checkboxes input[type="checkbox"] {
+      accent-color: #00c6fb;
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    .admin-msg {
+      margin-top: 12px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .admin-msg.success {
+      display: block;
+      background: rgba(0, 200, 100, 0.15);
+      color: #00c864;
+      border: 1px solid rgba(0, 200, 100, 0.3);
+    }
+
+    .admin-msg.error {
+      display: block;
+      background: rgba(255, 80, 80, 0.15);
+      color: #ff6b6b;
+      border: 1px solid rgba(255, 80, 80, 0.3);
+    }
+
+    .admin-msg.info {
+      display: block;
+      background: rgba(0, 198, 251, 0.1);
+      color: #00c6fb;
+      border: 1px solid rgba(0, 198, 251, 0.2);
+    }
+
+    /* Responsividade admin */
+    @media (max-width: 700px) {
+      .admin-panel .modal-box {
+        padding: 20px 16px;
+      }
+
+      .admin-header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+
+      .admin-user {
+        justify-content: center;
+      }
+
+      .admin-table th,
+      .admin-table td {
+        padding: 6px 4px;
+        font-size: 12px;
+      }
+
+      .admin-table .admin-input {
+        font-size: 12px;
+        padding: 4px 6px;
+      }
+
+      .admin-table .dias-checkboxes label {
+        font-size: 10px;
+      }
     }
 
     .admin-panel .modal-box h2 {
@@ -1306,9 +1596,18 @@
   <!-- MODAL ADMIN -->
   <div class="modal-overlay admin-panel" id="adminModal">
     <div class="modal-box">
-      <div class="icon-big"><i class="fas fa-cog"></i></div>
-      <h2>Painel Administrativo</h2>
-      <p>Gerencie os horários dos ônibus.</p>
+      <div class="admin-header">
+        <div class="admin-title">
+          <i class="fas fa-cog"></i>
+          <h2>Painel Administrativo</h2>
+        </div>
+        <div class="admin-user">
+          <i class="fas fa-user-circle"></i>
+          <span>Igor Veras Morais</span>
+        </div>
+      </div>
+      <div class="admin-subtitle">Gerencie os horários dos ônibus</div>
+
       <div class="admin-form">
         <div class="field">
           <label>Senha de acesso</label>
@@ -1316,10 +1615,31 @@
         </div>
         <button class="btn-save" id="adminLoginBtn">Entrar</button>
         <div id="adminMsg" class="msg"></div>
+
         <div id="adminContent" style="display:none; margin-top:16px;">
-          <p style="color:var(--text-secondary); font-size:14px; margin-bottom:12px;">Edite os horários abaixo:</p>
-          <div id="adminHorariosList"></div>
-          <button class="btn-save" id="adminSaveBtn" style="margin-top:12px;">Salvar alterações</button>
+          <div class="admin-toolbar">
+            <button class="btn-add-row" id="adminAddRowBtn"><i class="fas fa-plus"></i> Adicionar horário</button>
+            <span id="adminRowCount">0 horários</span>
+          </div>
+          <div class="admin-table-wrapper">
+            <table class="admin-table" id="adminTable">
+              <thead>
+                <tr>
+                  <th>Destino</th>
+                  <th>Horário</th>
+                  <th>Embarque</th>
+                  <th>Dias</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="adminTableBody">
+                <!-- linhas geradas dinamicamente -->
+              </tbody>
+            </table>
+          </div>
+          <button class="btn-save" id="adminSaveBtn" style="margin-top:12px;">
+            <i class="fas fa-save"></i> Salvar alterações
+          </button>
         </div>
       </div>
     </div>
@@ -1925,26 +2245,92 @@
     });
 
     function loadAdminHorarios() {
-      let html = '';
+      // Limpa o container
+      adminHorariosList.innerHTML = '';
+
       allHorarios.forEach((h, idx) => {
-        html += `
-          <div style="margin-bottom:10px; padding:10px; border:1px solid var(--card-border); border-radius:8px;">
-            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-              <input type="text" id="admin_destino_${idx}" value="${sanitize(h.destino)}" style="flex:2; min-width:100px;" />
-              <input type="time" id="admin_horario_${idx}" value="${sanitize(h.horario)}" style="flex:1; min-width:80px;" />
-              <input type="text" id="admin_embarque_${idx}" value="${sanitize(h.embarque)}" style="flex:2; min-width:100px;" />
-              <select id="admin_dias_${idx}" multiple style="flex:2; min-width:120px; height:50px;">
-                <option value="Segunda a Sexta" ${h.dias.includes('Segunda a Sexta') ? 'selected' : ''}>Segunda–Sexta</option>
-                <option value="Sábado" ${h.dias.includes('Sábado') ? 'selected' : ''}>Sábado</option>
-                <option value="Domingo" ${h.dias.includes('Domingo') ? 'selected' : ''}>Domingo</option>
-              </select>
-              <button class="btn-save" style="flex:0 0 60px; padding:4px 8px; font-size:12px;" onclick="removerHorario(${idx})">🗑️</button>
-            </div>
-          </div>
-        `;
+        // Container principal do horário
+        const div = document.createElement('div');
+        div.style.cssText = 'margin-bottom:10px; padding:10px; border:1px solid var(--card-border); border-radius:8px;';
+
+        // Wrapper flex
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'display:flex; flex-wrap:wrap; gap:8px; align-items:center;';
+
+        // Input destino
+        const inpDestino = document.createElement('input');
+        inpDestino.type = 'text';
+        inpDestino.id = `admin_destino_${idx}`;
+        inpDestino.style.cssText = 'flex:2; min-width:100px;';
+        inpDestino.value = h.destino; // textContent não é necessário aqui, pois value é seguro (string)
+
+        // Input horário
+        const inpHorario = document.createElement('input');
+        inpHorario.type = 'time';
+        inpHorario.id = `admin_horario_${idx}`;
+        inpHorario.style.cssText = 'flex:1; min-width:80px;';
+        inpHorario.value = h.horario;
+
+        // Input embarque
+        const inpEmbarque = document.createElement('input');
+        inpEmbarque.type = 'text';
+        inpEmbarque.id = `admin_embarque_${idx}`;
+        inpEmbarque.style.cssText = 'flex:2; min-width:100px;';
+        inpEmbarque.value = h.embarque;
+
+        // Select dias (múltiplo)
+        const selDias = document.createElement('select');
+        selDias.id = `admin_dias_${idx}`;
+        selDias.multiple = true;
+        selDias.style.cssText = 'flex:2; min-width:120px; height:50px;';
+
+        const opcoes = ['Segunda a Sexta', 'Sábado', 'Domingo'];
+        opcoes.forEach(dia => {
+          const opt = document.createElement('option');
+          opt.value = dia;
+          opt.textContent = dia;
+          if (h.dias.includes(dia)) opt.selected = true;
+          selDias.appendChild(opt);
+        });
+
+        // Botão remover
+        const btnRemover = document.createElement('button');
+        btnRemover.className = 'btn-save';
+        btnRemover.style.cssText = 'flex:0 0 60px; padding:4px 8px; font-size:12px;';
+        btnRemover.textContent = '🗑️';
+        btnRemover.onclick = function () {
+          if (confirm('Remover este horário?')) {
+            allHorarios.splice(idx, 1);
+            loadAdminHorarios();
+          }
+        };
+
+        // Monta o wrapper
+        wrapper.appendChild(inpDestino);
+        wrapper.appendChild(inpHorario);
+        wrapper.appendChild(inpEmbarque);
+        wrapper.appendChild(selDias);
+        wrapper.appendChild(btnRemover);
+
+        div.appendChild(wrapper);
+        adminHorariosList.appendChild(div);
       });
-      html += `<button class="btn-save" style="margin-top:8px;" onclick="adicionarHorario()">➕ Adicionar horário</button>`;
-      adminHorariosList.innerHTML = html;
+
+      // Botão Adicionar horário (fora do loop)
+      const btnAdd = document.createElement('button');
+      btnAdd.className = 'btn-save';
+      btnAdd.style.cssText = 'margin-top:8px;';
+      btnAdd.textContent = '➕ Adicionar horário';
+      btnAdd.onclick = function () {
+        allHorarios.push({
+          destino: 'Novo destino',
+          horario: '12:00',
+          embarque: 'Local',
+          dias: ['Segunda a Sexta']
+        });
+        loadAdminHorarios();
+      };
+      adminHorariosList.appendChild(btnAdd);
     }
 
     // Funções globais para o admin (serão chamadas via onclick)
