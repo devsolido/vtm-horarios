@@ -873,14 +873,23 @@ body {
    ============================================================ */
 
 .admin-panel .modal-box {
-  max-width: 100%;
-  width: 95%;
-  max-height: 90vh;      /* LIMITA A ALTURA PARA CABER NA TELA */
-  overflow-y: auto;      /* ROLAGEM INTERNA SE O CONTEÚDO ULTRAPASSAR */
-  padding: 25px 20px;
-  text-align: left;
-  box-sizing: border-box;
-  overflow-x: hidden;
+  max-height: 80vh;      /* Limita a altura do modal */
+  overflow-y: auto;      /* Habilita rolagem interna se o conteúdo ultrapassar */
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-table-wrapper {
+  max-height: 50vh;      /* Limita a altura da tabela para rolar internamente */
+  overflow-y: auto;      /* Habilita rolagem vertical na tabela */
+  overflow-x: auto;
+  flex: 1 1 auto;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 /* Cabeçalho com duas áreas: título à esquerda, info à direita */
