@@ -867,13 +867,16 @@ body {
 /* ============================================================
    ADMIN PANEL – DASHBOARD COMPLETO
    Com horário em tempo real, clima e nome do operador
+   CORRIGIDO PARA EVITAR CORTE EM ZOOM 100%
    ============================================================ */
 
 .admin-panel .modal-box {
-  max-width: 950px;
+  max-width: 100%;
   width: 95%;
-  padding: 30px 28px;
+  padding: 25px 20px;
   text-align: left;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Cabeçalho com duas áreas: título à esquerda, info à direita */
@@ -1022,6 +1025,7 @@ body {
 
 .admin-table-wrapper {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: 12px;
   border: 1px solid var(--card-border);
   background: var(--card-bg);
@@ -1031,7 +1035,7 @@ body {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  min-width: 600px;
+  min-width: 100%; /* removido o 600px fixo que cortava */
 }
 
 .admin-table th {
@@ -1064,6 +1068,7 @@ body {
   font-size: 13px;
   outline: none;
   transition: border-color 0.3s;
+  box-sizing: border-box;
 }
 
 .admin-table .admin-input:focus {
@@ -1091,6 +1096,7 @@ body {
   font-size: 13px;
   outline: none;
   min-height: 36px;
+  box-sizing: border-box;
 }
 
 .admin-table .admin-select[disabled] {
@@ -1196,6 +1202,7 @@ body {
   transition: 0.3s;
   margin-top: 8px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .admin-form .btn-save:hover {
@@ -1205,6 +1212,101 @@ body {
 
 .admin-form .btn-save:active {
   transform: scale(0.98);
+}
+
+/* ============================================================
+   RESPONSIVIDADE DO ADMIN (CORREÇÃO DE ZOOM)
+   ============================================================ */
+@media (max-width: 700px) {
+  .admin-panel .modal-box {
+    padding: 16px 12px;
+    width: 98%;
+  }
+  .admin-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .admin-header-left,
+  .admin-header-right {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .admin-header-right {
+    gap: 6px;
+  }
+  .admin-header-right .admin-info-item {
+    font-size: 11px;
+    padding: 2px 8px;
+    min-height: 28px;
+  }
+  .admin-header-right .admin-user span {
+    font-size: 13px;
+  }
+  .admin-subtitle {
+    flex-direction: column;
+    text-align: center;
+    font-size: 13px;
+  }
+  .admin-table th,
+  .admin-table td {
+    padding: 6px 4px;
+    font-size: 12px;
+  }
+  .admin-table .admin-input {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+  .admin-table .dias-checkboxes label {
+    font-size: 10px;
+  }
+  .admin-table .btn-action {
+    font-size: 14px;
+    padding: 2px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-panel .modal-box {
+    padding: 12px 8px;
+  }
+  .admin-header-left .admin-title h2 {
+    font-size: 18px;
+  }
+  .admin-header-left .admin-title i {
+    font-size: 22px;
+  }
+  .admin-header-right .admin-info-item {
+    font-size: 10px;
+    padding: 2px 6px;
+    min-height: 22px;
+  }
+  .admin-header-right .admin-user {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+  .admin-header-right .admin-user i {
+    font-size: 16px;
+  }
+  .admin-table th,
+  .admin-table td {
+    padding: 3px 3px;
+    font-size: 10px;
+  }
+  .admin-table .admin-input {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+  .admin-table .dias-checkboxes label {
+    font-size: 8px;
+  }
+  .admin-table .btn-action {
+    font-size: 12px;
+    padding: 2px 3px;
+  }
+  .admin-subtitle {
+    font-size: 11px;
+  }
 }
 
 /* ===== FOOTER ===== */
