@@ -10,6 +10,60 @@
   <meta name="theme-color" content="#005bea" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <style>
+    /* ===== VARIÁVEIS (TEMA ESCURO PADRÃO) ===== */
+    :root {
+      --bg-body: #0b0e1a;
+      --bg-app: rgba(255, 255, 255, 0.03);
+      --border-app: rgba(255, 255, 255, 0.06);
+      --text-primary: #fff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --text-muted: rgba(255, 255, 255, 0.3);
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --card-border: rgba(255, 255, 255, 0.05);
+      --card-hover-bg: rgba(255, 255, 255, 0.06);
+      --input-bg: rgba(255, 255, 255, 0.05);
+      --input-border: rgba(255, 255, 255, 0.08);
+      --input-color: #fff;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+      --badge-bg: rgba(0, 198, 251, 0.1);
+      --badge-color: #00c6fb;
+      --filter-btn-bg: rgba(255, 255, 255, 0.04);
+      --filter-btn-color: rgba(255, 255, 255, 0.6);
+      --filter-btn-hover-bg: rgba(255, 255, 255, 0.08);
+      --filter-btn-active: linear-gradient(135deg, #00c6fb, #005bea);
+      --note-bg: #fff3cd;
+      --note-color: #856404;
+      --note-border: #ffe69c;
+      --note-border-left: #ffc107;
+    }
+
+    /* ===== TEMA CLARO ===== */
+    body.light-mode {
+      --bg-body: #f0f2f5;
+      --bg-app: rgba(255, 255, 255, 0.7);
+      --border-app: rgba(0, 0, 0, 0.1);
+      --text-primary: #1a1a2e;
+      --text-secondary: rgba(0, 0, 0, 0.7);
+      --text-muted: rgba(0, 0, 0, 0.4);
+      --card-bg: rgba(255, 255, 255, 0.7);
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-hover-bg: rgba(255, 255, 255, 0.9);
+      --input-bg: rgba(255, 255, 255, 0.8);
+      --input-border: rgba(0, 0, 0, 0.15);
+      --input-color: #1a1a2e;
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      --badge-bg: rgba(0, 198, 251, 0.15);
+      --badge-color: #005bea;
+      --filter-btn-bg: rgba(0, 0, 0, 0.05);
+      --filter-btn-color: rgba(0, 0, 0, 0.6);
+      --filter-btn-hover-bg: rgba(0, 0, 0, 0.08);
+      --filter-btn-active: linear-gradient(135deg, #00c6fb, #005bea);
+      --note-bg: #fff3cd;
+      --note-color: #856404;
+      --note-border: #ffe69c;
+      --note-border-left: #ffc107;
+    }
+
     /* ===== RESET ===== */
     * {
       margin: 0;
@@ -20,23 +74,25 @@
 
     body {
       min-height: 100vh;
-      background: radial-gradient(circle at 20% 30%, #0b0e1a, #03050b);
+      background: var(--bg-body);
       display: flex;
       justify-content: center;
       align-items: flex-start;
       padding: 16px;
+      transition: background 0.4s ease, color 0.4s ease;
     }
 
     .app {
       max-width: 1200px;
       width: 100%;
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--bg-app);
       backdrop-filter: blur(12px);
       border-radius: 32px;
       padding: 20px 20px 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-app);
       will-change: transform;
+      transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
     }
 
     /* ===== HEADER ===== */
@@ -48,7 +104,7 @@
       gap: 12px;
       margin-bottom: 16px;
       padding-bottom: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      border-bottom: 1px solid var(--border-app);
     }
 
     .logo-area {
@@ -76,13 +132,14 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      color: rgba(255, 255, 255, 0.8);
+      color: var(--text-secondary);
       font-size: 13px;
-      background: rgba(255, 255, 255, 0.04);
+      background: var(--filter-btn-bg);
       padding: 4px 12px;
       border-radius: 40px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--input-border);
       min-height: 36px;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
     }
 
     .info-item i {
@@ -92,27 +149,109 @@
 
     .info-item .value {
       font-weight: 500;
-      color: #fff;
+      color: var(--text-primary);
       white-space: nowrap;
     }
 
     .version {
       font-size: 10px;
-      color: rgba(255, 255, 255, 0.25);
-      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      background: var(--filter-btn-bg);
       padding: 4px 10px;
       border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--input-border);
+    }
+
+    /* ===== BOTÃO DE TEMA ===== */
+    .theme-toggle {
+      background: var(--filter-btn-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-primary);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.3s;
+      touch-action: manipulation;
+    }
+
+    .theme-toggle:hover {
+      background: var(--filter-btn-hover-bg);
+      transform: scale(1.05);
+    }
+
+    .theme-toggle:active {
+      transform: scale(0.95);
     }
 
     /* ===== DATE ===== */
     .date-display {
       text-align: center;
       font-size: 15px;
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--text-secondary);
       padding: 6px 0 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      border-bottom: 1px solid var(--border-app);
       margin-bottom: 14px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    /* ===== FILTER BAR ===== */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .filter-bar .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .filter-bar .filter-indicator {
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--filter-btn-bg);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--input-border);
+      white-space: nowrap;
+    }
+
+    .filter-btn {
+      background: var(--filter-btn-bg);
+      border: 1px solid var(--input-border);
+      color: var(--filter-btn-color);
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    .filter-btn:hover {
+      background: var(--filter-btn-hover-bg);
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+    }
+
+    .filter-btn.active {
+      background: var(--filter-btn-active);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(0, 91, 234, 0.35);
     }
 
     /* ===== NEXT BUS ===== */
@@ -127,10 +266,11 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
+      transition: background 0.3s, border-color 0.3s;
     }
 
     .next-bus .label {
-      color: rgba(255, 255, 255, 0.7);
+      color: var(--text-secondary);
       font-size: 13px;
       display: flex;
       align-items: center;
@@ -151,7 +291,7 @@
     .next-bus .destino {
       font-size: 18px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-primary);
     }
 
     .next-bus .horario {
@@ -179,47 +319,8 @@
     }
 
     .next-bus .empty-msg {
-      color: rgba(255, 255, 255, 0.5);
+      color: var(--text-muted);
       font-size: 14px;
-    }
-
-    /* ===== FILTERS ===== */
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-bottom: 20px;
-    }
-
-    .filter-btn {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: rgba(255, 255, 255, 0.6);
-      padding: 6px 16px;
-      border-radius: 40px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.25s;
-      min-height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      touch-action: manipulation;
-      flex: 0 1 auto;
-    }
-
-    .filter-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      color: #fff;
-      border-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .filter-btn.active {
-      background: linear-gradient(135deg, #00c6fb, #005bea);
-      border-color: transparent;
-      color: #fff;
-      box-shadow: 0 6px 20px rgba(0, 91, 234, 0.35);
     }
 
     /* ===== CARDS ===== */
@@ -231,10 +332,10 @@
     }
 
     .card {
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--card-bg);
       border-radius: 20px;
       padding: 16px 18px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
@@ -255,6 +356,51 @@
 
     .card.passed .destino {
       color: #aaa;
+    }
+
+    .card.outro-dia {
+      opacity: 0.5 !important;
+      filter: grayscale(0.4);
+    }
+
+    .card.outro-dia .horario {
+      color: #777;
+    }
+
+    .card.outro-dia .destino {
+      color: #999;
+    }
+
+    .card.outro-dia .dias span {
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .card.outro-dia .share-btn {
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
+    .card.outro-dia .embarque {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .card.outro-dia .dia-badge {
+      display: inline-block;
+      background: rgba(255, 200, 0, 0.15);
+      color: #f0c040;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 200, 0, 0.2);
+      margin-top: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .card:not(.outro-dia) .dia-badge {
+      display: none;
     }
 
     .card.next {
@@ -295,15 +441,15 @@
 
     .card:hover {
       transform: translateY(-3px);
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 255, 255, 0.12);
+      background: var(--card-hover-bg);
+      border-color: var(--text-muted);
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
     }
 
     .card .destino {
       font-size: 17px;
       font-weight: 700;
-      color: #fff;
+      color: var(--text-primary);
       margin-bottom: 4px;
       display: flex;
       align-items: center;
@@ -325,7 +471,7 @@
 
     .card .embarque {
       font-size: 12px;
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--text-secondary);
       margin-bottom: 8px;
       display: flex;
       align-items: center;
@@ -341,11 +487,12 @@
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
+      margin-bottom: 4px;
     }
 
     .card .dias span {
-      background: rgba(0, 198, 251, 0.1);
-      color: #00c6fb;
+      background: var(--badge-bg);
+      color: var(--badge-color);
       font-size: 9px;
       font-weight: 600;
       padding: 2px 10px;
@@ -355,14 +502,13 @@
       letter-spacing: 0.5px;
     }
 
-    /* ===== BOTÃO COMPARTILHAR ===== */
     .card .share-btn {
       position: absolute;
       bottom: 12px;
       right: 12px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      color: rgba(255, 255, 255, 0.5);
+      background: var(--filter-btn-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-muted);
       width: 30px;
       height: 30px;
       border-radius: 50%;
@@ -388,28 +534,13 @@
       pointer-events: none;
     }
 
-    .empty {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 40px 20px;
-      color: rgba(255, 255, 255, 0.3);
-      font-size: 14px;
-    }
-
-    .empty i {
-      font-size: 32px;
-      display: block;
-      margin-bottom: 10px;
-      opacity: 0.4;
-    }
-
-    /* ===== ALERTS SECTION (EM CONSTRUÇÃO) ===== */
+    /* ===== ALERTS SECTION ===== */
     .alerts-section {
-      background: rgba(255, 255, 255, 0.04);
+      background: var(--card-bg);
       border-radius: 20px;
       padding: 18px 16px 14px;
       margin-bottom: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
       position: relative;
       overflow: hidden;
       opacity: 0.7;
@@ -472,7 +603,7 @@
     }
 
     .alerts-section h3 {
-      color: #fff;
+      color: var(--text-primary);
       font-size: 17px;
       font-weight: 600;
       margin-bottom: 12px;
@@ -500,7 +631,7 @@
 
     .alert-form label {
       display: block;
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--text-secondary);
       font-size: 11px;
       font-weight: 500;
       margin-bottom: 3px;
@@ -512,9 +643,9 @@
       width: 100%;
       padding: 8px 12px;
       border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--input-color);
       font-size: 13px;
       transition: 0.3s;
       outline: none;
@@ -553,7 +684,7 @@
     }
 
     .no-alerts {
-      color: rgba(255, 255, 255, 0.3);
+      color: var(--text-muted);
       font-size: 13px;
       padding: 4px 0;
       font-style: italic;
@@ -563,14 +694,15 @@
     .note {
       margin: 16px 0;
       padding: 12px 16px;
-      background-color: #fff3cd;
-      color: #856404;
-      border: 1px solid #ffe69c;
-      border-left: 5px solid #ffc107;
+      background-color: var(--note-bg);
+      color: var(--note-color);
+      border: 1px solid var(--note-border);
+      border-left: 5px solid var(--note-border-left);
       border-radius: 8px;
       font-size: 13px;
       line-height: 1.5;
       font-weight: 500;
+      transition: background 0.3s, color 0.3s, border-color 0.3s;
     }
 
     .note strong {
@@ -603,14 +735,15 @@
     }
 
     .modal-box {
-      background: rgba(20, 30, 50, 0.95);
+      background: var(--bg-app);
+      backdrop-filter: blur(12px);
       border-radius: 32px;
       padding: 36px 28px 28px;
       max-width: 420px;
       width: 100%;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+      border: 1px solid var(--border-app);
+      box-shadow: var(--shadow);
       transform: scale(0.9) translateY(20px);
       transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
@@ -629,7 +762,7 @@
     }
 
     .modal-box h2 {
-      color: #fff;
+      color: var(--text-primary);
       font-size: 22px;
       font-weight: 700;
       letter-spacing: -0.5px;
@@ -637,7 +770,7 @@
     }
 
     .modal-box p {
-      color: rgba(255, 255, 255, 0.6);
+      color: var(--text-secondary);
       font-size: 14px;
       margin-bottom: 20px;
       line-height: 1.5;
@@ -686,14 +819,15 @@
     }
 
     .alert-modal .modal-box {
-      background: rgba(20, 30, 50, 0.97);
+      background: var(--bg-app);
+      backdrop-filter: blur(12px);
       border-radius: 32px;
       padding: 36px 28px 28px;
       max-width: 440px;
       width: 100%;
       text-align: center;
       border: 1px solid rgba(0, 198, 251, 0.25);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+      box-shadow: var(--shadow);
       transform: scale(0.95) translateY(10px);
       animation: alertPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
@@ -720,14 +854,14 @@
     }
 
     .alert-modal h2 {
-      color: #fff;
+      color: var(--text-primary);
       font-size: 22px;
       font-weight: 700;
       margin-bottom: 4px;
     }
 
     .alert-modal .msg {
-      color: rgba(255, 255, 255, 0.85);
+      color: var(--text-secondary);
       font-size: 16px;
       line-height: 1.6;
       margin-bottom: 6px;
@@ -738,9 +872,84 @@
     }
 
     .alert-modal .sub-msg {
-      color: rgba(255, 255, 255, 0.35);
+      color: var(--text-muted);
       font-size: 13px;
       margin-bottom: 20px;
+    }
+
+    /* ===== ADMIN PANEL (modal) ===== */
+    .admin-panel .modal-box {
+      max-width: 600px;
+      text-align: left;
+    }
+
+    .admin-panel .modal-box h2 {
+      text-align: center;
+    }
+
+    .admin-panel .modal-box .admin-form {
+      margin-top: 16px;
+    }
+
+    .admin-panel .modal-box .admin-form .field {
+      margin-bottom: 12px;
+    }
+
+    .admin-panel .modal-box .admin-form label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .admin-panel .modal-box .admin-form input {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--input-color);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .admin-panel .modal-box .admin-form input:focus {
+      border-color: #00c6fb;
+    }
+
+    .admin-panel .modal-box .admin-form .btn-save {
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      padding: 10px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+      margin-top: 8px;
+      width: 100%;
+    }
+
+    .admin-panel .modal-box .admin-form .btn-save:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 91, 234, 0.35);
+    }
+
+    .admin-panel .modal-box .admin-form .btn-save:active {
+      transform: scale(0.98);
+    }
+
+    .admin-panel .modal-box .admin-form .msg {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #00c6fb;
+      text-align: center;
+    }
+
+    .admin-panel .modal-box .admin-form .msg.error {
+      color: #ff6b6b;
     }
 
     /* ===== FOOTER ===== */
@@ -751,13 +960,23 @@
       flex-wrap: wrap;
       gap: 8px;
       padding-top: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      border-top: 1px solid var(--border-app);
       font-size: 11px;
-      color: rgba(255, 255, 255, 0.2);
+      color: var(--text-muted);
     }
 
     .footer .version {
       font-size: 10px;
+    }
+
+    .footer a {
+      color: #00c6fb;
+      text-decoration: none;
+      transition: opacity 0.3s;
+    }
+
+    .footer a:hover {
+      opacity: 0.7;
     }
 
     /* ===== ANIMAÇÕES DOS CARDS ===== */
@@ -932,6 +1151,10 @@
         bottom: 8px;
         right: 8px;
       }
+
+      .admin-panel .modal-box {
+        max-width: 95%;
+      }
     }
 
     @media (max-width: 550px) {
@@ -1057,17 +1280,18 @@
 </head>
 
 <body>
+
   <!-- MODAL BOAS-VINDAS -->
   <div class="modal-overlay" id="welcomeModal">
     <div class="modal-box">
       <div class="icon-big"><i class="fas fa-bus"></i></div>
       <h2>BEM VINDO AO HELP VTM</h2>
       <p>Consulte os horários de ônibus da <strong>Integração - Vale Transporte Marabá</strong> de forma rápida e
-        moderna.
-      </p>
+        moderna.</p>
       <button class="btn-primary" id="closeModalBtn"><i class="fas fa-arrow-right"></i> Entrar</button>
     </div>
   </div>
+
   <!-- MODAL DE ALERTA -->
   <div class="alert-modal" id="alertModal">
     <div class="modal-box">
@@ -1078,6 +1302,29 @@
       <button class="btn-primary" id="closeAlertBtn"><i class="fas fa-check"></i> Entendi</button>
     </div>
   </div>
+
+  <!-- MODAL ADMIN -->
+  <div class="modal-overlay admin-panel" id="adminModal">
+    <div class="modal-box">
+      <div class="icon-big"><i class="fas fa-cog"></i></div>
+      <h2>Painel Administrativo</h2>
+      <p>Gerencie os horários dos ônibus.</p>
+      <div class="admin-form">
+        <div class="field">
+          <label>Senha de acesso</label>
+          <input type="password" id="adminPassword" placeholder="Digite a senha" />
+        </div>
+        <button class="btn-save" id="adminLoginBtn">Entrar</button>
+        <div id="adminMsg" class="msg"></div>
+        <div id="adminContent" style="display:none; margin-top:16px;">
+          <p style="color:var(--text-secondary); font-size:14px; margin-bottom:12px;">Edite os horários abaixo:</p>
+          <div id="adminHorariosList"></div>
+          <button class="btn-save" id="adminSaveBtn" style="margin-top:12px;">Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- APP PRINCIPAL -->
   <div class="app">
     <header class="header">
@@ -1097,13 +1344,18 @@
           <i class="fas fa-cloud-sun"></i>
           <span class="value" id="weatherValue">-- °C</span>
         </div>
-        <span class="version"><i class="fas fa-code-branch"></i> v2.6.0</span>
+        <button class="theme-toggle" id="themeToggle" title="Alternar tema">
+          <i class="fas fa-moon"></i>
+        </button>
+        <span class="version"><i class="fas fa-code-branch"></i> v2.8.0</span>
       </div>
     </header>
+
     <div class="date-display">
       <i class="far fa-calendar-alt" style="margin-right:6px; color:#00c6fb;"></i>
       <span id="fullDate">--</span>
     </div>
+
     <div class="next-bus" id="nextBus">
       <div class="label"><i class="fas fa-bus"></i> Próximo ônibus</div>
       <div class="bus-info" id="nextBusInfo">
@@ -1112,13 +1364,19 @@
         <span class="countdown" id="countdown">--</span>
       </div>
     </div>
-    <div class="filters">
-      <button class="filter-btn" data-filter="all">Todos</button>
-      <button class="filter-btn" data-filter="Segunda a Sexta">Segunda–Sexta</button>
-      <button class="filter-btn" data-filter="Sábado">Sábado</button>
-      <button class="filter-btn" data-filter="Domingo">Domingo</button>
+
+    <div class="filter-bar">
+      <div class="filters">
+        <button class="filter-btn" data-filter="all">Todos</button>
+        <button class="filter-btn" data-filter="Segunda a Sexta">Segunda–Sexta</button>
+        <button class="filter-btn" data-filter="Sábado">Sábado</button>
+        <button class="filter-btn" data-filter="Domingo">Domingo</button>
+      </div>
+      <span class="filter-indicator" id="filterIndicator">Filtro: Todos</span>
     </div>
+
     <div class="cards-grid" id="cardsContainer"></div>
+
     <!-- SEÇÃO DE ALERTAS (EM CONSTRUÇÃO) -->
     <div class="alerts-section">
       <div class="overlay">
@@ -1131,6 +1389,7 @@
           <small>Em breve você receberá avisos diretamente no seu telefone!</small>
         </p>
       </div>
+
       <h3><i class="fas fa-bell"></i> Alertas de Ônibus</h3>
       <div class="alert-form" id="alertForm">
         <div class="field">
@@ -1155,15 +1414,21 @@
         <div class="no-alerts">Funcionalidade em desenvolvimento</div>
       </div>
     </div>
+
     <div class="note">
       <strong>⚠ Nota:</strong> Os horários podem sofrer alterações. O alerta é ativado 30 minutos antes do horário
       programado.
     </div>
+
     <div class="footer">
-      <span>© 2026 VTM Integração – Todos os direitos reservados</span>
-      <span class="version">2.6.0</span>
+      <span>
+        &copy; 2026 VTM Integração – Tecnologia em mobilidade &bull;
+        <a href="#" id="adminLink">Admin</a>
+      </span>
+      <span class="version">2.8.0</span>
     </div>
   </div>
+
   <script>
     // ================================================================
     // 🛠️ CONTROLE DE MANUTENÇÃO (via JSON)
@@ -1181,6 +1446,83 @@
       .catch(() => {
         localStorage.removeItem('manutencao_ativa');
       });
+
+    // ================================================================
+    //  🛡️ PROTEÇÃO CONTRA DDoS E INVASÕES
+    //  ================================================================
+    const rateLimit = (() => {
+      const timestamps = {};
+      return (action, limit = 3, windowMs = 5000) => {
+        const now = Date.now();
+        if (!timestamps[action]) timestamps[action] = [];
+        timestamps[action] = timestamps[action].filter(t => now - t < windowMs);
+        if (timestamps[action].length >= limit) {
+          console.warn(`⛔ Rate limit excedido para: ${action}`);
+          return false;
+        }
+        timestamps[action].push(now);
+        return true;
+      };
+    })();
+
+    function debounce(fn, delay = 300) {
+      let timer = null;
+      return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+      };
+    }
+
+    function sanitize(str) {
+      if (!str) return '';
+      const el = document.createElement('div');
+      el.textContent = str;
+      return el.innerHTML;
+    }
+
+    let weatherFetchInProgress = false;
+    let weatherCache = null;
+    let weatherCacheTime = 0;
+    const WEATHER_CACHE_TTL = 600000;
+
+    // ================================================================
+    //  🌓 TEMA (Dark/Light com persistência)
+    //  ================================================================
+    const themeToggle = document.getElementById('themeToggle');
+    const iconTheme = themeToggle.querySelector('i');
+
+    function setTheme(theme) {
+      if (theme === 'light') {
+        document.body.classList.add('light-mode');
+        iconTheme.className = 'fas fa-sun';
+        localStorage.setItem('vtm_theme', 'light');
+      } else {
+        document.body.classList.remove('light-mode');
+        iconTheme.className = 'fas fa-moon';
+        localStorage.setItem('vtm_theme', 'dark');
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+      setTheme(current === 'light' ? 'dark' : 'light');
+    }
+
+    // Carrega tema salvo
+    const savedTheme = localStorage.getItem('vtm_theme') || 'dark';
+    setTheme(savedTheme);
+
+    themeToggle.addEventListener('click', toggleTheme);
+
+    // ================================================================
+    //  OFFLINE FIRST – Service Worker (registro)
+    //  ================================================================
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(() => console.log('✅ Service Worker registrado com sucesso.'))
+        .catch(err => console.warn('⚠️ SW falhou:', err));
+    }
+
     // ================================================================
     //  HORÁRIOS
     //  ================================================================
@@ -1194,7 +1536,8 @@
       { destino: "Liberdade", horario: "12:41", embarque: "Terminal", dias: ["Sábado"] },
       { destino: "São Félix", horario: "06:10", embarque: "Antônio Vilhena", dias: ["Segunda a Sexta"] },
       { destino: "Liberdade", horario: "12:18", embarque: "Cidade Nova - Praça", dias: ["Segunda a Sexta"] },
-      { destino: "Liberdade", horario: "16:00", embarque: "Praça", dias: ["Segunda a Sexta"] }
+      { destino: "Liberdade", horario: "16:00", embarque: "Praça", dias: ["Segunda a Sexta"] },
+      { destino: "Liberdade", horario: "18:30", embarque: "Praça São Francisco", dias: ["Segunda a Sexta"] }
     ];
 
     horarios.sort((a, b) => a.horario.localeCompare(b.horario));
@@ -1217,6 +1560,17 @@
     const alertMessage = document.getElementById('alertMessage');
     const alertSubMsg = document.getElementById('alertSubMsg');
     const closeAlertBtn = document.getElementById('closeAlertBtn');
+    const filterIndicator = document.getElementById('filterIndicator');
+
+    // Admin
+    const adminModal = document.getElementById('adminModal');
+    const adminLink = document.getElementById('adminLink');
+    const adminPassword = document.getElementById('adminPassword');
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const adminMsg = document.getElementById('adminMsg');
+    const adminContent = document.getElementById('adminContent');
+    const adminHorariosList = document.getElementById('adminHorariosList');
+    const adminSaveBtn = document.getElementById('adminSaveBtn');
 
     // ================================================================
     //  UTILITÁRIOS
@@ -1226,6 +1580,15 @@
         'Sábado'
       ];
       return days[new Date().getDay()];
+    }
+
+    function getDiaLabel(dia) {
+      const map = {
+        'Segunda a Sexta': 'dias úteis',
+        'Sábado': 'sábados',
+        'Domingo': 'domingos'
+      };
+      return map[dia] || dia;
     }
 
     function getMinutesFromTime(t) {
@@ -1240,8 +1603,7 @@
 
     function formatDateFull(d) {
       return d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
-        .replace(/^(\d+)\s+de\s+(\w+)/, (_, day, month) => day + ' de ' + month.charAt(0).toUpperCase() + month.slice(
-          1));
+        .replace(/^(\d+)\s+de\s+(\w+)/, (_, day, month) => day + ' de ' + month.charAt(0).toUpperCase() + month.slice(1));
     }
 
     function formatCountdown(minDiff) {
@@ -1252,11 +1614,10 @@
       return h > 0 ? `${h}h ${m}min` : `${m} min`;
     }
 
-    // ===== SIMULAÇÃO DE VOZ LOCAL (fallback) =====
     function speak(text) {
       if (!window.speechSynthesis) return;
       window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
+      const utter = new SpeechSynthesisUtterance(sanitize(text));
       utter.lang = 'pt-BR';
       utter.rate = 0.9;
       utter.pitch = 1.0;
@@ -1267,31 +1628,22 @@
     }
 
     // ================================================================
-    //  🎵 SOM DE NOTIFICAÇÃO (BEEP) – via Web Audio API
+    //  🎵 BEEP
     //  ================================================================
     function playBeep() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
-
         oscillator.type = 'sine';
-        oscillator.frequency.value = 880; // 880 Hz (beep agudo)
-        gainNode.gain.value = 0.3; // volume moderado
-
+        oscillator.frequency.value = 880;
+        gainNode.gain.value = 0.3;
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
-
         oscillator.start();
-
-        // Beep curto: 200ms de duração
         gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
         oscillator.stop(audioCtx.currentTime + 0.2);
-
-        // Fecha o contexto após o som para liberar recursos
-        setTimeout(() => {
-          audioCtx.close();
-        }, 300);
+        setTimeout(() => audioCtx.close(), 300);
       } catch (e) {
         console.warn('Erro ao tocar beep:', e);
       }
@@ -1315,50 +1667,65 @@
     }
 
     // ================================================================
-    //  CLIMA - SEM CHAVE EXPOSTA
+    //  CLIMA - SEM CHAVE EXPOSTA (proxy local)
     //  ================================================================
     async function fetchWeather() {
       const el = document.getElementById('weatherValue');
       if (!el) return;
+      const now = Date.now();
+      if (weatherCache && (now - weatherCacheTime) < WEATHER_CACHE_TTL) {
+        el.textContent = weatherCache;
+        return;
+      }
+      if (weatherFetchInProgress) return;
+      weatherFetchInProgress = true;
       el.textContent = '⏳ Carregando...';
       try {
-        // Chama o proxy local (exemplo: /api/weather ou /api/weather.php)
-        const res = await fetch('/api/weather');
+        // Chama o proxy local (caminho correto: /api/weather.php)
+        const res = await fetch('/api/weather.php');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data || data.temp === undefined) throw new Error('Dados incompletos');
         const temp = Math.round(data.temp);
         const slug = data.condition_slug || '';
         const emojiMap = {
-          'clear_day': '☀️',
-          'clear_night': '🌙',
-          'cloud': '☁️',
-          'cloudly_day': '⛅',
-          'cloudly_night': '☁️',
-          'rain': '🌧️',
-          'storm': '⛈️',
-          'snow': '❄️',
-          'fog': '🌫️'
+          'clear_day': '☀️', 'clear_night': '🌙', 'cloud': '☁️', 'cloudly_day': '⛅',
+          'cloudly_night': '☁️', 'rain': '🌧️', 'storm': '⛈️', 'snow': '❄️', 'fog': '🌫️'
         };
         const emoji = emojiMap[slug] || '🌤️';
-        el.textContent = `${emoji} ${temp} °C`;
+        const result = `${emoji} ${temp} °C`;
+        el.textContent = result;
+        weatherCache = result;
+        weatherCacheTime = now;
       } catch (e) {
         console.warn('Clima:', e);
         el.textContent = '⚠️ Sem dados';
+      } finally {
+        weatherFetchInProgress = false;
       }
     }
 
     // ================================================================
-    //  RENDER CARDS E PRÓXIMO (com botão compartilhar)
+    //  RENDER CARDS E PRÓXIMO
     //  ================================================================
     function renderCards() {
       const nowMin = getCurrentMinutes();
+      const diaAtual = getCurrentDay();
+
+      filterIndicator.textContent = `Filtro: ${currentFilter === 'all' ? 'Todos' : currentFilter}`;
+
       const filtered = currentFilter === 'all' ? [...allHorarios] : allHorarios.filter(h => h.dias.includes(currentFilter));
-      const futuros = filtered.filter(h => getMinutesFromTime(h.horario) >= nowMin);
-      const passados = filtered.filter(h => getMinutesFromTime(h.horario) < nowMin);
-      futuros.sort((a, b) => a.horario.localeCompare(b.horario));
-      passados.sort((a, b) => a.horario.localeCompare(b.horario));
-      const sorted = [...futuros, ...passados];
+
+      const disponiveisHoje = filtered.filter(h => h.dias.includes(diaAtual));
+      const futurosHoje = disponiveisHoje.filter(h => getMinutesFromTime(h.horario) >= nowMin);
+      futurosHoje.sort((a, b) => a.horario.localeCompare(b.horario));
+
+      const futurosTodos = filtered.filter(h => getMinutesFromTime(h.horario) >= nowMin);
+      const passadosTodos = filtered.filter(h => getMinutesFromTime(h.horario) < nowMin);
+      futurosTodos.sort((a, b) => a.horario.localeCompare(b.horario));
+      passadosTodos.sort((a, b) => a.horario.localeCompare(b.horario));
+
+      const sorted = [...futurosTodos, ...passadosTodos];
 
       if (sorted.length === 0) {
         container.innerHTML = `<div class="empty"><i class="far fa-calendar-times"></i> Nenhum horário para este dia.</div>`;
@@ -1366,70 +1733,84 @@
         let html = '';
         sorted.forEach((h, idx) => {
           const passed = getMinutesFromTime(h.horario) < nowMin;
-          const isNext = idx === 0 && !passed;
-          const cls = `card${passed ? ' passed' : ''}${isNext ? ' next' : ''}`;
-          const shareMsg = encodeURIComponent(
-            `🚌 Ônibus para ${h.destino} às ${h.horario} - Embarque: ${h.embarque}. Emitido via Help VTM`
-          );
+          const operaHoje = h.dias.includes(diaAtual);
+          const isOutroDia = (currentFilter === 'all' && !operaHoje);
+          let isNext = false;
+          if (currentFilter === 'all') {
+            isNext = (idx === 0 && !passed && operaHoje);
+          } else {
+            isNext = (idx === 0 && !passed);
+          }
+          const cls = `card${passed ? ' passed' : ''}${isNext ? ' next' : ''}${isOutroDia ? ' outro-dia' : ''}`;
+
+          let diaBadge = '';
+          if (isOutroDia) {
+            const dia = h.dias[0];
+            const label = getDiaLabel(dia);
+            diaBadge = `<div class="dia-badge"><i class="fas fa-calendar-day"></i> Apenas ${label}</div>`;
+          }
+
           html += `
-                             <div class="${cls}" style="animation-delay:${idx * 0.04}s">
-                                 <div class="destino"><i class="fas fa-map-pin"></i> ${h.destino}</div>
-                                 <div class="horario">${h.horario}</div>
-                                 <div class="embarque"><i class="fas fa-location-dot"></i> ${h.embarque}</div>
-                                 <div class="dias">${h.dias.map(d => `<span>${d}</span>`).join('')}</div>
-                                 <button class="share-btn" data-destino="${h.destino}" data-horario="${h.horario}" data-embarque="${h.embarque}" title="Compartilhar"><i class="fas fa-share-alt"></i></button>
-                             </div>
-                         `;
+            <div class="${cls}" style="animation-delay:${idx * 0.04}s">
+              <div class="destino"><i class="fas fa-map-pin"></i> ${sanitize(h.destino)}</div>
+              <div class="horario">${sanitize(h.horario)}</div>
+              <div class="embarque"><i class="fas fa-location-dot"></i> ${sanitize(h.embarque)}</div>
+              <div class="dias">${h.dias.map(d => `<span>${sanitize(d)}</span>`).join('')}</div>
+              ${diaBadge}
+              <button class="share-btn" data-destino="${sanitize(h.destino)}" data-horario="${sanitize(h.horario)}" data-embarque="${sanitize(h.embarque)}" title="Compartilhar"><i class="fas fa-share-alt"></i></button>
+            </div>
+          `;
         });
         container.innerHTML = html;
 
-        // ===== Eventos de compartilhamento =====
         document.querySelectorAll('.share-btn').forEach(btn => {
-          btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const destino = this.dataset.destino;
-            const horario = this.dataset.horario;
-            const embarque = this.dataset.embarque;
-            const msg =
-              `🚌 Ônibus para ${destino} às ${horario} - Embarque: ${embarque}. Emitido via Help VTM`;
-
-            // Usa Web Share API se disponível (mobile/desktop com suporte)
-            if (navigator.share) {
-              navigator.share({
-                title: 'VTM Integração - Horário',
-                text: msg,
-              }).catch(() => { });
-            } else {
-              // Fallback: WhatsApp
-              const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
-              window.open(url, '_blank');
-            }
-          });
+          btn.removeEventListener('click', handleShare);
+          btn.addEventListener('click', handleShare);
         });
       }
 
-      // Próximo ônibus
-      if (futuros.length > 0) {
-        const nxt = futuros[0];
+      if (futurosHoje.length > 0) {
+        const nxt = futurosHoje[0];
         const diff = getMinutesFromTime(nxt.horario) - nowMin;
         const txt = formatCountdown(diff);
         const cls = diff < 0 ? 'passed' : '';
         nextBusInfo.innerHTML = `
-                         <span class="destino">${nxt.destino}</span>
-                         <span class="horario">${nxt.horario}</span>
-                         <span class="countdown ${cls}">${txt}</span>
-                     `;
+          <span class="destino">${sanitize(nxt.destino)}</span>
+          <span class="horario">${sanitize(nxt.horario)}</span>
+          <span class="countdown ${cls}">${txt}</span>
+        `;
       } else {
         const amanha = findNextTomorrow();
         if (amanha) {
           nextBusInfo.innerHTML = `
-                             <span class="destino">${amanha.destino}</span>
-                             <span class="horario">${amanha.horario}</span>
-                             <span class="countdown" style="color:#ffaa00;">Amanhã</span>
-                         `;
+            <span class="destino">${sanitize(amanha.destino)}</span>
+            <span class="horario">${sanitize(amanha.horario)}</span>
+            <span class="countdown" style="color:#ffaa00;">Amanhã</span>
+          `;
         } else {
-          nextBusInfo.innerHTML = `<span class="empty-msg">Nenhum ônibus programado</span>`;
+          nextBusInfo.innerHTML = `<span class="empty-msg">Nenhum ônibus programado para hoje</span>`;
         }
+      }
+    }
+
+    function handleShare(e) {
+      e.stopPropagation();
+      const btn = e.currentTarget;
+      const destino = btn.dataset.destino;
+      const horario = btn.dataset.horario;
+      const embarque = btn.dataset.embarque;
+      const msg = `🚌 Ônibus para ${destino} às ${horario} - Embarque: ${embarque}. Emitido via Help VTM`;
+
+      if (!rateLimit('share', 3, 10000)) {
+        alert('Aguarde alguns segundos antes de compartilhar novamente.');
+        return;
+      }
+
+      if (navigator.share) {
+        navigator.share({ title: 'VTM Integração - Horário', text: msg }).catch(() => { });
+      } else {
+        const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
       }
     }
 
@@ -1448,19 +1829,10 @@
     }
 
     // ================================================================
-    //  ALERTAS (simulação – sem cadastro ativo)
-    //  ================================================================
-
-    // ================================================================
-    //  VERIFICAÇÃO DE ALERTAS (com beep e modal)
+    //  VERIFICAÇÃO DE ALERTAS
     //  ================================================================
     function verificarAlertas() {
       const agora = getCurrentMinutes();
-      // Simula um alerta de exemplo para demonstrar o som e o modal
-      // Na prática, você usaria a lista de alertas cadastrados
-      // Aqui criamos um alerta de demonstração para o próximo ônibus
-
-      // Pega o próximo ônibus futuro
       const filtered = currentFilter === 'all' ? [...allHorarios] : allHorarios.filter(h => h.dias.includes(currentFilter));
       const futuros = filtered.filter(h => getMinutesFromTime(h.horario) >= agora);
       futuros.sort((a, b) => a.horario.localeCompare(b.horario));
@@ -1472,29 +1844,21 @@
       const diff = hm - agora;
       const key = proximo.destino + '|' + proximo.horario;
 
-      // Se já disparou, não repete
       if (alertaDisparado[key]) return;
 
-      // Se faltar 30 minutos ou menos (e ainda não passou)
       if (diff <= 30 && diff >= -2) {
         alertaDisparado[key] = true;
         const minutos = Math.round(diff);
 
-        // 1. 🔔 Toca o beep
         playBeep();
 
-        // 2. Mostra modal
         alertMessage.innerHTML =
-          `📢 <strong>Atenção!</strong> Faltam <strong>${minutos} minutos</strong> para o <strong>VTM "${proximo.destino}"</strong> passar na parada <strong>${proximo.embarque}</strong>.`;
+          `📢 <strong>Atenção!</strong> Faltam <strong>${minutos} minutos</strong> para o <strong>VTM "${sanitize(proximo.destino)}"</strong> passar na parada <strong>${sanitize(proximo.embarque)}</strong>.`;
         alertSubMsg.textContent = `⏰ Alerta às ${new Date().toLocaleTimeString()} - ${proximo.destino} às ${proximo.horario}`;
         alertModal.classList.add('active');
 
-        // 3. Fala local (simulação)
         const msg = `Olá! Faltam ${minutos} minutos para o VTM da linha ${proximo.destino} passar na parada ${proximo.embarque}. Programa-se!`;
         speak(msg);
-
-        // 4. Opcional: enviar para backend (se implementado)
-        // enviarAlertaBackend(proximo, minutos);
       }
     }
 
@@ -1519,13 +1883,119 @@
       }
 
       btns.forEach(btn => {
-        btn.addEventListener('click', function () {
+        btn.addEventListener('click', function (e) {
+          if (!rateLimit('filter-click', 2, 2000)) return;
           btns.forEach(b => b.classList.remove('active'));
           this.classList.add('active');
           currentFilter = this.dataset.filter;
           renderCards();
         });
       });
+    }
+
+    // ================================================================
+    //  PAINEL ADMINISTRATIVO (simples)
+    //  ================================================================
+    adminLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      adminModal.classList.add('active');
+      adminMsg.textContent = '';
+      adminMsg.className = 'msg';
+      adminContent.style.display = 'none';
+      adminPassword.value = '';
+    });
+
+    adminModal.addEventListener('click', (e) => {
+      if (e.target === adminModal) {
+        adminModal.classList.remove('active');
+      }
+    });
+
+    adminLoginBtn.addEventListener('click', () => {
+      const pass = adminPassword.value.trim();
+      if (pass === 'admin123') {
+        adminMsg.textContent = '✅ Acesso concedido!';
+        adminMsg.className = 'msg';
+        adminContent.style.display = 'block';
+        loadAdminHorarios();
+      } else {
+        adminMsg.textContent = '❌ Senha incorreta. Tente novamente.';
+        adminMsg.className = 'msg error';
+      }
+    });
+
+    function loadAdminHorarios() {
+      let html = '';
+      allHorarios.forEach((h, idx) => {
+        html += `
+          <div style="margin-bottom:10px; padding:10px; border:1px solid var(--card-border); border-radius:8px;">
+            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+              <input type="text" id="admin_destino_${idx}" value="${sanitize(h.destino)}" style="flex:2; min-width:100px;" />
+              <input type="time" id="admin_horario_${idx}" value="${sanitize(h.horario)}" style="flex:1; min-width:80px;" />
+              <input type="text" id="admin_embarque_${idx}" value="${sanitize(h.embarque)}" style="flex:2; min-width:100px;" />
+              <select id="admin_dias_${idx}" multiple style="flex:2; min-width:120px; height:50px;">
+                <option value="Segunda a Sexta" ${h.dias.includes('Segunda a Sexta') ? 'selected' : ''}>Segunda–Sexta</option>
+                <option value="Sábado" ${h.dias.includes('Sábado') ? 'selected' : ''}>Sábado</option>
+                <option value="Domingo" ${h.dias.includes('Domingo') ? 'selected' : ''}>Domingo</option>
+              </select>
+              <button class="btn-save" style="flex:0 0 60px; padding:4px 8px; font-size:12px;" onclick="removerHorario(${idx})">🗑️</button>
+            </div>
+          </div>
+        `;
+      });
+      html += `<button class="btn-save" style="margin-top:8px;" onclick="adicionarHorario()">➕ Adicionar horário</button>`;
+      adminHorariosList.innerHTML = html;
+    }
+
+    // Funções globais para o admin (serão chamadas via onclick)
+    window.removerHorario = function (idx) {
+      if (confirm('Remover este horário?')) {
+        allHorarios.splice(idx, 1);
+        loadAdminHorarios();
+      }
+    };
+
+    window.adicionarHorario = function () {
+      allHorarios.push({
+        destino: 'Novo destino',
+        horario: '12:00',
+        embarque: 'Local',
+        dias: ['Segunda a Sexta']
+      });
+      loadAdminHorarios();
+    };
+
+    adminSaveBtn.addEventListener('click', () => {
+      const novos = [];
+      const inputs = adminHorariosList.querySelectorAll('div[style*="margin-bottom:10px;"]');
+      inputs.forEach((div, idx) => {
+        const destino = document.getElementById(`admin_destino_${idx}`).value.trim();
+        const horario = document.getElementById(`admin_horario_${idx}`).value.trim();
+        const embarque = document.getElementById(`admin_embarque_${idx}`).value.trim();
+        const select = document.getElementById(`admin_dias_${idx}`);
+        const selected = Array.from(select.selectedOptions).map(opt => opt.value);
+        if (destino && horario && embarque && selected.length) {
+          novos.push({ destino, horario, embarque, dias: selected });
+        }
+      });
+      allHorarios = novos;
+      allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
+      localStorage.setItem('vtm_horarios_custom', JSON.stringify(allHorarios));
+      adminMsg.textContent = '✅ Horários salvos com sucesso!';
+      adminMsg.className = 'msg';
+      loadAdminHorarios();
+      renderCards();
+    });
+
+    // Carregar horários do localStorage (se houver personalização)
+    const customHorarios = localStorage.getItem('vtm_horarios_custom');
+    if (customHorarios) {
+      try {
+        const parsed = JSON.parse(customHorarios);
+        if (Array.isArray(parsed) && parsed.length) {
+          allHorarios = parsed;
+        }
+      } catch (e) { }
     }
 
     // ================================================================
@@ -1563,24 +2033,15 @@
         }
       });
 
-      // Verificação de alertas (a cada 30 segundos)
       setInterval(() => {
         verificarAlertas();
         renderCards();
       }, 30000);
 
-      // Atualização geral
       setInterval(() => {
         updateDateAndGreeting();
         renderCards();
       }, 60000);
-
-      // PWA
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-          .then(() => console.log('SW registrado'))
-          .catch(() => console.warn('SW não disponível'));
-      }
     }
 
     document.addEventListener('DOMContentLoaded', init);
