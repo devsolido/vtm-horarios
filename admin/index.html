@@ -1,15 +1,101 @@
-<!-- Área de login -->
-<div id="adminLoginArea">
-  <div class="field">
-    <label for="adminPassword">Senha de acesso</label>
-    <div class="password-wrapper">
-      <input type="password" id="adminPassword" placeholder="Digite a senha" />
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  <title>VTM Integração - Painel Administrativo</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+
+<body>
+
+  <div class="admin-page">
+
+    <!-- Cabeçalho -->
+    <div class="admin-header">
+      <div class="admin-header-left">
+        <div class="admin-title">
+          <i class="fas fa-cog"></i>
+          <h2>Painel Administrativo</h2>
+        </div>
+      </div>
+      <div class="admin-header-right">
+        <div class="admin-user">
+          <i class="fas fa-user-circle"></i>
+          <span>Igor Veras Morais</span>
+        </div>
+        <div class="admin-info-item" id="adminClock">
+          <i class="far fa-clock"></i>
+          <span class="value" id="adminClockValue">--:--:--</span>
+        </div>
+        <div class="admin-info-item" id="adminWeather">
+          <i class="fas fa-cloud-sun"></i>
+          <span class="value" id="adminWeatherValue">-- °C</span>
+        </div>
+      </div>
     </div>
-    <!-- Dica opcional (pode remover se quiser) -->
-    <div class="password-hint">
-      <i class="fas fa-info-circle"></i> Senha padrão: <code>admin123</code>
+
+    <!-- Subtítulo -->
+    <div class="admin-subtitle">
+      <span>Gerencie os horários dos ônibus</span>
+      <span class="admin-date">
+        <i class="far fa-calendar-alt"></i> <span id="adminDateValue">--</span>
+      </span>
     </div>
+
+    <!-- ========================================================== -->
+    <!-- ÁREA DE LOGIN (com a estrutura que você enviou)             -->
+    <!-- ========================================================== -->
+    <div id="adminLoginArea">
+      <div class="field">
+        <label for="adminPassword">Senha de acesso</label>
+        <div class="password-wrapper">
+          <input type="password" id="adminPassword" placeholder="Digite a senha" />
+        </div>
+        <div class="password-hint">
+          <i class="fas fa-info-circle"></i> Senha padrão: <code>admin123</code>
+        </div>
+      </div>
+      <button class="btn-save" id="adminLoginBtn">Entrar</button>
+      <div id="adminMsg" class="msg"></div>
+    </div>
+    <!-- ========================================================== -->
+
+    <!-- Conteúdo (visível após login) -->
+    <div id="adminContent" style="display:none;">
+      <div class="admin-toolbar">
+        <button class="btn-add-row" id="adminAddRowBtn"><i class="fas fa-plus"></i> Adicionar horário</button>
+        <span id="adminRowCount">0 horários</span>
+      </div>
+      <div class="admin-table-wrapper">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Destino</th>
+              <th>Horário</th>
+              <th>Embarque</th>
+              <th>Dias</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody"></tbody>
+        </table>
+      </div>
+      <button class="btn-save" id="adminSaveBtn"><i class="fas fa-save"></i> Salvar alterações</button>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="admin-footer">
+      <a href="../">← Voltar para o site</a>
+    </div>
+
   </div>
-  <button class="btn-save" id="adminLoginBtn">Entrar</button>
-  <div id="adminMsg" class="msg"></div>
-</div>
+
+  <script src="../script.js"></script>
+  <script src="admin.js"></script>
+</body>
+
+</html>
