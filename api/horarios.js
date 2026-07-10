@@ -1,77 +1,61 @@
-// api/horarios.js
-import { createClient } from '@supabase/supabase-js';
-
-// As variáveis de ambiente serão configuradas na Vercel
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
+// api/horarios.js - VERSÃO SIMPLIFICADA PARA TESTE
 export default async function handler(req, res) {
-  // CORS (opcional)
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
   try {
-    // GET - buscar todos os horários
-    if (req.method === 'GET') {
-      const { data, error } = await supabase
-        .from('horarios')
-        .select('*')
-        .order('horario', { ascending: true });
-      if (error) throw error;
-      return res.status(200).json(data);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+      res.status(200).end();
+      return;
     }
 
-    // POST - adicionar um horário
-    if (req.method === 'POST') {
-      const { destino, horario, embarque, dias } = req.body;
-      if (!destino || !horario || !embarque || !dias) {
-        return res.status(400).json({ error: 'Campos obrigatórios' });
+    // SOMENTE GET PARA TESTE
+    if (req.method !== 'GET') {
+      return res.status(405).json({ error: 'Método não permitido' });
+    }
+
+    const SUPABASE_URL = process.env.SUPABASE_URL;
+    const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
+
+    // Validação clara
+    if (!SUPABASE_URL) {
+      return res.status(500).json({ 
+        erro: 'SUPABASE_URL não configurada',
+        variavel: 'SUPABASE_URL',
+        valor_atual: SUPABASE_URL
+      });
+    }
+    if (!SUPABASE_ANON_KEY) {
+      return res.status(500).json({ 
+        erro: 'SUPABASE_ANON_KEY não configurada',
+        variavel: 'SUPABASE_ANON_KEY',
+        valor_atual: SUPABASE_ANON_KEY
+      });
+    }
+
+    // Monta URL
+    const apiUrl = `${SUPABASE_URL}/rest/v1/horarios`;
+
+    // Faz requisição para o Supabase
+    const response = await fetch(apiUrl, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
       }
-      const { data, error } = await supabase
-        .from('horarios')
-        .insert([{ destino, horario, embarque, dias }])
-        .select();
-      if (error) throw error;
-      return res.status(201).json(data[0]);
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
-    // PUT - substituir todos os horários
-    if (req.method === 'PUT') {
-      const novosHorarios = req.body;
-      if (!Array.isArray(novosHorarios)) {
-        return res.status(400).json({ error: 'Dados inválidos' });
-      }
-      // Deleta todos
-      const { error: deleteError } = await supabase.from('horarios').delete().neq('id', 0);
-      if (deleteError) throw deleteError;
-      // Insere os novos
-      const { data, error } = await supabase
-        .from('horarios')
-        .insert(novosHorarios.map(({ destino, horario, embarque, dias }) => ({ destino, horario, embarque, dias })))
-        .select();
-      if (error) throw error;
-      return res.status(200).json(data);
-    }
-
-    // DELETE - remover um horário por id
-    if (req.method === 'DELETE') {
-      const { id } = req.query;
-      if (!id) return res.status(400).json({ error: 'ID obrigatório' });
-      const { error } = await supabase.from('horarios').delete().match({ id });
-      if (error) throw error;
-      return res.status(204).end();
-    }
-
-    return res.status(405).json({ error: 'Método não permitido' });
+    const data = await response.json();
+    return res.status(200).json(data);
   } catch (error) {
-    console.error('Erro na API de horários:', error);
-    return res.status(500).json({ error: error.message });
+    console.error('Erro:', error);
+    return res.status(500).json({ 
+      erro: error.message,
+      stack: error.stack 
+    });
   }
 }
