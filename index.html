@@ -36,77 +36,6 @@
     </div>
   </div>
 
-  <!-- MODAL ADMIN (DASHBOARD COMPLETO) -->
-  <div class="modal-overlay admin-panel" id="adminModal">
-    <div class="modal-box">
-      <!-- Cabeçalho com duas áreas -->
-      <div class="admin-header">
-        <div class="admin-header-left">
-          <div class="admin-title">
-            <i class="fas fa-cog"></i>
-            <h2>Painel Administrativo</h2>
-          </div>
-        </div>
-        <div class="admin-header-right">
-          <div class="admin-user">
-            <i class="fas fa-user-circle"></i>
-            <span>Igor Veras Morais</span>
-          </div>
-          <div class="admin-info-item" id="adminClock">
-            <i class="far fa-clock"></i>
-            <span class="value" id="adminClockValue">--:--:--</span>
-          </div>
-          <div class="admin-info-item" id="adminWeather">
-            <i class="fas fa-cloud-sun"></i>
-            <span class="value" id="adminWeatherValue">-- °C</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Subtítulo com data -->
-      <div class="admin-subtitle">
-        <span>Gerencie os horários dos ônibus</span>
-        <span class="admin-date" id="adminDateDisplay">
-          <i class="far fa-calendar-alt"></i> <span id="adminDateValue">--</span>
-        </span>
-      </div>
-
-      <!-- Formulário e tabela (restante igual) -->
-      <div class="admin-form">
-        <div class="field">
-          <label>Senha de acesso</label>
-          <input type="password" id="adminPassword" placeholder="Digite a senha" />
-        </div>
-        <button class="btn-save" id="adminLoginBtn">Entrar</button>
-        <div id="adminMsg" class="msg"></div>
-
-        <div id="adminContent" style="display:none; margin-top:16px;">
-          <div class="admin-toolbar">
-            <button class="btn-add-row" id="adminAddRowBtn"><i class="fas fa-plus"></i> Adicionar horário</button>
-            <span id="adminRowCount">0 horários</span>
-          </div>
-          <div class="admin-table-wrapper">
-            <table class="admin-table" id="adminTable">
-              <thead>
-                <tr>
-                  <th>Destino</th>
-                  <th>Horário</th>
-                  <th>Embarque</th>
-                  <th>Dias</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="adminTableBody"></tbody>
-            </table>
-          </div>
-          <button class="btn-save" id="adminSaveBtn" style="margin-top:12px;">
-            <i class="fas fa-save"></i> Salvar alterações
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- APP PRINCIPAL -->
   <div class="app">
     <header class="header">
@@ -205,7 +134,7 @@
     <div class="footer">
       <span>
         &copy; 2026 VTM Integração – Tecnologia em mobilidade &bull;
-        <a href="#" id="adminLink">Admin</a>
+        <a href="/admin/" id="adminLink">Admin</a>
       </span>
       <span class="version">2.8.0</span>
     </div>

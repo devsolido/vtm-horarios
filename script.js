@@ -108,7 +108,7 @@ let allHorarios = [];
 let alertaDisparado = {};
 
 // ================================================================
-//  DOM REFS
+//  DOM REFS (apenas elementos da página principal)
 // ================================================================
 const container = document.getElementById('cardsContainer');
 const nextBusInfo = document.getElementById('nextBusInfo');
@@ -118,17 +118,6 @@ const alertMessage = document.getElementById('alertMessage');
 const alertSubMsg = document.getElementById('alertSubMsg');
 const closeAlertBtn = document.getElementById('closeAlertBtn');
 const filterIndicator = document.getElementById('filterIndicator');
-
-const adminModal = document.getElementById('adminModal');
-const adminLink = document.getElementById('adminLink');
-const adminPassword = document.getElementById('adminPassword');
-const adminLoginBtn = document.getElementById('adminLoginBtn');
-const adminMsg = document.getElementById('adminMsg');
-const adminContent = document.getElementById('adminContent');
-const adminTableBody = document.getElementById('adminTableBody');
-const adminRowCount = document.getElementById('adminRowCount');
-const adminAddRowBtn = document.getElementById('adminAddRowBtn');
-const adminSaveBtn = document.getElementById('adminSaveBtn');
 
 // ================================================================
 //  UTILITÁRIOS
@@ -218,6 +207,7 @@ function updateClock() {
   const clockEl = document.getElementById('clockValue');
   if (clockEl) clockEl.textContent = timeStr;
 
+  // Atualiza também o admin, se os elementos existirem (na página /admin/)
   const adminClock = document.getElementById('adminClockValue');
   if (adminClock) adminClock.textContent = timeStr;
 }
@@ -304,14 +294,19 @@ async function carregarHorariosDoBanco() {
     if (!res.ok) throw new Error('Erro ao carregar horários: ' + res.status);
     const data = await res.json();
 
-    // Remove os campos 'id' e 'created_at' e formata o horário para HH:MM
+    // Remove 'id' e 'created_at', formata horário para HH:MM
     allHorarios = data.map(({ id, created_at, horario, ...rest }) => ({
       ...rest,
-      horario: horario.substring(0, 5) // Pega apenas "HH:MM"
+      horario: horario.substring(0, 5)
     }));
     allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
     renderCards();
-    if (adminContent.style.display === 'block') loadAdminTable();
+
+    // Se a página admin estiver carregada (elemento adminContent existe), recarrega a tabela
+    const adminContent = document.getElementById('adminContent');
+    if (adminContent && adminContent.style.display === 'block') {
+      loadAdminTable();
+    }
   } catch (e) {
     console.error('Erro ao carregar horários do banco:', e);
     if (allHorarios.length === 0) {
@@ -320,6 +315,7 @@ async function carregarHorariosDoBanco() {
     }
   }
 }
+
 // ================================================================
 //  RENDER CARDS
 // ================================================================
@@ -575,7 +571,7 @@ function initFilters() {
 }
 
 // ================================================================
-//  PAINEL ADMIN (COM SUPABASE)
+//  FUNÇÕES COMPARTILHADAS DO ADMIN (usadas pela página /admin/)
 // ================================================================
 
 function showAdminMsg(text, type = 'info') {
@@ -602,7 +598,8 @@ function loadAdminTable() {
   if (!allHorarios || allHorarios.length === 0) {
     tbody.innerHTML =
       '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum horário cadastrado.</td></tr>';
-    document.getElementById('adminRowCount').textContent = '0 horários';
+    const rowCount = document.getElementById('adminRowCount');
+    if (rowCount) rowCount.textContent = '0 horários';
     return;
   }
 
@@ -681,7 +678,6 @@ function loadAdminTable() {
         allHorarios.splice(idx, 1);
         loadAdminTable();
         showAdminMsg('Horário removido com sucesso.', 'info');
-        // Salva automaticamente após remover
         salvarHorariosNoBanco();
       }
     });
@@ -693,7 +689,8 @@ function loadAdminTable() {
     tbody.appendChild(tr);
   });
 
-  document.getElementById('adminRowCount').textContent = allHorarios.length + ' horários';
+  const rowCount = document.getElementById('adminRowCount');
+  if (rowCount) rowCount.textContent = allHorarios.length + ' horários';
 }
 
 function toggleEditRow(idx) {
@@ -730,7 +727,6 @@ function toggleEditRow(idx) {
 
     loadAdminTable();
     showAdminMsg('Horário atualizado com sucesso!', 'success');
-    // Salva automaticamente após editar
     salvarHorariosNoBanco();
   } else {
     inputs.forEach((inp) => (inp.readOnly = false));
@@ -741,77 +737,25 @@ function toggleEditRow(idx) {
   }
 }
 
-adminLoginBtn.addEventListener('click', () => {
-  const pass = adminPassword.value.trim();
-  if (pass === 'admin123') {
-    adminMsg.textContent = '✅ Acesso concedido!';
-    adminMsg.className = 'msg';
-    adminContent.style.display = 'block';
-    loadAdminTable();
-    showAdminMsg('Painel aberto com sucesso.', 'success');
-  } else {
-    adminMsg.textContent = '❌ Senha incorreta. Tente novamente.';
-    adminMsg.className = 'msg error';
+// ================================================================
+//  SALVAR HORÁRIOS NO SUPABASE
+// ================================================================
+async function salvarHorariosNoBanco() {
+  try {
+    const res = await fetch('/api/horarios', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(allHorarios)
+    });
+    if (!res.ok) throw new Error('Erro ao salvar: ' + res.status);
+    const data = await res.json();
+    console.log('Horários salvos no Supabase:', data);
+    showAdminMsg('✅ Horários salvos com sucesso no servidor!', 'success');
+  } catch (e) {
+    console.error('Erro ao salvar horários:', e);
+    showAdminMsg('❌ Erro ao salvar no servidor. Tente novamente.', 'error');
   }
-});
-
-adminLink.addEventListener('click', (e) => {
-  e.preventDefault();
-  adminModal.classList.add('active');
-  adminPassword.value = '';
-  adminMsg.textContent = '';
-  adminMsg.className = 'msg';
-  adminContent.style.display = 'none';
-});
-
-adminModal.addEventListener('click', (e) => {
-  if (e.target === adminModal) adminModal.classList.remove('active');
-});
-
-document.getElementById('adminAddRowBtn').addEventListener('click', function () {
-  allHorarios.push({
-    destino: 'Novo destino',
-    horario: '12:00',
-    embarque: 'Local',
-    dias: ['Segunda a Sexta']
-  });
-  loadAdminTable();
-  const lastIdx = allHorarios.length - 1;
-  toggleEditRow(lastIdx);
-  showAdminMsg('Novo horário adicionado. Edite os campos e salve.', 'info');
-});
-
-adminSaveBtn.addEventListener('click', function () {
-  // Captura todos os valores atuais dos inputs antes de salvar
-  const novasLinhas = [];
-  const linhas = document.querySelectorAll('#adminTableBody tr');
-  linhas.forEach(tr => {
-    const inputs = tr.querySelectorAll('.admin-input');
-    const checkboxes = tr.querySelectorAll('.dias-checkboxes input[type="checkbox"]');
-    if (inputs.length >= 3) {
-      const destino = inputs[0].value.trim();
-      const horario = inputs[1].value.trim();
-      const embarque = inputs[2].value.trim();
-      const dias = [];
-      checkboxes.forEach(cb => { if (cb.checked) dias.push(cb.value); });
-      if (destino && horario && embarque && dias.length > 0) {
-        novasLinhas.push({ destino, horario, embarque, dias });
-      }
-    }
-  });
-  if (novasLinhas.length === 0) {
-    showAdminMsg('Nenhum horário válido para salvar.', 'error');
-    return;
-  }
-  allHorarios = novasLinhas;
-  allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
-
-  // Salva no banco
-  salvarHorariosNoBanco();
-  // Recarrega a tabela e os cards
-  loadAdminTable();
-  renderCards();
-});
+}
 
 // ================================================================
 //  INICIALIZAÇÃO
@@ -838,6 +782,7 @@ function init() {
     if (e.target === welcomeModal) welcomeModal.classList.remove('active');
   });
 
+  // Modal alerta
   closeAlertBtn.addEventListener('click', () => {
     alertModal.classList.remove('active');
     window.speechSynthesis.cancel();
