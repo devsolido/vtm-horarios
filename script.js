@@ -303,42 +303,23 @@ async function carregarHorariosDoBanco() {
     const res = await fetch('/api/horarios');
     if (!res.ok) throw new Error('Erro ao carregar horários: ' + res.status);
     const data = await res.json();
-    // Se vierem com campo 'id', removemos para manter compatibilidade
-    allHorarios = data.map(({ id, ...rest }) => rest);
+
+    // Remove os campos 'id' e 'created_at' e formata o horário para HH:MM
+    allHorarios = data.map(({ id, created_at, horario, ...rest }) => ({
+      ...rest,
+      horario: horario.substring(0, 5) // Pega apenas "HH:MM"
+    }));
     allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
     renderCards();
-    // Se o admin estiver aberto, recarrega a tabela
-    if (adminContent.style.display === 'block') {
-      loadAdminTable();
-    }
+    if (adminContent.style.display === 'block') loadAdminTable();
   } catch (e) {
     console.error('Erro ao carregar horários do banco:', e);
-    // Fallback para dados locais se não houver conexão
     if (allHorarios.length === 0) {
       allHorarios = [...horariosFallback];
       renderCards();
     }
-    showAdminMsg('Não foi possível carregar os horários do servidor. Usando dados locais.', 'error');
   }
 }
-
-async function salvarHorariosNoBanco() {
-  try {
-    const res = await fetch('/api/horarios', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(allHorarios)
-    });
-    if (!res.ok) throw new Error('Erro ao salvar: ' + res.status);
-    const data = await res.json();
-    console.log('Horários salvos no Supabase:', data);
-    showAdminMsg('✅ Horários salvos com sucesso no servidor!', 'success');
-  } catch (e) {
-    console.error('Erro ao salvar horários:', e);
-    showAdminMsg('❌ Erro ao salvar no servidor. Tente novamente.', 'error');
-  }
-}
-
 // ================================================================
 //  RENDER CARDS
 // ================================================================
