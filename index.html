@@ -1682,7 +1682,7 @@
       el.textContent = '⏳ Carregando...';
       try {
         // Chama o proxy local (caminho correto: /api/weather.php)
-        const res = await fetch('/api/weather.php');
+        const res = await fetch('/api/weather');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data || data.temp === undefined) throw new Error('Dados incompletos');
