@@ -71,16 +71,17 @@ body {
 }
 
 .app {
-  max-width: 1200px;
+  max-width: 100%;
   width: 100%;
   background: var(--bg-app);
   backdrop-filter: blur(12px);
   border-radius: 32px;
-  padding: 20px 20px 16px;
+  padding: 16px;
   box-shadow: var(--shadow);
   border: 1px solid var(--border-app);
   will-change: transform;
   transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  overflow-x: hidden;
 }
 
 /* ===== HEADER ===== */
@@ -314,7 +315,7 @@ body {
 /* ===== CARDS ===== */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 14px;
   margin-bottom: 20px;
 }
@@ -715,6 +716,7 @@ body {
   transition: opacity 0.4s, visibility 0.4s;
   padding: 16px;
   will-change: opacity, visibility;
+  overflow-y: auto; /* CRUCIAL: permite rolagem quando o conteúdo é maior que a tela */
 }
 
 .modal-overlay.active {
@@ -734,6 +736,7 @@ body {
   box-shadow: var(--shadow);
   transform: scale(0.9) translateY(20px);
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  margin: auto; /* centraliza verticalmente com o overflow do overlay */
 }
 
 .modal-overlay.active .modal-box {
@@ -866,13 +869,14 @@ body {
 
 /* ============================================================
    ADMIN PANEL – DASHBOARD COMPLETO
-   Com horário em tempo real, clima e nome do operador
-   CORRIGIDO PARA EVITAR CORTE EM ZOOM 100%
+   CORRIGIDO: ZOOM + ROLAGEM
    ============================================================ */
 
 .admin-panel .modal-box {
   max-width: 100%;
   width: 95%;
+  max-height: 90vh;      /* LIMITA A ALTURA PARA CABER NA TELA */
+  overflow-y: auto;      /* ROLAGEM INTERNA SE O CONTEÚDO ULTRAPASSAR */
   padding: 25px 20px;
   text-align: left;
   box-sizing: border-box;
@@ -1035,7 +1039,7 @@ body {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  min-width: 100%; /* removido o 600px fixo que cortava */
+  min-width: 100%;
 }
 
 .admin-table th {
@@ -1221,6 +1225,7 @@ body {
   .admin-panel .modal-box {
     padding: 16px 12px;
     width: 98%;
+    max-height: 85vh;
   }
   .admin-header {
     flex-direction: column;
@@ -1269,6 +1274,7 @@ body {
 @media (max-width: 480px) {
   .admin-panel .modal-box {
     padding: 12px 8px;
+    max-height: 80vh;
   }
   .admin-header-left .admin-title h2 {
     font-size: 18px;
@@ -1397,10 +1403,10 @@ body {
   background: rgba(0, 198, 251, 0.6);
 }
 
-/* ===== RESPONSIVIDADE ===== */
+/* ===== RESPONSIVIDADE GERAL ===== */
 @media (max-width: 768px) {
   body { padding: 12px; }
-  .app { padding: 16px; border-radius: 24px; }
+  .app { padding: 12px; border-radius: 24px; }
   .header { flex-direction: column; align-items: stretch; gap: 8px; }
   .logo-area { justify-content: center; }
   .info-bar { justify-content: center; gap: 6px; }
@@ -1414,19 +1420,6 @@ body {
   .date-display { font-size: 14px; }
   .version { font-size: 9px; }
   .card .share-btn { width: 26px; height: 26px; font-size: 11px; bottom: 8px; right: 8px; }
-  .admin-panel .modal-box { max-width: 95%; }
-}
-
-@media (max-width: 700px) {
-  .admin-panel .modal-box { padding: 20px 16px; }
-  .admin-header { flex-direction: column; align-items: stretch; text-align: center; }
-  .admin-header-left, .admin-header-right { justify-content: center; }
-  .admin-header-right { flex-wrap: wrap; }
-  .admin-subtitle { flex-direction: column; text-align: center; }
-  .admin-table th,
-  .admin-table td { padding: 6px 4px; font-size: 12px; }
-  .admin-table .admin-input { font-size: 12px; padding: 4px 6px; }
-  .admin-table .dias-checkboxes label { font-size: 10px; }
 }
 
 @media (max-width: 550px) {
