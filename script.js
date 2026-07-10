@@ -83,9 +83,9 @@ if ('serviceWorker' in navigator) {
 }
 
 // ================================================================
-//  HORÁRIOS
+//  HORÁRIOS INICIAIS (fallback)
 // ================================================================
-const horarios = [
+const horariosFallback = [
   { destino: 'Morada Nova', horario: '11:35', embarque: 'Antônio Vilhena', dias: ['Sábado'] },
   { destino: 'Morada Nova', horario: '16:48', embarque: 'Antônio Vilhena', dias: ['Domingo'] },
   { destino: 'Morada Nova', horario: '17:42', embarque: 'Antônio Vilhena', dias: ['Domingo'] },
@@ -98,14 +98,13 @@ const horarios = [
   { destino: 'Liberdade', horario: '16:00', embarque: 'Praça', dias: ['Segunda a Sexta'] },
   { destino: 'Liberdade', horario: '18:30', embarque: 'Praça São Francisco', dias: ['Segunda a Sexta'] },
 ];
-
-horarios.sort((a, b) => a.horario.localeCompare(b.horario));
+horariosFallback.sort((a, b) => a.horario.localeCompare(b.horario));
 
 // ================================================================
 //  VARIÁVEIS GLOBAIS
 // ================================================================
 let currentFilter = 'all';
-let allHorarios = [...horarios];
+let allHorarios = [];
 let alertaDisparado = {};
 
 // ================================================================
@@ -216,11 +215,9 @@ function updateClock() {
     ':' +
     String(n.getSeconds()).padStart(2, '0');
 
-  // Atualiza na página principal
   const clockEl = document.getElementById('clockValue');
   if (clockEl) clockEl.textContent = timeStr;
 
-  // Atualiza no painel admin (se estiver visível)
   const adminClock = document.getElementById('adminClockValue');
   if (adminClock) adminClock.textContent = timeStr;
 }
@@ -229,11 +226,9 @@ function updateDateAndGreeting() {
   const n = new Date();
   const dateStr = formatDateFull(n);
 
-  // Atualiza na página principal
   const dateEl = document.getElementById('fullDate');
   if (dateEl) dateEl.textContent = dateStr;
 
-  // Atualiza no painel admin
   const adminDate = document.getElementById('adminDateValue');
   if (adminDate) adminDate.textContent = dateStr;
 
@@ -251,7 +246,6 @@ async function fetchWeather() {
   if (!el) return;
   const now = Date.now();
 
-  // Verifica cache
   if (weatherCache && now - weatherCacheTime < WEATHER_CACHE_TTL) {
     el.textContent = weatherCache;
     const adminWeather = document.getElementById('adminWeatherValue');
@@ -285,15 +279,12 @@ async function fetchWeather() {
     const emoji = emojiMap[slug] || '🌤️';
     const result = emoji + ' ' + temp + ' °C';
 
-    // Atualiza na página principal
     el.textContent = result;
     weatherCache = result;
     weatherCacheTime = now;
 
-    // Atualiza no painel admin
     const adminWeather = document.getElementById('adminWeatherValue');
     if (adminWeather) adminWeather.textContent = result;
-
   } catch (e) {
     console.warn('Clima:', e);
     el.textContent = '⚠️ Sem dados';
@@ -305,7 +296,51 @@ async function fetchWeather() {
 }
 
 // ================================================================
-//  RENDER CARDS (sem alterações)
+//  API DE HORÁRIOS (SUPABASE)
+// ================================================================
+async function carregarHorariosDoBanco() {
+  try {
+    const res = await fetch('/api/horarios');
+    if (!res.ok) throw new Error('Erro ao carregar horários: ' + res.status);
+    const data = await res.json();
+    // Se vierem com campo 'id', removemos para manter compatibilidade
+    allHorarios = data.map(({ id, ...rest }) => rest);
+    allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
+    renderCards();
+    // Se o admin estiver aberto, recarrega a tabela
+    if (adminContent.style.display === 'block') {
+      loadAdminTable();
+    }
+  } catch (e) {
+    console.error('Erro ao carregar horários do banco:', e);
+    // Fallback para dados locais se não houver conexão
+    if (allHorarios.length === 0) {
+      allHorarios = [...horariosFallback];
+      renderCards();
+    }
+    showAdminMsg('Não foi possível carregar os horários do servidor. Usando dados locais.', 'error');
+  }
+}
+
+async function salvarHorariosNoBanco() {
+  try {
+    const res = await fetch('/api/horarios', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(allHorarios)
+    });
+    if (!res.ok) throw new Error('Erro ao salvar: ' + res.status);
+    const data = await res.json();
+    console.log('Horários salvos no Supabase:', data);
+    showAdminMsg('✅ Horários salvos com sucesso no servidor!', 'success');
+  } catch (e) {
+    console.error('Erro ao salvar horários:', e);
+    showAdminMsg('❌ Erro ao salvar no servidor. Tente novamente.', 'error');
+  }
+}
+
+// ================================================================
+//  RENDER CARDS
 // ================================================================
 function renderCards() {
   const nowMin = getCurrentMinutes();
@@ -559,7 +594,7 @@ function initFilters() {
 }
 
 // ================================================================
-//  PAINEL ADMIN (CORRIGIDO)
+//  PAINEL ADMIN (COM SUPABASE)
 // ================================================================
 
 function showAdminMsg(text, type = 'info') {
@@ -575,22 +610,6 @@ function showAdminMsg(text, type = 'info') {
 }
 
 function loadAdminTable() {
-  // Garante que allHorarios tenha dados
-  if (!allHorarios || allHorarios.length === 0) {
-    const saved = localStorage.getItem('vtm_horarios_custom');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length) {
-          allHorarios = parsed;
-        }
-      } catch (e) {}
-    }
-    if (!allHorarios || allHorarios.length === 0) {
-      allHorarios = [...horarios];
-    }
-  }
-
   const tbody = document.getElementById('adminTableBody');
   if (!tbody) {
     console.error('❌ adminTableBody não encontrado no DOM');
@@ -599,7 +618,7 @@ function loadAdminTable() {
 
   tbody.innerHTML = '';
 
-  if (allHorarios.length === 0) {
+  if (!allHorarios || allHorarios.length === 0) {
     tbody.innerHTML =
       '<tr><td colspan="5" style="text-align:center; padding:20px; color:var(--text-muted);">Nenhum horário cadastrado.</td></tr>';
     document.getElementById('adminRowCount').textContent = '0 horários';
@@ -681,6 +700,8 @@ function loadAdminTable() {
         allHorarios.splice(idx, 1);
         loadAdminTable();
         showAdminMsg('Horário removido com sucesso.', 'info');
+        // Salva automaticamente após remover
+        salvarHorariosNoBanco();
       }
     });
 
@@ -728,6 +749,8 @@ function toggleEditRow(idx) {
 
     loadAdminTable();
     showAdminMsg('Horário atualizado com sucesso!', 'success');
+    // Salva automaticamente após editar
+    salvarHorariosNoBanco();
   } else {
     inputs.forEach((inp) => (inp.readOnly = false));
     checkboxes.forEach((cb) => (cb.disabled = false));
@@ -777,21 +800,37 @@ document.getElementById('adminAddRowBtn').addEventListener('click', function () 
   showAdminMsg('Novo horário adicionado. Edite os campos e salve.', 'info');
 });
 
-adminSaveBtn.addEventListener('click', () => {
-  localStorage.setItem('vtm_horarios_custom', JSON.stringify(allHorarios));
-  showAdminMsg('Todos os horários foram salvos com sucesso!', 'success');
+adminSaveBtn.addEventListener('click', function () {
+  // Captura todos os valores atuais dos inputs antes de salvar
+  const novasLinhas = [];
+  const linhas = document.querySelectorAll('#adminTableBody tr');
+  linhas.forEach(tr => {
+    const inputs = tr.querySelectorAll('.admin-input');
+    const checkboxes = tr.querySelectorAll('.dias-checkboxes input[type="checkbox"]');
+    if (inputs.length >= 3) {
+      const destino = inputs[0].value.trim();
+      const horario = inputs[1].value.trim();
+      const embarque = inputs[2].value.trim();
+      const dias = [];
+      checkboxes.forEach(cb => { if (cb.checked) dias.push(cb.value); });
+      if (destino && horario && embarque && dias.length > 0) {
+        novasLinhas.push({ destino, horario, embarque, dias });
+      }
+    }
+  });
+  if (novasLinhas.length === 0) {
+    showAdminMsg('Nenhum horário válido para salvar.', 'error');
+    return;
+  }
+  allHorarios = novasLinhas;
+  allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
+
+  // Salva no banco
+  salvarHorariosNoBanco();
+  // Recarrega a tabela e os cards
+  loadAdminTable();
   renderCards();
 });
-
-const customHorarios = localStorage.getItem('vtm_horarios_custom');
-if (customHorarios) {
-  try {
-    const parsed = JSON.parse(customHorarios);
-    if (Array.isArray(parsed) && parsed.length) {
-      allHorarios = parsed;
-    }
-  } catch (e) {}
-}
 
 // ================================================================
 //  INICIALIZAÇÃO
@@ -805,8 +844,11 @@ function init() {
   setInterval(fetchWeather, 600000);
 
   initFilters();
-  renderCards();
 
+  // Carrega os horários do banco (ou fallback)
+  carregarHorariosDoBanco();
+
+  // Modal boas-vindas
   const welcomeModal = document.getElementById('welcomeModal');
   const closeModalBtn = document.getElementById('closeModalBtn');
   window.addEventListener('load', () => welcomeModal.classList.add('active'));
