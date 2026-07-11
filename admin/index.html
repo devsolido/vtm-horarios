@@ -7,69 +7,14 @@
   <title>VTM Integração - Painel Administrativo</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="../style.css" />
-  <!-- CSS do admin com cache-busting (força recarregar) -->
-  <link rel="stylesheet" href="admin.css?v=2" />
-
-  <!-- CSS INLINE DE GARANTIA – assegura o estilo do botão salvar mesmo se admin.css falhar -->
-  <style>
-    /* ===== GARANTIA DE ESTILO DO BOTÃO SALVAR ===== */
-    #adminSaveBtn,
-    .btn-save {
-      background: linear-gradient(135deg, #00c6fb, #005bea) !important;
-      border: none !important;
-      color: #fff !important;
-      font-weight: 600 !important;
-      padding: 12px 28px !important;
-      border-radius: 12px !important;
-      cursor: pointer !important;
-      font-size: 15px !important;
-      width: 100% !important;
-      box-shadow: 0 4px 16px rgba(0, 91, 234, 0.25) !important;
-      transition: all 0.3s !important;
-    }
-
-    #adminSaveBtn:hover,
-    .btn-save:hover {
-      transform: translateY(-2px) !important;
-      box-shadow: 0 8px 28px rgba(0, 91, 234, 0.4) !important;
-    }
-
-    #adminSaveBtn:active,
-    .btn-save:active {
-      transform: scale(0.98) !important;
-    }
-
-    /* Pequeno ajuste para o botão "Entrar" também usar o mesmo estilo */
-    #adminLoginBtn {
-      background: linear-gradient(135deg, #00c6fb, #005bea) !important;
-      border: none !important;
-      color: #fff !important;
-      font-weight: 600 !important;
-      padding: 12px 28px !important;
-      border-radius: 12px !important;
-      cursor: pointer !important;
-      font-size: 16px !important;
-      width: 100% !important;
-      box-shadow: 0 4px 16px rgba(0, 91, 234, 0.25) !important;
-      transition: all 0.3s !important;
-    }
-
-    #adminLoginBtn:hover {
-      transform: translateY(-2px) !important;
-      box-shadow: 0 8px 28px rgba(0, 91, 234, 0.4) !important;
-    }
-
-    #adminLoginBtn:active {
-      transform: scale(0.98) !important;
-    }
-  </style>
+  <link rel="stylesheet" href="admin.css?v=4" />
 </head>
 
 <body>
 
   <div class="admin-page">
 
-    <!-- Cabeçalho -->
+    <!-- Cabeçalho (sempre visível) -->
     <div class="admin-header">
       <div class="admin-header-left">
         <div class="admin-title">
@@ -90,38 +35,80 @@
           <i class="fas fa-cloud-sun"></i>
           <span class="value" id="adminWeatherValue">-- °C</span>
         </div>
+        <button class="admin-header-btn logout-btn" id="logoutBtn" type="button" style="display:none;">
+          <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
       </div>
     </div>
 
-    <!-- Subtítulo -->
     <div class="admin-subtitle">
       <span>Gerencie os horários dos ônibus</span>
-      <span class="admin-date">
-        <i class="far fa-calendar-alt"></i> <span id="adminDateValue">--</span>
-      </span>
+      <span class="admin-date"><i class="far fa-calendar-alt"></i> <span id="adminDateValue">--</span></span>
     </div>
 
-    <!-- ÁREA DE LOGIN -->
-    <div id="adminLoginArea">
+    <!-- ============================================ -->
+    <!-- PASSO 1: SENHA -->
+    <!-- ============================================ -->
+    <div id="stepPassword" class="auth-step">
+      <div class="auth-icon"><i class="fas fa-lock"></i></div>
+      <h3>Digite sua senha</h3>
       <div class="field">
         <label for="adminPassword">Senha de acesso</label>
         <div class="password-wrapper">
-          <input type="password" id="adminPassword" placeholder="Digite a senha" />
-        </div>
-        <div class="password-hint">
-          <i class="fas fa-info-circle"></i> Senha padrão: <code>admin123</code>
+          <input type="password" id="adminPassword" placeholder="••••••••" />
         </div>
       </div>
-      <button class="btn-save" id="adminLoginBtn">Entrar</button>
-      <div id="adminMsg" class="msg"></div>
+      <button class="btn-save" id="passwordBtn">Verificar senha</button>
+      <div id="passwordMsg" class="msg"></div>
     </div>
 
-    <!-- Conteúdo (visível após login) -->
+    <!-- ============================================ -->
+    <!-- PASSO 2: CÓDIGO DE 22 DÍGITOS + TIMER -->
+    <!-- ============================================ -->
+    <div id="stepCode" class="auth-step" style="display:none;">
+      <div class="auth-icon"><i class="fas fa-shield-alt"></i></div>
+      <h3>Digite o código de 22 dígitos</h3>
+
+      <!-- Círculo de progresso (SVG) -->
+      <div class="timer-circle">
+        <svg viewBox="0 0 120 120" width="120" height="120">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0,198,251,0.1)" stroke-width="8" />
+          <circle cx="60" cy="60" r="54" fill="none" stroke="#00c6fb" stroke-width="8" stroke-linecap="round"
+            stroke-dasharray="339.292" stroke-dashoffset="0" id="progressCircle" />
+        </svg>
+        <span class="timer-text" id="timerText">60s</span>
+      </div>
+
+      <p class="email-code-notice">📧 Um código de 22 dígitos foi enviado para seu e-mail. Verifique sua caixa de entrada (e spam).</p>
+
+      <div class="field">
+        <label for="adminCode22">Código recebido por e-mail</label>
+        <input type="text" id="adminCode22" placeholder="Cole ou digite os 22 dígitos" maxlength="22"
+          autocomplete="off" />
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="btn-save" id="verifyCodeBtn" style="flex:2;"><i class="fas fa-check"></i> Verificar</button>
+        <button class="btn-save" id="resendCodeBtn"
+          style="flex:1; background: var(--filter-btn-bg) !important; color: var(--text-primary) !important;">Reenviar</button>
+      </div>
+      <div id="codeMsg" class="msg"></div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CONTEÚDO ADMIN (visível apenas após autenticação completa) -->
+    <!-- ============================================ -->
     <div id="adminContent" style="display:none;">
       <div class="admin-toolbar">
-        <button class="btn-add-row" id="adminAddRowBtn"><i class="fas fa-plus"></i> Adicionar horário</button>
+        <div class="admin-toolbar-actions">
+          <button class="btn-add-row" id="adminAddRowBtn"><i class="fas fa-plus"></i> Adicionar horário</button>
+          <button class="maintenance-btn" id="maintenanceBtn" type="button">
+            <i class="fas fa-tools"></i> <span>Manutenção: CARREGANDO...</span>
+          </button>
+        </div>
         <span id="adminRowCount">0 horários</span>
       </div>
+      <div id="adminMsg" class="admin-msg" style="display:none;"></div>
       <div class="admin-table-wrapper">
         <table class="admin-table">
           <thead>
@@ -136,12 +123,9 @@
           <tbody id="adminTableBody"></tbody>
         </table>
       </div>
-      <button class="btn-save" id="adminSaveBtn">
-        <i class="fas fa-save"></i> Salvar alterações
-      </button>
+      <button class="btn-save" id="adminSaveBtn"><i class="fas fa-save"></i> Salvar alterações</button>
     </div>
 
-    <!-- Rodapé -->
     <div class="admin-footer">
       <a href="../">← Voltar para o site</a>
     </div>
