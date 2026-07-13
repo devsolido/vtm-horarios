@@ -1,4 +1,4 @@
-// admin/admin.js – Login em 2 passos (senha + código de 22 dígitos)
+// admin/admin.js – Login em 2 passos (senha + código de verificação)
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -80,26 +80,26 @@ document.addEventListener('DOMContentLoaded', function() {
     timerText.style.color = timeLeft <= 10 ? '#ff6b6b' : '#00c6fb';
   }
 
-  // ===== Gerar e enviar código (sem fallback local) =====
+  // ===== Gerar e enviar código (sem menção a e-mail ou dígitos) =====
   function generateNewCode() {
     if (!resendCodeBtn) return;
     const btn = resendCodeBtn;
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
 
-    if (generatedCodeSpan) generatedCodeSpan.textContent = '📧 Enviando...';
+    if (generatedCodeSpan) generatedCodeSpan.textContent = '⏳ Enviando...';
     if (adminCode22) adminCode22.value = '';
 
     fetch('/api/send-code-email', { method: 'POST' })
       .then(res => res.json())
       .then(data => {
         if (data.success) {
-          showMessage(codeMsg, '📧 Código de verificação enviado para o sistema.', 'success');
-          if (generatedCodeSpan) generatedCodeSpan.textContent = '📧 Código enviado para o sistema';
+          showMessage(codeMsg, '✅ Código de verificação enviado.', 'success');
+          if (generatedCodeSpan) generatedCodeSpan.textContent = '✅ Código enviado';
           if (adminCode22) adminCode22.focus();
           startTimer();
         } else {
-          showMessage(codeMsg, '❌ Erro ao enviar código de verificação: ' + (data.error || 'tente novamente.'), 'error');
+          showMessage(codeMsg, '❌ Erro ao enviar código: ' + (data.error || 'tente novamente.'), 'error');
           if (generatedCodeSpan) generatedCodeSpan.textContent = '❌ Falha no envio';
         }
       })
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  // ===== Verificar código via API (sem fallback local) =====
+  // ===== Verificar código via API =====
   function verifyCode() {
     if (!adminCode22) return;
     const input = adminCode22.value.trim();
@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// ===== Funções globais (compatíveis com script.js) =====
+// ===== Funções globais =====
 window.adicionarHorarioAdmin = function() {
   allHorarios.push({
     destino: 'Novo destino',

@@ -63,11 +63,11 @@
     </div>
 
     <!-- ============================================ -->
-    <!-- PASSO 2: CÓDIGO DE 22 DÍGITOS + TIMER -->
+    <!-- PASSO 2: CÓDIGO DE VERIFICAÇÃO + TIMER -->
     <!-- ============================================ -->
     <div id="stepCode" class="auth-step" style="display:none;">
       <div class="auth-icon"><i class="fas fa-shield-alt"></i></div>
-      <h3>Digite o código de 22 dígitos</h3>
+      <h3>Digite o código de verificação</h3>
 
       <!-- Círculo de progresso (SVG) -->
       <div class="timer-circle">
@@ -79,12 +79,11 @@
         <span class="timer-text" id="timerText">60s</span>
       </div>
 
-      <p class="email-code-notice">📧 Um código de 22 dígitos foi enviado para seu e-mail. Verifique sua caixa de entrada (e spam).</p>
+      <p class="code-notice">✅ Código de verificação enviado, informe-o.</p>
 
       <div class="field">
-        <label for="adminCode22">Código recebido por e-mail</label>
-        <input type="text" id="adminCode22" placeholder="Cole ou digite os 22 dígitos" maxlength="22"
-          autocomplete="off" />
+        <label for="adminCode22">Código de verificação</label>
+        <input type="text" id="adminCode22" placeholder="Digite ou cole o código" maxlength="22" autocomplete="off" />
       </div>
 
       <div style="display:flex; gap:10px;">
@@ -103,12 +102,14 @@
         <div class="admin-toolbar-actions">
           <button class="btn-add-row" id="adminAddRowBtn"><i class="fas fa-plus"></i> Adicionar horário</button>
           <button class="maintenance-btn" id="maintenanceBtn" type="button">
-            <i class="fas fa-tools"></i> <span>Manutenção: CARREGANDO...</span>
+            <i class="fas fa-tools"></i> <span id="maintenanceStatus">Manutenção: CARREGANDO...</span>
           </button>
         </div>
         <span id="adminRowCount">0 horários</span>
       </div>
+
       <div id="adminMsg" class="admin-msg" style="display:none;"></div>
+
       <div class="admin-table-wrapper">
         <table class="admin-table">
           <thead>
@@ -123,7 +124,20 @@
           <tbody id="adminTableBody"></tbody>
         </table>
       </div>
+
       <button class="btn-save" id="adminSaveBtn"><i class="fas fa-save"></i> Salvar alterações</button>
+
+      <!-- Alterar senha -->
+      <div class="admin-change-password">
+        <h4><i class="fas fa-key"></i> Alterar senha de acesso</h4>
+        <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+          <input type="password" id="newPassword" placeholder="Nova senha" />
+          <input type="password" id="confirmPassword" placeholder="Confirmar nova senha" />
+          <button class="btn-save" id="changePasswordBtn" style="flex:0 0 auto; padding:8px 20px; width:auto;">Alterar
+            senha</button>
+        </div>
+        <div id="changePasswordMsg" class="msg" style="margin-top:8px;"></div>
+      </div>
     </div>
 
     <div class="admin-footer">
