@@ -1,56 +1,39 @@
-// api/send-code-email.js
 import nodemailer from 'nodemailer';
 
-// Armazenamento temporário dos códigos (em memória)
 const codeStore = new Map();
 
 export default async function handler(req, res) {
-  // Aceita apenas POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
   }
 
-  // E-mail de destino (seu e-mail pessoal)
   const toEmail = process.env.EMAIL_TO;
-
-  // Credenciais do e-mail que vai enviar (Brevo)
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASS;
 
-  // Verifica se as variáveis estão configuradas
   if (!user || !pass || !toEmail) {
-    console.error('❌ Variáveis de e-mail faltando:', { user: !!user, pass: !!pass, toEmail: !!toEmail });
     return res.status(500).json({
       error: 'Configuração de e-mail incompleta. Verifique EMAIL_USER, EMAIL_PASS e EMAIL_TO.'
     });
   }
 
-  // Gera código de 22 dígitos (apenas letras maiúsculas e números, sem caracteres ambíguos)
+  // Gerar código de 22 dígitos
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
   for (let i = 0; i < 22; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
 
-  // Armazena o código com expiração de 60 segundos
   const expiresAt = Date.now() + 60000;
   codeStore.set(toEmail, { code, expiresAt });
 
-  // ========= CONFIGURAÇÃO SMTP DO BREVO =========
-  // Servidor: smtp-relay.brevo.com
-  // Porta: 587 (TLS)
-  // Usuário: seu e-mail de cadastro no Brevo
-  // Senha: a senha SMTP gerada no painel do Brevo
-  // =============================================
+  // ⚡ ENVIO DIRETO PELO GMAIL (não via Brevo)
   const transporter = nodemailer.createTransport({
-    host: 'smtp-relay.brevo.com',
-    port: 587,
-    secure: false, // false para porta 587 (STARTTLS)
+    service: 'gmail',
     auth: { user, pass },
   });
 
   try {
-    // Envia o e-mail
     await transporter.sendMail({
       from: `"VTM Integração" <${user}>`,
       to: toEmail,
@@ -69,31 +52,10 @@ export default async function handler(req, res) {
       `,
     });
 
-    // Agenda a limpeza do código após 60 segundos
-    setTimeout(() => {
-      codeStore.delete(toEmail);
-    }, 60000);
-
+    setTimeout(() => codeStore.delete(toEmail), 60000);
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('Erro ao enviar e-mail:', error);
     return res.status(500).json({ error: 'Falha ao enviar e-mail', details: error.message });
   }
-}
-
-// Função para verificar o código (exportada para ser usada pela API de verificação)
-export function verifyEmailCode(email, inputCode) {
-  const entry = codeStore.get(email || process.env.EMAIL_TO);
-  if (!entry) {
-    return { valid: false, reason: 'Código não encontrado ou expirado' };
-  }
-  if (Date.now() > entry.expiresAt) {
-    codeStore.delete(email || process.env.EMAIL_TO);
-    return { valid: false, reason: 'Código expirado' };
-  }
-  if (entry.code === inputCode) {
-    codeStore.delete(email || process.env.EMAIL_TO);
-    return { valid: true };
-  }
-  return { valid: false, reason: 'Código incorreto' };
 }
