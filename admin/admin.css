@@ -49,6 +49,26 @@
   text-align: center;
 }
 
+/* ===== MENSAGEM DO CÓDIGO (sem e-mail) ===== */
+.code-notice {
+  color: var(--text-primary) !important;
+  font-size: 15px;
+  margin: 12px 0 18px;
+  padding: 10px 16px;
+  background: rgba(0, 198, 251, 0.08);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 198, 251, 0.15);
+  text-align: center;
+}
+
+#generatedCode {
+  color: var(--text-primary) !important;
+  font-weight: 500;
+  background: transparent;
+  padding: 8px 0;
+  font-size: 16px;
+}
+
 /* ===== CIRCLE TIMER ===== */
 .timer-circle {
   position: relative;
@@ -69,7 +89,7 @@
   color: #00c6fb;
 }
 
-/* ===== CÓDIGO DE 22 DÍGITOS ===== */
+/* ===== CÓDIGO DE 22 DÍGITOS (se ainda usado) ===== */
 .code-display {
   display: flex;
   align-items: center;
@@ -150,10 +170,12 @@
   border: 1px solid rgba(0,198,251,0.2);
 }
 
-/* Responsividade */
+/* ===== RESPONSIVIDADE ===== */
 @media (max-width: 480px) {
   .auth-step { padding: 20px 16px; }
   .code-display { font-size: 15px; padding: 10px 12px; }
   .timer-circle { width: 90px; height: 90px; }
   .timer-circle svg { width: 90px; height: 90px; }
+  .code-notice { font-size: 13px; padding: 8px 12px; }
+  #generatedCode { font-size: 14px; }
 }
