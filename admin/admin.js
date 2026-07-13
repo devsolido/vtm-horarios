@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const changePasswordBtn = document.getElementById('changePasswordBtn');
   const changePasswordMsg = document.getElementById('changePasswordMsg');
 
+  // ===== Elementos de manutenção =====
+  const maintenanceBtn = document.getElementById('maintenanceBtn');
+  const maintenanceStatus = document.getElementById('maintenanceStatus');
+
   let timerInterval = null;
   let timeLeft = 60;
   const TOTAL_TIME = 60;
@@ -80,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
     timerText.style.color = timeLeft <= 10 ? '#ff6b6b' : '#00c6fb';
   }
 
-  // ===== Gerar e enviar código (sem menção a e-mail ou dígitos) =====
+  // ===== Gerar e enviar código =====
   function generateNewCode() {
     if (!resendCodeBtn) return;
     const btn = resendCodeBtn;
@@ -166,6 +170,8 @@ document.addEventListener('DOMContentLoaded', function() {
         showAdminMsg('Bem-vindo ao painel!', 'success');
       }
       sessionStorage.setItem('adminAuthenticated', 'true');
+      // Carrega status da manutenção após login
+      carregarStatusManutencao();
     }, 600);
   }
 
@@ -233,6 +239,64 @@ document.addEventListener('DOMContentLoaded', function() {
       showMessage(changePasswordMsg, '✅ Senha alterada com sucesso!', 'success');
       if (newPasswordInput) newPasswordInput.value = '';
       if (confirmPasswordInput) confirmPasswordInput.value = '';
+    });
+  }
+
+  // ===== MANUTENÇÃO =====
+  async function carregarStatusManutencao() {
+    try {
+      const res = await fetch('/api/manutencao');
+      if (!res.ok) throw new Error('Erro ao carregar status');
+      const data = await res.json();
+      atualizarBotaoManutencao(data.ativo);
+    } catch (e) {
+      console.warn('Erro ao carregar status de manutenção:', e);
+      if (maintenanceStatus) maintenanceStatus.textContent = '⚠️ Erro';
+    }
+  }
+
+  function atualizarBotaoManutencao(ativo) {
+    if (!maintenanceStatus) return;
+    if (ativo) {
+      maintenanceStatus.textContent = '🔧 Manutenção: ATIVA';
+      if (maintenanceBtn) maintenanceBtn.classList.add('active');
+    } else {
+      maintenanceStatus.textContent = '✅ Manutenção: DESATIVADA';
+      if (maintenanceBtn) maintenanceBtn.classList.remove('active');
+    }
+  }
+
+  if (maintenanceBtn) {
+    maintenanceBtn.addEventListener('click', async function() {
+      const isAtivo = maintenanceStatus && maintenanceStatus.textContent.includes('ATIVA');
+      const novoStatus = !isAtivo;
+
+      try {
+        if (maintenanceStatus) maintenanceStatus.textContent = '⏳ Alternando...';
+        maintenanceBtn.disabled = true;
+
+        const res = await fetch('/api/manutencao', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ativo: novoStatus })
+        });
+
+        if (!res.ok) throw new Error('Erro ao alternar manutenção');
+        const data = await res.json();
+
+        if (data.success) {
+          atualizarBotaoManutencao(data.ativo);
+          alert(data.ativo ? '⚠️ Manutenção ativada!' : '✅ Manutenção desativada!');
+        } else {
+          throw new Error('Resposta inválida');
+        }
+      } catch (e) {
+        console.error('Erro ao alternar manutenção:', e);
+        if (maintenanceStatus) maintenanceStatus.textContent = '❌ Erro ao alternar';
+        carregarStatusManutencao(); // recarrega para consistência
+      } finally {
+        maintenanceBtn.disabled = false;
+      }
     });
   }
 
