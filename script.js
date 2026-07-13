@@ -235,23 +235,30 @@ function updateDateAndGreeting() {
 }
 
 // ================================================================
-//  CLIMA (proxy local)
+//  CLIMA (proxy local) – funciona na página principal e no admin
 // ================================================================
 async function fetchWeather() {
   const el = document.getElementById('weatherValue');
-  if (!el) return;
+  const adminEl = document.getElementById('adminWeatherValue');
+
+  // Se nenhum dos elementos existir, não faz nada
+  if (!el && !adminEl) return;
+
   const now = Date.now();
 
+  // Usa cache se disponível
   if (weatherCache && now - weatherCacheTime < WEATHER_CACHE_TTL) {
-    el.textContent = weatherCache;
-    const adminWeather = document.getElementById('adminWeatherValue');
-    if (adminWeather) adminWeather.textContent = weatherCache;
+    if (el) el.textContent = weatherCache;
+    if (adminEl) adminEl.textContent = weatherCache;
     return;
   }
 
   if (weatherFetchInProgress) return;
   weatherFetchInProgress = true;
-  el.textContent = '⏳ Carregando...';
+
+  // Mostra "Carregando..." nos elementos existentes
+  if (el) el.textContent = '⏳ Carregando...';
+  if (adminEl) adminEl.textContent = '⏳ Carregando...';
 
   try {
     const res = await fetch('/api/weather');
@@ -270,22 +277,20 @@ async function fetchWeather() {
       rain: '🌧️',
       storm: '⛈️',
       snow: '❄️',
-      fog: '🌫️',
+      fog: '🌫️'
     };
     const emoji = emojiMap[slug] || '🌤️';
-    const result = emoji + ' ' + temp + ' °C';
+    const result = `${emoji} ${temp} °C`;
 
-    el.textContent = result;
     weatherCache = result;
     weatherCacheTime = now;
 
-    const adminWeather = document.getElementById('adminWeatherValue');
-    if (adminWeather) adminWeather.textContent = result;
+    if (el) el.textContent = result;
+    if (adminEl) adminEl.textContent = result;
   } catch (e) {
     console.warn('Clima:', e);
-    el.textContent = '⚠️ Sem dados';
-    const adminWeather = document.getElementById('adminWeatherValue');
-    if (adminWeather) adminWeather.textContent = '⚠️ Sem dados';
+    if (el) el.textContent = '⚠️ Sem dados';
+    if (adminEl) adminEl.textContent = '⚠️ Sem dados';
   } finally {
     weatherFetchInProgress = false;
   }
