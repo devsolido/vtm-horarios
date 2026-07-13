@@ -1,5 +1,4 @@
 // admin/admin.js – Login em 2 passos (senha + código de 22 dígitos)
-// FALLBACK: código exibido na tela + tentativa de e-mail em segundo plano
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -20,6 +19,17 @@ document.addEventListener('DOMContentLoaded', function() {
   const timerText = document.getElementById('timerText');
 
   const adminContent = document.getElementById('adminContent');
+  const loginArea = document.getElementById('adminLoginArea');
+
+  // ===== Senha armazenada no localStorage =====
+  const STORAGE_KEY = 'vtm_admin_password';
+  let storedPassword = localStorage.getItem(STORAGE_KEY) || 'admin123';
+
+  // ===== Elementos para alterar senha =====
+  const newPasswordInput = document.getElementById('newPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const changePasswordBtn = document.getElementById('changePasswordBtn');
+  const changePasswordMsg = document.getElementById('changePasswordMsg');
 
   let timerInterval = null;
   let timeLeft = 60;
@@ -57,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
         if (generatedCodeSpan) generatedCodeSpan.textContent = '⌛ Código expirado';
-        showMessage(codeMsg, '⏰ Código expirado. Clique em "Reenviar".', 'error');
+        showMessage(codeMsg, '⏰ O código expirou. Clique em "Reenviar".', 'error');
       }
     }, 1000);
   }
@@ -70,67 +80,56 @@ document.addEventListener('DOMContentLoaded', function() {
     timerText.style.color = timeLeft <= 10 ? '#ff6b6b' : '#00c6fb';
   }
 
-  // ===== Gerar código (fallback local + e-mail em segundo plano) =====
+  // ===== Gerar e enviar código (sem fallback local) =====
   function generateNewCode() {
-    // 1. Gera código localmente e exibe na tela
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let code = '';
-    for (let i = 0; i < 22; i++) {
-      code += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    window._tempCode = code;
-    if (generatedCodeSpan) generatedCodeSpan.textContent = code;
-    if (adminCode22) {
-      adminCode22.value = '';
-      adminCode22.focus();
-    }
-    startTimer();
-    showMessage(codeMsg, '🔑 Código gerado (copie e cole abaixo). Válido por 1 minuto.', 'info');
+    if (!resendCodeBtn) return;
+    const btn = resendCodeBtn;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
 
-    // 2. Tenta enviar por e-mail em segundo plano (não bloqueia)
-    if (resendCodeBtn) {
-      const btn = resendCodeBtn;
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-      fetch('/api/send-code-email', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            console.log('📧 Código também enviado por e-mail.');
-            showMessage(codeMsg, '📧 Código também enviado para seu e-mail!', 'success');
-          }
-        })
-        .catch(() => {})
-        .finally(() => {
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Reenviar';
-        });
-    }
+    if (generatedCodeSpan) generatedCodeSpan.textContent = '📧 Enviando...';
+    if (adminCode22) adminCode22.value = '';
+
+    fetch('/api/send-code-email', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showMessage(codeMsg, '📧 Código de verificação enviado para o sistema.', 'success');
+          if (generatedCodeSpan) generatedCodeSpan.textContent = '📧 Código enviado para o sistema';
+          if (adminCode22) adminCode22.focus();
+          startTimer();
+        } else {
+          showMessage(codeMsg, '❌ Erro ao enviar código de verificação: ' + (data.error || 'tente novamente.'), 'error');
+          if (generatedCodeSpan) generatedCodeSpan.textContent = '❌ Falha no envio';
+        }
+      })
+      .catch(() => {
+        showMessage(codeMsg, '❌ Falha na comunicação com o servidor.', 'error');
+        if (generatedCodeSpan) generatedCodeSpan.textContent = '❌ Erro de conexão';
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Reenviar';
+      });
   }
 
-  // ===== Verificar código (local ou e-mail) =====
+  // ===== Verificar código via API (sem fallback local) =====
   function verifyCode() {
     if (!adminCode22) return;
     const input = adminCode22.value.trim();
     if (!input) {
-      showMessage(codeMsg, 'Digite o código.', 'error');
+      showMessage(codeMsg, 'Digite o código de verificação recebido.', 'error');
       return;
     }
     if (timeLeft <= 0) {
-      showMessage(codeMsg, '⏰ Código expirado. Gere um novo.', 'error');
+      showMessage(codeMsg, '⏰ Código expirado. Peça um novo.', 'error');
       return;
     }
 
-    // Verifica localmente (fallback)
-    if (input === window._tempCode) {
-      autenticarSucesso();
-      return;
-    }
-
-    // Se não for o local, tenta verificar via API (e-mail)
     const btn = verifyCodeBtn;
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+
     fetch('/api/verify-code-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -175,10 +174,10 @@ document.addEventListener('DOMContentLoaded', function() {
     passwordBtn.addEventListener('click', function() {
       if (!adminPassword) return;
       const pass = adminPassword.value.trim();
-      if (pass === 'admin123') {
+      if (pass === storedPassword) {
         if (stepPassword) stepPassword.style.display = 'none';
         if (stepCode) stepCode.style.display = 'block';
-        generateNewCode(); // gera código localmente
+        generateNewCode();
       } else {
         showMessage(passwordMsg, '❌ Senha incorreta.', 'error');
         if (adminPassword) adminPassword.value = '';
@@ -193,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== PASSO 2: Eventos =====
+  // ===== PASSO 2: Eventos do código =====
   if (verifyCodeBtn) {
     verifyCodeBtn.addEventListener('click', verifyCode);
   }
@@ -214,21 +213,41 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== Botões do admin (com verificação) =====
-  const adminAddRowBtn = document.getElementById('adminAddRowBtn');
-  if (adminAddRowBtn) {
-    adminAddRowBtn.addEventListener('click', function() {
-      if (typeof window.adicionarHorarioAdmin === 'function') {
-        window.adicionarHorarioAdmin();
+  // ===== ALTERAR SENHA =====
+  if (changePasswordBtn) {
+    changePasswordBtn.addEventListener('click', function() {
+      const newPass = newPasswordInput ? newPasswordInput.value.trim() : '';
+      const confirmPass = confirmPasswordInput ? confirmPasswordInput.value.trim() : '';
+
+      if (!newPass || newPass.length < 4) {
+        showMessage(changePasswordMsg, 'A nova senha deve ter pelo menos 4 caracteres.', 'error');
+        return;
       }
+      if (newPass !== confirmPass) {
+        showMessage(changePasswordMsg, 'As senhas não coincidem.', 'error');
+        return;
+      }
+
+      localStorage.setItem(STORAGE_KEY, newPass);
+      storedPassword = newPass;
+      showMessage(changePasswordMsg, '✅ Senha alterada com sucesso!', 'success');
+      if (newPasswordInput) newPasswordInput.value = '';
+      if (confirmPasswordInput) confirmPasswordInput.value = '';
     });
   }
 
-  const adminSaveBtn = document.getElementById('adminSaveBtn');
-  if (adminSaveBtn) {
-    adminSaveBtn.addEventListener('click', function() {
-      if (typeof window.salvarHorariosAdmin === 'function') {
-        window.salvarHorariosAdmin();
+  // ===== Botões do admin (delegação de eventos) =====
+  if (adminContent) {
+    adminContent.addEventListener('click', function(e) {
+      if (e.target.closest('#adminAddRowBtn')) {
+        if (typeof window.adicionarHorarioAdmin === 'function') {
+          window.adicionarHorarioAdmin();
+        }
+      }
+      if (e.target.closest('#adminSaveBtn')) {
+        if (typeof window.salvarHorariosAdmin === 'function') {
+          window.salvarHorariosAdmin();
+        }
       }
     });
   }
