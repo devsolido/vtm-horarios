@@ -1,10 +1,8 @@
-// api/manutencao.js
-import { createClient } from '@supabase/supabase-js';
+// api/manutencao.js – versão com arquivo JSON
+import fs from 'fs';
+import path from 'path';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
+const filePath = path.join(process.cwd(), 'manutencao-status.json');
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -17,29 +15,22 @@ export default async function handler(req, res) {
   }
 
   try {
+    // GET
     if (req.method === 'GET') {
-      const { data, error } = await supabase
-        .from('config')
-        .select('value')
-        .eq('key', 'manutencao')
-        .single();
-
-      if (error) throw error;
-      return res.status(200).json({ ativo: data.value === 'true' });
+      if (!fs.existsSync(filePath)) {
+        fs.writeFileSync(filePath, JSON.stringify({ ativo: false }, null, 2));
+      }
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      return res.status(200).json({ ativo: data.ativo });
     }
 
+    // POST
     if (req.method === 'POST') {
       const { ativo } = req.body;
       if (typeof ativo !== 'boolean') {
         return res.status(400).json({ error: 'Campo "ativo" deve ser booleano' });
       }
-
-      const { error } = await supabase
-        .from('config')
-        .update({ value: String(ativo) })
-        .eq('key', 'manutencao');
-
-      if (error) throw error;
+      fs.writeFileSync(filePath, JSON.stringify({ ativo }, null, 2));
       return res.status(200).json({ success: true, ativo });
     }
 
