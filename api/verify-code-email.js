@@ -1,8 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-
+// api/verify-code-email.js – usando fetch (sem dependência)
 export default async function handler(req, res) {
   try {
-    console.log('🔵 verify-code-email chamada - Método:', req.method);
+    console.log('🔵 verify-code-email chamada');
 
     if (req.method !== 'POST') {
       return res.status(405).json({ error: 'Método não permitido' });
@@ -18,47 +17,54 @@ export default async function handler(req, res) {
     const SUPABASE_URL = process.env.SUPABASE_URL;
     const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
-    console.log('🔵 SUPABASE_URL:', SUPABASE_URL ? '✅ configurado' : '❌ faltando');
-    console.log('🔵 SUPABASE_ANON_KEY:', SUPABASE_ANON_KEY ? '✅ configurada' : '❌ faltando');
-
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
       console.error('❌ Variáveis do Supabase não configuradas');
       return res.status(500).json({ error: 'Configuração do servidor incompleta' });
     }
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const email = process.env.EMAIL_TO || 'igorifcmi@gmail.com';
 
-    console.log('🔵 Buscando código no banco para:', email);
+    // Buscar código no Supabase via REST
+    const apiUrl = `${SUPABASE_URL}/rest/v1/admin_codes?code=eq.${encodeURIComponent(code)}&email=eq.${encodeURIComponent(email)}&used=eq.false&expires_at=gt.${encodeURIComponent(new Date().toISOString())}&select=id`;
 
-    const { data, error } = await supabase
-      .from('admin_codes')
-      .select('id')
-      .eq('code', code)
-      .eq('email', email)
-      .eq('used', false)
-      .gt('expires_at', new Date().toISOString())
-      .maybeSingle();
+    const response = await fetch(apiUrl, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
 
-    if (error) {
-      console.error('❌ Erro ao consultar Supabase:', error);
-      return res.status(500).json({ error: 'Erro ao verificar código', details: error.message });
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ Erro ao consultar Supabase:', response.status, errorText);
+      return res.status(500).json({ error: 'Erro ao verificar código', details: errorText });
     }
 
-    if (!data) {
+    const data = await response.json();
+
+    if (!data || data.length === 0) {
       console.warn('⚠️ Código não encontrado ou expirado:', code);
       return res.status(400).json({ error: 'Código inválido ou expirado' });
     }
 
+    const record = data[0];
     console.log('✅ Código válido, marcando como usado...');
 
-    const { error: updateError } = await supabase
-      .from('admin_codes')
-      .update({ used: true })
-      .eq('id', data.id);
+    // Atualizar para used = true
+    const updateUrl = `${SUPABASE_URL}/rest/v1/admin_codes?id=eq.${record.id}`;
+    const updateResponse = await fetch(updateUrl, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({ used: true }),
+    });
 
-    if (updateError) {
-      console.error('❌ Erro ao marcar código como usado:', updateError);
+    if (!updateResponse.ok) {
+      console.error('❌ Erro ao marcar como usado:', updateResponse.status);
     }
 
     return res.status(200).json({ success: true });
