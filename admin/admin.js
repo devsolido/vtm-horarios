@@ -40,15 +40,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const TOTAL_TIME = 60;
   const CIRCUMFERENCE = 339.292;
 
+  // ================================================================
+  //  FUNÇÕES AUXILIARES (declaradas antes de serem usadas)
+  // ================================================================
+
   // ===== Atualiza relógio e clima =====
   function atualizarAdmin() {
     if (typeof updateClock === 'function') updateClock();
     if (typeof updateDateAndGreeting === 'function') updateDateAndGreeting();
     if (typeof fetchWeather === 'function') fetchWeather();
   }
-  atualizarAdmin();
-  setInterval(atualizarAdmin, 1000);
-  setInterval(() => { if (typeof fetchWeather === 'function') fetchWeather(); }, 600000);
 
   // ===== Mostrar mensagem =====
   function showMessage(el, text, type = 'info') {
@@ -175,6 +176,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 600);
   }
 
+  // ================================================================
+  //  MANUTENÇÃO (funções declaradas antes de serem usadas)
+  // ================================================================
+
+  async function carregarStatusManutencao() {
+    try {
+      const res = await fetch('/api/manutencao');
+      if (!res.ok) throw new Error('Erro ao carregar status');
+      const data = await res.json();
+      atualizarBotaoManutencao(data.ativo);
+    } catch (e) {
+      console.warn('Erro ao carregar status de manutenção:', e);
+      if (maintenanceStatus) maintenanceStatus.textContent = '⚠️ Erro';
+    }
+  }
+
+  function atualizarBotaoManutencao(ativo) {
+    if (!maintenanceStatus) return;
+    if (ativo) {
+      maintenanceStatus.textContent = '🔧 Manutenção: ATIVA';
+      if (maintenanceBtn) maintenanceBtn.classList.add('active');
+    } else {
+      maintenanceStatus.textContent = '✅ Manutenção: DESATIVADA';
+      if (maintenanceBtn) maintenanceBtn.classList.remove('active');
+    }
+  }
+
+  // ================================================================
+  //  EVENTOS
+  // ================================================================
+
   // ===== PASSO 1: Verificar senha =====
   if (passwordBtn) {
     passwordBtn.addEventListener('click', function() {
@@ -242,30 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== MANUTENÇÃO =====
-  async function carregarStatusManutencao() {
-    try {
-      const res = await fetch('/api/manutencao');
-      if (!res.ok) throw new Error('Erro ao carregar status');
-      const data = await res.json();
-      atualizarBotaoManutencao(data.ativo);
-    } catch (e) {
-      console.warn('Erro ao carregar status de manutenção:', e);
-      if (maintenanceStatus) maintenanceStatus.textContent = '⚠️ Erro';
-    }
-  }
-
-  function atualizarBotaoManutencao(ativo) {
-    if (!maintenanceStatus) return;
-    if (ativo) {
-      maintenanceStatus.textContent = '🔧 Manutenção: ATIVA';
-      if (maintenanceBtn) maintenanceBtn.classList.add('active');
-    } else {
-      maintenanceStatus.textContent = '✅ Manutenção: DESATIVADA';
-      if (maintenanceBtn) maintenanceBtn.classList.remove('active');
-    }
-  }
-
+  // ===== MANUTENÇÃO – EVENTO DO BOTÃO =====
   if (maintenanceBtn) {
     maintenanceBtn.addEventListener('click', async function() {
       const isAtivo = maintenanceStatus && maintenanceStatus.textContent.includes('ATIVA');
@@ -320,9 +329,15 @@ document.addEventListener('DOMContentLoaded', function() {
   if (typeof carregarHorariosDoBanco === 'function') {
     carregarHorariosDoBanco();
   }
+
+  // ===== Inicialização =====
+  atualizarAdmin();
 });
 
-// ===== Funções globais =====
+// ================================================================
+//  FUNÇÕES GLOBAIS (compatíveis com script.js)
+// ================================================================
+
 window.adicionarHorarioAdmin = function() {
   allHorarios.push({
     destino: 'Novo destino',
