@@ -1,6 +1,10 @@
 import nodemailer from 'nodemailer';
+import { createClient } from '@supabase/supabase-js';
 
-const codeStore = new Map();
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -24,16 +28,27 @@ export default async function handler(req, res) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
 
-  const expiresAt = Date.now() + 60000;
-  codeStore.set(toEmail, { code, expiresAt });
-
-  // ⚡ ENVIO DIRETO PELO GMAIL (não via Brevo)
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: { user, pass },
-  });
+  const expiresAt = new Date(Date.now() + 60000);
 
   try {
+    // Salvar no Supabase
+    const { error: insertError } = await supabase
+      .from('admin_codes')
+      .insert({
+        email: toEmail,
+        code: code,
+        expires_at: expiresAt.toISOString(),
+        used: false
+      });
+
+    if (insertError) throw insertError;
+
+    // Enviar e-mail via Gmail
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user, pass },
+    });
+
     await transporter.sendMail({
       from: `"VTM Integração" <${user}>`,
       to: toEmail,
@@ -52,10 +67,9 @@ export default async function handler(req, res) {
       `,
     });
 
-    setTimeout(() => codeStore.delete(toEmail), 60000);
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error('Erro ao enviar e-mail:', error);
+    console.error('❌ Erro ao enviar e-mail ou salvar no banco:', error);
     return res.status(500).json({ error: 'Falha ao enviar e-mail', details: error.message });
   }
 }
