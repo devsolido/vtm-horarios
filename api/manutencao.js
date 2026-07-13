@@ -1,4 +1,4 @@
-// api/manutencao.js – versão com arquivo JSON
+// api/manutencao.js – versão com arquivo JSON (sem Supabase)
 import fs from 'fs';
 import path from 'path';
 
@@ -15,7 +15,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // GET
     if (req.method === 'GET') {
       if (!fs.existsSync(filePath)) {
         fs.writeFileSync(filePath, JSON.stringify({ ativo: false }, null, 2));
@@ -24,7 +23,6 @@ export default async function handler(req, res) {
       return res.status(200).json({ ativo: data.ativo });
     }
 
-    // POST
     if (req.method === 'POST') {
       const { ativo } = req.body;
       if (typeof ativo !== 'boolean') {
@@ -36,7 +34,7 @@ export default async function handler(req, res) {
 
     return res.status(405).json({ error: 'Método não permitido' });
   } catch (error) {
-    console.error('Erro na API de manutenção:', error);
-    return res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error('❌ Erro na API de manutenção:', error);
+    return res.status(500).json({ error: error.message });
   }
 }
