@@ -1006,25 +1006,32 @@
 }
 
 
-/* ===== PROTEÇÃO CONTRA EXIBIÇÃO FORÇADA ===== */
-#adminContent {
+/* ============================================================
+   PROTEÇÃO CONTRA EXIBIÇÃO FORÇADA – NUNCA VAZAR
+   ============================================================ */
+
+/* Oculta por padrão com máxima especificidade */
+body #adminContent {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-.admin-content-visible {
+/* Exibe apenas quando a classe de autenticação está presente */
+body #adminContent.admin-content-visible {
   display: block !important;
-}
-
-
-
-/* Força ocultação por padrão */
-#adminContent {
-  display: none !important;
-}
-
-/* Exibe apenas quando autenticado */
-.admin-content-visible {
-  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+  margin: inherit !important;
+  padding: inherit !important;
 }
 
 /* ================================================================
