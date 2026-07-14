@@ -13,9 +13,26 @@ export default async function handler(req, res) {
 
   const { senha } = req.body;
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  const userAgent = req.headers['user-agent'] || 'unknown';
 
   const MAX_ATTEMPTS = 5;
   const BLOCK_TIME = 60000; // 60 segundos
+
+  // Função auxiliar para registrar log de login
+  async function logLogin(success, errorMessage = null) {
+    try {
+      await supabase
+        .from('login_logs')
+        .insert({
+          ip,
+          success,
+          error_message: errorMessage,
+          user_agent: userAgent
+        });
+    } catch (err) {
+      console.error('Erro ao registrar log de login:', err);
+    }
+  }
 
   try {
     // Busca ou cria registro para o IP
@@ -27,7 +44,6 @@ export default async function handler(req, res) {
 
     if (error) throw error;
 
-    // Se não existir, cria
     if (!data) {
       const { error: insertError } = await supabase
         .from('login_attempts')
@@ -40,6 +56,8 @@ export default async function handler(req, res) {
     if (data.blocked_until && new Date(data.blocked_until) > new Date()) {
       const blockedUntil = new Date(data.blocked_until);
       const segundosRestantes = Math.ceil((blockedUntil - Date.now()) / 1000);
+      // Registra tentativa bloqueada (falha)
+      await logLogin(false, `Bloqueado por muitas tentativas (restam ${segundosRestantes}s)`);
       return res.status(429).json({
         error: `Muitas tentativas. Aguarde ${segundosRestantes} segundos.`,
         blocked: true,
@@ -47,14 +65,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // 🔑 VERIFICAÇÃO DA SENHA
-    // A senha correta está no front-end (localStorage). Para segurança,
-    // vamos manter a lógica: a senha correta é a que está armazenada no localStorage.
-    // Como a API não tem acesso ao localStorage, precisamos que o front-end
-    // envie a senha correta junto com a tentativa? Não, isso é inseguro.
-    // Melhor: mover a senha para o servidor (variável de ambiente).
-    // Por enquanto, vamos usar uma variável de ambiente ADMIN_PASSWORD.
-    // Configure na Vercel: ADMIN_PASSWORD = admin123
+    // Verifica a senha
     const storedPassword = process.env.ADMIN_PASSWORD || 'admin123';
     const isCorrect = senha === storedPassword;
 
@@ -64,6 +75,10 @@ export default async function handler(req, res) {
         .from('login_attempts')
         .update({ attempts: 0, blocked_until: null })
         .eq('ip', ip);
+
+      // Log de sucesso
+      await logLogin(true);
+
       return res.status(200).json({ success: true });
     }
 
@@ -79,6 +94,9 @@ export default async function handler(req, res) {
       .update({ attempts: newAttempts, blocked_until: blockedUntil })
       .eq('ip', ip);
 
+    // Log de falha
+    await logLogin(false, 'Senha incorreta');
+
     return res.status(401).json({
       error: 'Senha incorreta.',
       attempts: newAttempts,
@@ -88,6 +106,8 @@ export default async function handler(req, res) {
     });
   } catch (err) {
     console.error('Erro no check-login:', err);
+    // Tenta registrar o erro no log
+    await logLogin(false, `Erro interno: ${err.message}`);
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 }
