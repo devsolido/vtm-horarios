@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const adminContent = document.getElementById('adminContent');
   const loginArea = document.getElementById('adminLoginArea');
 
+  // 🔑 Senha – usada apenas para alteração (localStorage)
   const STORAGE_KEY = 'vtm_admin_password';
   let storedPassword = localStorage.getItem(STORAGE_KEY) || 'admin123';
 
@@ -233,7 +234,6 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
       if (stepCode) stepCode.style.display = 'none';
       if (adminContent) {
-        // Força a exibição com !important para sobrescrever qualquer tentativa de ocultação
         adminContent.style.setProperty('display', 'block', 'important');
         adminContent.classList.add('admin-content-visible');
       }
@@ -244,27 +244,59 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 600);
   }
 
-  // Eventos de autenticação
+  // ================================================================
+  //  🔐 VERIFICAÇÃO DE SENHA – VIA API (proteção contra força bruta)
+  // ================================================================
   if (passwordBtn) {
-    passwordBtn.addEventListener('click', function() {
+    passwordBtn.addEventListener('click', async function() {
       if (!adminPassword) return;
       const pass = adminPassword.value.trim();
-      if (pass === storedPassword) {
-        if (stepPassword) stepPassword.style.display = 'none';
-        if (stepCode) stepCode.style.display = 'block';
-        generateNewCode();
-      } else {
-        showMessage(passwordMsg, '❌ Senha incorreta.', 'error');
-        if (adminPassword) adminPassword.value = '';
-        if (adminPassword) adminPassword.focus();
+
+      // Desabilita o botão para evitar múltiplos cliques
+      passwordBtn.disabled = true;
+      passwordBtn.textContent = 'Verificando...';
+
+      try {
+        const res = await fetch('/api/check-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ senha: pass })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          // Login bem-sucedido
+          showMessage(passwordMsg, '✅ Senha correta!', 'success');
+          if (stepPassword) stepPassword.style.display = 'none';
+          if (stepCode) stepCode.style.display = 'block';
+          generateNewCode();
+        } else if (data.blocked) {
+          showMessage(passwordMsg, `⛔ ${data.error}`, 'error');
+          if (adminPassword) adminPassword.value = '';
+          if (adminPassword) adminPassword.focus();
+        } else {
+          const restantes = data.maxAttempts - (data.attempts || 0);
+          showMessage(passwordMsg, `❌ Senha incorreta. Tentativas restantes: ${restantes}`, 'error');
+          if (adminPassword) adminPassword.value = '';
+          if (adminPassword) adminPassword.focus();
+        }
+      } catch (err) {
+        console.error('Erro ao verificar login:', err);
+        showMessage(passwordMsg, '❌ Erro ao conectar ao servidor. Tente novamente.', 'error');
+      } finally {
+        passwordBtn.disabled = false;
+        passwordBtn.textContent = 'Verificar senha';
       }
     });
   }
+
   if (adminPassword) {
     adminPassword.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && passwordBtn) passwordBtn.click();
     });
   }
+
   if (verifyCodeBtn) verifyCodeBtn.addEventListener('click', verifyCode);
   if (adminCode22) {
     adminCode22.addEventListener('keydown', function(e) {
@@ -295,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ================================================================
-  //  8. ALTERAR SENHA
+  //  8. ALTERAR SENHA (ainda usa localStorage – futuramente será migrado)
   // ================================================================
 
   if (changePasswordBtn) {
@@ -671,7 +703,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (stepPassword) stepPassword.style.display = 'none';
     if (stepCode) stepCode.style.display = 'none';
     if (adminContent) {
-      // Força a exibição com !important também para a sessão ativa
       adminContent.style.setProperty('display', 'block', 'important');
       adminContent.classList.add('admin-content-visible');
     }
