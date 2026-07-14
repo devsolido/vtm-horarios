@@ -26,7 +26,7 @@
         </div>
         <div class="admin-header-meta">
           <span class="admin-date" id="adminDateValue">--</span>
-          <span class="admin-user"><i class="fas fa-user-circle"></i> Igor V.</span>
+          <!-- Nome do operador removido -->
         </div>
       </div>
       <div class="admin-header-right">
@@ -44,25 +44,15 @@
       </div>
     </header>
 
-    <!-- ===== SUBHEADER ===== -->
-    <div class="admin-subheader">
-      <div>
-        <h2>Gerenciar horários</h2>
-        <p>Gerencie os horários dos ônibus da Integração – Vale Transporte Marabá.</p>
-      </div>
-      <div class="admin-actions-top">
-        <button class="btn-add-row" id="adminAddRowBtn"><i class="fas fa-plus"></i> Adicionar horário</button>
-      </div>
-    </div>
-
     <!-- ========================================================== -->
-    <!-- AUTENTICAÇÃO – SENHA + CÓDIGO DE 22 DÍGITOS                 -->
+    <!-- AUTENTICAÇÃO – SENHA + CÓDIGO (design melhorado)           -->
     <!-- ========================================================== -->
 
     <!-- PASSO 1: SENHA -->
-    <div id="stepPassword" class="auth-step" style="display:block; max-width:420px; margin:30px auto;">
+    <div id="stepPassword" class="auth-step" style="display:block; max-width:420px; margin:40px auto;">
       <div class="auth-icon"><i class="fas fa-lock"></i></div>
       <h3>Digite sua senha</h3>
+      <p class="auth-sub">Acesso restrito ao painel administrativo</p>
       <div class="field">
         <label for="adminPassword">Senha de acesso</label>
         <div class="password-wrapper">
@@ -74,9 +64,10 @@
     </div>
 
     <!-- PASSO 2: CÓDIGO -->
-    <div id="stepCode" class="auth-step" style="display:none; max-width:420px; margin:30px auto;">
+    <div id="stepCode" class="auth-step" style="display:none; max-width:420px; margin:40px auto;">
       <div class="auth-icon"><i class="fas fa-shield-alt"></i></div>
-      <h3>Digite o código de verificação</h3>
+      <h3>Verificação em duas etapas</h3>
+      <p class="auth-sub">Informe o código enviado</p>
       <div class="timer-circle">
         <svg viewBox="0 0 120 120" width="120" height="120">
           <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0,198,251,0.1)" stroke-width="8" />
@@ -223,7 +214,7 @@
 
   </div>
 
-  <!-- ===== MODAL DE CONFIRMAÇÃO (para exclusão) ===== -->
+  <!-- ===== MODAL DE CONFIRMAÇÃO ===== -->
   <div class="modal-overlay" id="confirmModal">
     <div class="modal-box" style="max-width:400px;">
       <div class="icon-big" style="color:#ff6b6b;"><i class="fas fa-exclamation-triangle"></i></div>

@@ -1,6 +1,6 @@
 // ================================================================
-//  ADMIN.JS – Painel Administrativo VTM (CORRIGIDO)
-//  Autenticação, CRUD, Manutenção, Estatísticas, Pesquisa, Filtros
+//  ADMIN.JS – Painel Administrativo VTM (VERSÃO FINAL)
+//  Autenticação 2FA, CRUD, Manutenção, Estatísticas, Pesquisa
 // ================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function() {
   //  1. ELEMENTOS DO DOM
   // ================================================================
 
-  // Autenticação
   const stepPassword = document.getElementById('stepPassword');
   const stepCode = document.getElementById('stepCode');
   const adminPassword = document.getElementById('adminPassword');
@@ -24,41 +23,34 @@ document.addEventListener('DOMContentLoaded', function() {
   const progressCircle = document.getElementById('progressCircle');
   const timerText = document.getElementById('timerText');
 
-  // Admin content
   const adminContent = document.getElementById('adminContent');
   const loginArea = document.getElementById('adminLoginArea');
 
-  // Segurança
   const STORAGE_KEY = 'vtm_admin_password';
   let storedPassword = localStorage.getItem(STORAGE_KEY) || 'admin123';
+
   const newPasswordInput = document.getElementById('newPassword');
   const confirmPasswordInput = document.getElementById('confirmPassword');
   const changePasswordBtn = document.getElementById('changePasswordBtn');
   const changePasswordMsg = document.getElementById('changePasswordMsg');
 
-  // Logout
   const logoutBtn = document.getElementById('logoutBtn');
 
-  // Manutenção
   const maintenanceToggle = document.getElementById('maintenanceToggle');
   const maintenanceStatusLabel = document.getElementById('maintenanceStatus');
   const statManutencao = document.getElementById('statManutencao');
 
-  // Pesquisa e Filtros
   const searchInput = document.getElementById('searchInput');
   const filterChips = document.querySelectorAll('.filter-chip');
 
-  // Tabela e ações
   const adminTableBody = document.getElementById('adminTableBody');
   const adminRowCount = document.getElementById('adminRowCount');
 
-  // Modal de confirmação
   const confirmModal = document.getElementById('confirmModal');
   const confirmMessage = document.getElementById('confirmMessage');
   const confirmCancelBtn = document.getElementById('confirmCancelBtn');
   const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 
-  // Toast container
   const toastContainer = document.getElementById('toast-container');
 
   // ================================================================
@@ -129,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
   //  6. AUTENTICAÇÃO – SENHA + CÓDIGO DE 22 DÍGITOS
   // ================================================================
 
-  // 6.1 Timer
   function startTimer() {
     clearInterval(timerInterval);
     timeLeft = TOTAL_TIME;
@@ -153,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
     timerText.style.color = timeLeft <= 10 ? '#ff6b6b' : '#00c6fb';
   }
 
-  // 6.2 Gerar e enviar código via e-mail
   function generateNewCode() {
     if (!resendCodeBtn) return;
     const btn = resendCodeBtn;
@@ -185,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  // 6.3 Verificar código via API
   function verifyCode() {
     if (!adminCode22) return;
     const input = adminCode22.value.trim();
@@ -225,27 +214,20 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  // 6.4 Autenticação bem-sucedida
   function autenticarSucesso() {
     clearInterval(timerInterval);
     showMessage(codeMsg, '✅ Autenticação completa!', 'success');
     setTimeout(() => {
       if (stepCode) stepCode.style.display = 'none';
       if (adminContent) adminContent.style.display = 'block';
-      
-      // CARREGA A TABELA E ATUALIZA ESTATÍSTICAS
       carregarDadosAdmin();
-
       sessionStorage.setItem('adminAuthenticated', 'true');
       if (logoutBtn) logoutBtn.style.display = 'flex';
       carregarStatusManutencao();
     }, 600);
   }
 
-  // ================================================================
-  //  6.5 EVENTOS DE AUTENTICAÇÃO
-  // ================================================================
-
+  // Eventos de autenticação
   if (passwordBtn) {
     passwordBtn.addEventListener('click', function() {
       if (!adminPassword) return;
@@ -261,13 +243,11 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   }
-
   if (adminPassword) {
     adminPassword.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && passwordBtn) passwordBtn.click();
     });
   }
-
   if (verifyCodeBtn) verifyCodeBtn.addEventListener('click', verifyCode);
   if (adminCode22) {
     adminCode22.addEventListener('keydown', function(e) {
@@ -461,7 +441,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // ================================================================
 
   function carregarDadosAdmin() {
-    // Se já tiver dados, carrega imediatamente
     if (typeof allHorarios !== 'undefined' && allHorarios.length > 0) {
       if (typeof loadAdminTable === 'function') {
         loadAdminTable();
@@ -471,10 +450,8 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    // Se não tiver dados, carrega do banco e depois recarrega a tabela
     if (typeof carregarHorariosDoBanco === 'function') {
       carregarHorariosDoBanco();
-
       let tentativas = 0;
       const maxTentativas = 10;
       const intervalo = setInterval(() => {
@@ -502,10 +479,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ================================================================
-  //  14. CRUD DE HORÁRIOS – CORRIGIDO COM DELEGAÇÃO GLOBAL
+  //  14. CRUD DE HORÁRIOS (compartilhado com script.js)
   // ================================================================
 
-  // 14.1 Adicionar horário
   window.adicionarHorarioAdmin = function() {
     console.log('🔵 Adicionando horário...');
     if (typeof allHorarios === 'undefined') {
@@ -532,7 +508,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 200);
   };
 
-  // 14.2 Salvar alterações
   window.salvarHorariosAdmin = function() {
     console.log('🔵 Salvando alterações...');
     if (typeof allHorarios === 'undefined') {
@@ -593,7 +568,6 @@ document.addEventListener('DOMContentLoaded', function() {
     showToast('✅ Horários salvos com sucesso!', 'success');
   };
 
-  // 14.3 Remover horário (com modal)
   window.confirmarExclusao = function(idx, destino) {
     pendingDeleteIdx = idx;
     confirmMessage.textContent = `Tem certeza que deseja excluir o horário para ${destino}?`;
@@ -642,11 +616,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ================================================================
-  //  15. DELEGAÇÃO DE EVENTOS GLOBAL PARA BOTÕES (MAIS ROBUSTA)
+  //  15. DELEGAÇÃO DE EVENTOS GLOBAL
   // ================================================================
 
   document.addEventListener('click', function(e) {
-    // Botão Adicionar horário
     const btnAdd = e.target.closest('#adminAddRowBtn');
     if (btnAdd) {
       console.log('🔵 Clique no Adicionar horário detectado');
@@ -659,7 +632,6 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    // Botão Salvar alterações
     const btnSave = e.target.closest('#adminSaveBtn');
     if (btnSave) {
       console.log('🔵 Clique no Salvar alterações detectado');
@@ -676,16 +648,13 @@ document.addEventListener('DOMContentLoaded', function() {
   //  16. CARREGAR DADOS E INICIALIZAR
   // ================================================================
 
-  // Carregar status da manutenção (sempre)
   carregarStatusManutencao();
 
-  // Verificar se já está autenticado
   if (sessionStorage.getItem('adminAuthenticated') === 'true') {
     if (stepPassword) stepPassword.style.display = 'none';
     if (stepCode) stepCode.style.display = 'none';
     if (adminContent) adminContent.style.display = 'block';
     if (logoutBtn) logoutBtn.style.display = 'flex';
-
     carregarDadosAdmin();
   } else {
     if (stepPassword) stepPassword.style.display = 'block';
