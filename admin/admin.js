@@ -1,5 +1,5 @@
 // ================================================================
-//  ADMIN.JS – Painel Administrativo VTM (VERSÃO FINAL)
+//  ADMIN.JS – Painel Administrativo Que Horas Passa (VERSÃO FINAL)
 //  Autenticação 2FA, CRUD, Manutenção, Estatísticas, Pesquisa
 // ================================================================
 
