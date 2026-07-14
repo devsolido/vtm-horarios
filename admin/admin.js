@@ -3,6 +3,16 @@
 //  Autenticação 2FA, CRUD, Manutenção, Estatísticas, Pesquisa
 // ================================================================
 
+// ================================================================
+//  PROTEÇÃO: bloqueia exibição do conteúdo admin sem autenticação
+// ================================================================
+(function() {
+  const content = document.getElementById('adminContent');
+  if (content) {
+    content.style.setProperty('display', 'none', 'important');
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
 
   // ================================================================
@@ -214,21 +224,21 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
- function autenticarSucesso() {
-  clearInterval(timerInterval);
-  showMessage(codeMsg, '✅ Autenticação completa!', 'success');
-  setTimeout(() => {
-    if (stepCode) stepCode.style.display = 'none';
-    if (adminContent) {
-      adminContent.classList.add('admin-content-visible');
-      adminContent.style.display = '';
-    }
-    if (logoutBtn) logoutBtn.style.display = 'flex';
-    sessionStorage.setItem('adminAuthenticated', 'true');
-    carregarDadosAdmin();
-    carregarStatusManutencao();
-  }, 600);
-}
+  function autenticarSucesso() {
+    clearInterval(timerInterval);
+    showMessage(codeMsg, '✅ Autenticação completa!', 'success');
+    setTimeout(() => {
+      if (stepCode) stepCode.style.display = 'none';
+      if (adminContent) {
+        adminContent.classList.add('admin-content-visible');
+        adminContent.style.display = '';
+      }
+      if (logoutBtn) logoutBtn.style.display = 'flex';
+      sessionStorage.setItem('adminAuthenticated', 'true');
+      carregarDadosAdmin();
+      carregarStatusManutencao();
+    }, 600);
+  }
 
   // Eventos de autenticação
   if (passwordBtn) {
@@ -654,15 +664,15 @@ document.addEventListener('DOMContentLoaded', function() {
   carregarStatusManutencao();
 
   if (sessionStorage.getItem('adminAuthenticated') === 'true') {
-  if (stepPassword) stepPassword.style.display = 'none';
-  if (stepCode) stepCode.style.display = 'none';
-  if (adminContent) {
-    adminContent.classList.add('admin-content-visible');
-    adminContent.style.display = '';
+    if (stepPassword) stepPassword.style.display = 'none';
+    if (stepCode) stepCode.style.display = 'none';
+    if (adminContent) {
+      adminContent.classList.add('admin-content-visible');
+      adminContent.style.display = '';
+    }
+    if (logoutBtn) logoutBtn.style.display = 'flex';
+    carregarDadosAdmin();
   }
-  if (logoutBtn) logoutBtn.style.display = 'flex';
-  carregarDadosAdmin();
-}
 
   // ================================================================
   //  17. EXPOR FUNÇÕES PARA USO GLOBAL
