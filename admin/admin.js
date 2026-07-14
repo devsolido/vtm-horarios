@@ -13,6 +13,50 @@
   }
 })();
 
+// ================================================================
+//  FUNÇÃO PARA REGISTRAR ERROS (global)
+// ================================================================
+function logError(tipo, mensagem, stack = null, url = null) {
+  try {
+    fetch('/api/log-error', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tipo,
+        mensagem,
+        stack,
+        url: url || window.location.href
+      })
+    }).catch(() => {});
+  } catch (_) {}
+}
+
+// ================================================================
+//  CAPTURA DE ERROS GLOBAIS
+// ================================================================
+window.addEventListener('unhandledrejection', function(event) {
+  logError(
+    'Promise Rejection',
+    event.reason?.message || String(event.reason),
+    event.reason?.stack || null
+  );
+});
+
+window.addEventListener('error', function(event) {
+  logError(
+    'Runtime Error',
+    event.message,
+    event.error?.stack || null
+  );
+});
+
+const originalConsoleError = console.error;
+console.error = function(...args) {
+  originalConsoleError.apply(console, args);
+  const mensagem = args.map(a => typeof a === 'string' ? a : JSON.stringify(a)).join(' ');
+  logError('Console Error', mensagem);
+};
+
 document.addEventListener('DOMContentLoaded', function() {
 
   // ================================================================
@@ -176,9 +220,10 @@ document.addEventListener('DOMContentLoaded', function() {
           if (generatedCodeSpan) generatedCodeSpan.textContent = '❌ Falha no envio';
         }
       })
-      .catch(() => {
+      .catch((err) => {
         showMessage(codeMsg, '❌ Falha na comunicação com o servidor.', 'error');
         if (generatedCodeSpan) generatedCodeSpan.textContent = '❌ Erro de conexão';
+        logError('Erro envio código', err.message, err.stack);
       })
       .finally(() => {
         btn.disabled = false;
@@ -216,8 +261,9 @@ document.addEventListener('DOMContentLoaded', function() {
           if (adminCode22) adminCode22.focus();
         }
       })
-      .catch(() => {
+      .catch((err) => {
         showMessage(codeMsg, '❌ Erro ao verificar código.', 'error');
+        logError('Erro verificação código', err.message, err.stack);
       })
       .finally(() => {
         btn.disabled = false;
@@ -252,7 +298,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!adminPassword) return;
       const pass = adminPassword.value.trim();
 
-      // Desabilita o botão para evitar múltiplos cliques
       passwordBtn.disabled = true;
       passwordBtn.textContent = 'Verificando...';
 
@@ -266,7 +311,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = await res.json();
 
         if (data.success) {
-          // Login bem-sucedido
           showMessage(passwordMsg, '✅ Senha correta!', 'success');
           if (stepPassword) stepPassword.style.display = 'none';
           if (stepCode) stepCode.style.display = 'block';
@@ -284,6 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch (err) {
         console.error('Erro ao verificar login:', err);
         showMessage(passwordMsg, '❌ Erro ao conectar ao servidor. Tente novamente.', 'error');
+        logError('Erro verificação senha', err.message, err.stack);
       } finally {
         passwordBtn.disabled = false;
         passwordBtn.textContent = 'Verificar senha';
@@ -379,6 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
       atualizarSwitchManutencao(manutencaoAtiva);
     } catch (e) {
       console.warn('Erro ao carregar status de manutenção:', e);
+      logError('Erro carregar manutenção', e.message, e.stack);
     }
   }
 
@@ -418,6 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch (e) {
         console.error('Erro ao alternar manutenção:', e);
         showToast('❌ Erro ao alternar manutenção', 'error');
+        logError('Erro alternar manutenção', e.message, e.stack);
         this.checked = !this.checked;
       } finally {
         this.disabled = false;
@@ -430,16 +477,20 @@ document.addEventListener('DOMContentLoaded', function() {
   // ================================================================
 
   function atualizarStats() {
-    const total = allHorarios ? allHorarios.length : 0;
-    const destinos = allHorarios ? [...new Set(allHorarios.map(h => h.destino))].length : 0;
-    const elTotal = document.getElementById('statTotalHorarios');
-    const elDestinos = document.getElementById('statDestinos');
-    if (elTotal) elTotal.textContent = total;
-    if (elDestinos) elDestinos.textContent = destinos;
-    const elStatus = document.getElementById('statStatus');
-    if (elStatus) {
-      elStatus.textContent = 'Online';
-      elStatus.style.color = '#00c864';
+    try {
+      const total = allHorarios ? allHorarios.length : 0;
+      const destinos = allHorarios ? [...new Set(allHorarios.map(h => h.destino))].length : 0;
+      const elTotal = document.getElementById('statTotalHorarios');
+      const elDestinos = document.getElementById('statDestinos');
+      if (elTotal) elTotal.textContent = total;
+      if (elDestinos) elDestinos.textContent = destinos;
+      const elStatus = document.getElementById('statStatus');
+      if (elStatus) {
+        elStatus.textContent = 'Online';
+        elStatus.style.color = '#00c864';
+      }
+    } catch (e) {
+      logError('Erro atualizar stats', e.message, e.stack);
     }
   }
 
@@ -448,25 +499,29 @@ document.addEventListener('DOMContentLoaded', function() {
   // ================================================================
 
   function filtrarTabela() {
-    const rows = document.querySelectorAll('#adminTableBody tr');
-    const term = searchTerm.toLowerCase().trim();
-    rows.forEach(row => {
-      const destino = (row.querySelector('td:first-child input')?.value || '').toLowerCase();
-      const horario = (row.querySelector('td:nth-child(2) input')?.value || '').toLowerCase();
-      const embarque = (row.querySelector('td:nth-child(3) input')?.value || '').toLowerCase();
-      const dias = row.querySelectorAll('.dias-checkboxes input[type="checkbox"]');
-      const diasSelecionados = [];
-      dias.forEach(cb => { if (cb.checked) diasSelecionados.push(cb.value); });
+    try {
+      const rows = document.querySelectorAll('#adminTableBody tr');
+      const term = searchTerm.toLowerCase().trim();
+      rows.forEach(row => {
+        const destino = (row.querySelector('td:first-child input')?.value || '').toLowerCase();
+        const horario = (row.querySelector('td:nth-child(2) input')?.value || '').toLowerCase();
+        const embarque = (row.querySelector('td:nth-child(3) input')?.value || '').toLowerCase();
+        const dias = row.querySelectorAll('.dias-checkboxes input[type="checkbox"]');
+        const diasSelecionados = [];
+        dias.forEach(cb => { if (cb.checked) diasSelecionados.push(cb.value); });
 
-      const matchSearch = !term || destino.includes(term) || horario.includes(term) || embarque.includes(term);
-      let matchFilter = true;
-      if (activeFilter !== 'all') {
-        matchFilter = diasSelecionados.includes(activeFilter);
-      }
-      row.style.display = (matchSearch && matchFilter) ? '' : 'none';
-    });
-    const totalVisiveis = document.querySelectorAll('#adminTableBody tr:not([style*="display: none;"])').length;
-    if (adminRowCount) adminRowCount.textContent = totalVisiveis + ' horários';
+        const matchSearch = !term || destino.includes(term) || horario.includes(term) || embarque.includes(term);
+        let matchFilter = true;
+        if (activeFilter !== 'all') {
+          matchFilter = diasSelecionados.includes(activeFilter);
+        }
+        row.style.display = (matchSearch && matchFilter) ? '' : 'none';
+      });
+      const totalVisiveis = document.querySelectorAll('#adminTableBody tr:not([style*="display: none;"])').length;
+      if (adminRowCount) adminRowCount.textContent = totalVisiveis + ' horários';
+    } catch (e) {
+      logError('Erro filtrar tabela', e.message, e.stack);
+    }
   }
 
   if (searchInput) {
@@ -490,40 +545,44 @@ document.addEventListener('DOMContentLoaded', function() {
   // ================================================================
 
   function carregarDadosAdmin() {
-    if (typeof allHorarios !== 'undefined' && allHorarios.length > 0) {
-      if (typeof loadAdminTable === 'function') {
-        loadAdminTable();
-        atualizarStats();
-        setTimeout(filtrarTabela, 300);
-      }
-      return;
-    }
-
-    if (typeof carregarHorariosDoBanco === 'function') {
-      carregarHorariosDoBanco();
-      let tentativas = 0;
-      const maxTentativas = 10;
-      const intervalo = setInterval(() => {
-        tentativas++;
-        if (typeof allHorarios !== 'undefined' && allHorarios.length > 0) {
-          clearInterval(intervalo);
-          if (typeof loadAdminTable === 'function') {
-            loadAdminTable();
-            atualizarStats();
-            filtrarTabela();
-            console.log('✅ Tabela carregada após dados serem obtidos.');
-          }
-        } else if (tentativas >= maxTentativas) {
-          clearInterval(intervalo);
-          console.warn('⚠️ Não foi possível carregar os dados após várias tentativas.');
+    try {
+      if (typeof allHorarios !== 'undefined' && allHorarios.length > 0) {
+        if (typeof loadAdminTable === 'function') {
+          loadAdminTable();
+          atualizarStats();
+          setTimeout(filtrarTabela, 300);
         }
-      }, 300);
-    } else {
-      if (typeof loadAdminTable === 'function') {
-        loadAdminTable();
-        atualizarStats();
-        setTimeout(filtrarTabela, 300);
+        return;
       }
+
+      if (typeof carregarHorariosDoBanco === 'function') {
+        carregarHorariosDoBanco();
+        let tentativas = 0;
+        const maxTentativas = 10;
+        const intervalo = setInterval(() => {
+          tentativas++;
+          if (typeof allHorarios !== 'undefined' && allHorarios.length > 0) {
+            clearInterval(intervalo);
+            if (typeof loadAdminTable === 'function') {
+              loadAdminTable();
+              atualizarStats();
+              filtrarTabela();
+              console.log('✅ Tabela carregada após dados serem obtidos.');
+            }
+          } else if (tentativas >= maxTentativas) {
+            clearInterval(intervalo);
+            console.warn('⚠️ Não foi possível carregar os dados após várias tentativas.');
+          }
+        }, 300);
+      } else {
+        if (typeof loadAdminTable === 'function') {
+          loadAdminTable();
+          atualizarStats();
+          setTimeout(filtrarTabela, 300);
+        }
+      }
+    } catch (e) {
+      logError('Erro carregar dados admin', e.message, e.stack);
     }
   }
 
@@ -532,89 +591,99 @@ document.addEventListener('DOMContentLoaded', function() {
   // ================================================================
 
   window.adicionarHorarioAdmin = function() {
-    console.log('🔵 Adicionando horário...');
-    if (typeof allHorarios === 'undefined') {
-      showToast('Erro: dados não carregados.', 'error');
-      return;
+    try {
+      console.log('🔵 Adicionando horário...');
+      if (typeof allHorarios === 'undefined') {
+        showToast('Erro: dados não carregados.', 'error');
+        return;
+      }
+      allHorarios.push({
+        destino: 'Novo destino',
+        horario: '12:00',
+        embarque: 'Local',
+        dias: ['Segunda a Sexta']
+      });
+      if (typeof loadAdminTable === 'function') {
+        loadAdminTable();
+      } else {
+        console.warn('loadAdminTable não definida');
+      }
+      if (typeof showAdminMsg === 'function') {
+        showAdminMsg('Novo horário adicionado. Edite os campos e salve.', 'info');
+      }
+      setTimeout(() => {
+        atualizarStats();
+        filtrarTabela();
+      }, 200);
+    } catch (e) {
+      showToast('❌ Erro ao adicionar horário.', 'error');
+      logError('Erro adicionar horário', e.message, e.stack);
     }
-    allHorarios.push({
-      destino: 'Novo destino',
-      horario: '12:00',
-      embarque: 'Local',
-      dias: ['Segunda a Sexta']
-    });
-    if (typeof loadAdminTable === 'function') {
-      loadAdminTable();
-    } else {
-      console.warn('loadAdminTable não definida');
-    }
-    if (typeof showAdminMsg === 'function') {
-      showAdminMsg('Novo horário adicionado. Edite os campos e salve.', 'info');
-    }
-    setTimeout(() => {
-      atualizarStats();
-      filtrarTabela();
-    }, 200);
   };
 
   window.salvarHorariosAdmin = function() {
-    console.log('🔵 Salvando alterações...');
-    if (typeof allHorarios === 'undefined') {
-      showToast('Erro: dados não carregados.', 'error');
-      return;
-    }
-    const novasLinhas = [];
-    let temErro = false;
-    document.querySelectorAll('#adminTableBody tr').forEach(tr => {
-      const inputs = tr.querySelectorAll('.admin-input');
-      const checkboxes = tr.querySelectorAll('.dias-checkboxes input[type="checkbox"]');
-      if (inputs.length >= 3) {
-        const destino = inputs[0].value.trim();
-        const horario = inputs[1].value.trim();
-        const embarque = inputs[2].value.trim();
-        if (!destino || !horario) {
-          temErro = true;
-          tr.style.border = '2px solid #ff6b6b';
-          return;
+    try {
+      console.log('🔵 Salvando alterações...');
+      if (typeof allHorarios === 'undefined') {
+        showToast('Erro: dados não carregados.', 'error');
+        return;
+      }
+      const novasLinhas = [];
+      let temErro = false;
+      document.querySelectorAll('#adminTableBody tr').forEach(tr => {
+        const inputs = tr.querySelectorAll('.admin-input');
+        const checkboxes = tr.querySelectorAll('.dias-checkboxes input[type="checkbox"]');
+        if (inputs.length >= 3) {
+          const destino = inputs[0].value.trim();
+          const horario = inputs[1].value.trim();
+          const embarque = inputs[2].value.trim();
+          if (!destino || !horario) {
+            temErro = true;
+            tr.style.border = '2px solid #ff6b6b';
+            return;
+          }
+          tr.style.border = '';
+          const dias = [];
+          checkboxes.forEach(cb => { if (cb.checked) dias.push(cb.value); });
+          if (destino && horario && embarque && dias.length) {
+            novasLinhas.push({ destino, horario, embarque, dias });
+          }
         }
-        tr.style.border = '';
-        const dias = [];
-        checkboxes.forEach(cb => { if (cb.checked) dias.push(cb.value); });
-        if (destino && horario && embarque && dias.length) {
-          novasLinhas.push({ destino, horario, embarque, dias });
+      });
+      if (temErro) {
+        if (typeof showAdminMsg === 'function') {
+          showAdminMsg('⚠️ Preencha todos os campos (Destino e Horário são obrigatórios).', 'error');
+        } else {
+          showToast('Preencha todos os campos (Destino e Horário são obrigatórios).', 'error');
         }
+        return;
       }
-    });
-    if (temErro) {
-      if (typeof showAdminMsg === 'function') {
-        showAdminMsg('⚠️ Preencha todos os campos (Destino e Horário são obrigatórios).', 'error');
+      if (!novasLinhas.length) {
+        if (typeof showAdminMsg === 'function') {
+          showAdminMsg('Nenhum horário válido para salvar.', 'error');
+        } else {
+          showToast('Nenhum horário válido para salvar.', 'error');
+        }
+        return;
+      }
+      allHorarios = novasLinhas;
+      allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
+      if (typeof salvarHorariosNoBanco === 'function') {
+        salvarHorariosNoBanco();
       } else {
-        showToast('Preencha todos os campos (Destino e Horário são obrigatórios).', 'error');
+        console.warn('salvarHorariosNoBanco não definida');
       }
-      return;
+      if (typeof loadAdminTable === 'function') loadAdminTable();
+      if (typeof renderCards === 'function') renderCards();
+      setTimeout(() => {
+        atualizarStats();
+        filtrarTabela();
+      }, 300);
+      showToast('✅ Horários salvos com sucesso!', 'success');
+    } catch (e) {
+      showToast('❌ Erro ao salvar horários.', 'error');
+      logError('Erro salvar horários', e.message, e.stack);
     }
-    if (!novasLinhas.length) {
-      if (typeof showAdminMsg === 'function') {
-        showAdminMsg('Nenhum horário válido para salvar.', 'error');
-      } else {
-        showToast('Nenhum horário válido para salvar.', 'error');
-      }
-      return;
-    }
-    allHorarios = novasLinhas;
-    allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
-    if (typeof salvarHorariosNoBanco === 'function') {
-      salvarHorariosNoBanco();
-    } else {
-      console.warn('salvarHorariosNoBanco não definida');
-    }
-    if (typeof loadAdminTable === 'function') loadAdminTable();
-    if (typeof renderCards === 'function') renderCards();
-    setTimeout(() => {
-      atualizarStats();
-      filtrarTabela();
-    }, 300);
-    showToast('✅ Horários salvos com sucesso!', 'success');
   };
 
   window.confirmarExclusao = function(idx, destino) {
@@ -637,22 +706,28 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   if (confirmDeleteBtn) {
     confirmDeleteBtn.addEventListener('click', function() {
-      if (pendingDeleteIdx !== null && typeof allHorarios !== 'undefined') {
-        allHorarios.splice(pendingDeleteIdx, 1);
-        if (typeof loadAdminTable === 'function') loadAdminTable();
-        if (typeof salvarHorariosNoBanco === 'function') salvarHorariosNoBanco();
-        if (typeof showAdminMsg === 'function') {
-          showAdminMsg('Horário removido com sucesso.', 'info');
-        } else {
-          showToast('Horário removido.', 'info');
+      try {
+        if (pendingDeleteIdx !== null && typeof allHorarios !== 'undefined') {
+          allHorarios.splice(pendingDeleteIdx, 1);
+          if (typeof loadAdminTable === 'function') loadAdminTable();
+          if (typeof salvarHorariosNoBanco === 'function') salvarHorariosNoBanco();
+          if (typeof showAdminMsg === 'function') {
+            showAdminMsg('Horário removido com sucesso.', 'info');
+          } else {
+            showToast('Horário removido.', 'info');
+          }
+          setTimeout(() => {
+            atualizarStats();
+            filtrarTabela();
+          }, 200);
         }
-        setTimeout(() => {
-          atualizarStats();
-          filtrarTabela();
-        }, 200);
+        confirmModal.classList.remove('active');
+        pendingDeleteIdx = null;
+      } catch (e) {
+        logError('Erro remover horário', e.message, e.stack);
+        confirmModal.classList.remove('active');
+        pendingDeleteIdx = null;
       }
-      confirmModal.classList.remove('active');
-      pendingDeleteIdx = null;
     });
   }
   if (confirmModal) {
