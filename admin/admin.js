@@ -6,17 +6,31 @@
 // ================================================================
 //  PROTEÇÃO: bloqueia exibição do conteúdo admin sem autenticação
 //  (executado assim que o DOM estiver pronto)
+/// ================================================================
+//  PROTEÇÃO: bloqueia exibição do conteúdo admin sem autenticação
+//  (executado assim que o DOM estiver pronto)
 // ================================================================
 document.addEventListener('DOMContentLoaded', function() {
   const content = document.getElementById('adminContent');
+  const stepPassword = document.getElementById('stepPassword');
+  const stepCode = document.getElementById('stepCode');
+
+  // 1. FORÇA OCULTAÇÃO IMEDIATA (independente da sessão)
   if (content) {
-    // Se NÃO estiver autenticado, força ocultação
-    if (sessionStorage.getItem('adminAuthenticated') !== 'true') {
-      content.style.setProperty('display', 'none', 'important');
-      content.classList.remove('admin-content-visible');
-    }
-    // Se estiver autenticado, o restante do código cuidará de exibir
+    content.style.setProperty('display', 'none', 'important');
+    content.classList.remove('admin-content-visible');
   }
+
+  // 2. GARANTE QUE O PASSO 2 (CÓDIGO) NÃO APAREÇA SEM AUTENTICAÇÃO
+  if (stepCode) {
+    stepCode.style.display = 'none';
+  }
+  if (stepPassword) {
+    stepPassword.style.display = 'block';
+  }
+
+  // 3. SE ESTIVER AUTENTICADO, EXIBE O CONTEÚDO (isso será feito depois pelo restante do código)
+  //    Mas NÃO fazemos nada aqui – deixamos o fluxo normal de autenticação decidir.
 });
 
 // ================================================================

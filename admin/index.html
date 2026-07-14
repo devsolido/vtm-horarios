@@ -4,10 +4,123 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-  <title>VTM Integração - Painel Administrativo</title>
+  <title>Que Horas Passa - Painel Administrativo</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="../style.css" />
-  <link rel="stylesheet" href="admin.css?v=5" />
+  <link rel="stylesheet" href="admin.css?v=6" />
+  <style>
+    /* Correção temporária para garantir que os passos de autenticação fiquem centralizados */
+    .admin-page {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .auth-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      max-width: 420px;
+      margin: 0 auto;
+      width: 100%;
+      text-align: center;
+    }
+
+    #adminContent {
+      flex: 1;
+      padding: 20px;
+    }
+
+    /* Garantir que os passos não apareçam junto com o conteúdo */
+    #stepPassword,
+    #stepCode {
+      display: none; /* controlado por JS */
+    }
+
+    #stepPassword[style*="display:block"],
+    #stepCode[style*="display:block"] {
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 60vh;
+    }
+
+    .admin-header {
+      flex-shrink: 0;
+    }
+
+    .admin-footer {
+      flex-shrink: 0;
+      margin-top: auto;
+    }
+
+    /* Ajustes para o campo de senha e botão */
+    .field {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    .password-wrapper {
+      display: flex;
+      align-items: center;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      padding: 0 12px;
+    }
+    .password-wrapper input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 10px 0;
+      color: var(--input-color);
+      font-size: 16px;
+      outline: none;
+    }
+    .password-wrapper input:focus {
+      outline: none;
+    }
+    .toggle-password {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px 8px;
+    }
+    .toggle-password:hover {
+      color: var(--text-primary);
+    }
+    .btn-save {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(135deg, #00c6fb, #005bea);
+      color: #fff;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn-save:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 15px rgba(0, 91, 234, 0.4);
+    }
+    .msg {
+      margin-top: 12px;
+      font-size: 14px;
+      text-align: center;
+    }
+    .msg.error {
+      color: #ff6b6b;
+    }
+    .msg.success {
+      color: #00c864;
+    }
+  </style>
 </head>
 
 <body>
@@ -20,7 +133,7 @@
         <div class="admin-brand">
           <i class="fas fa-route"></i>
           <div>
-            <h1>VTM Integração</h1>
+            <h1>Que Horas Passa</h1>
             <span class="admin-version">v2.8.0</span>
           </div>
         </div>
@@ -48,7 +161,7 @@
     <!-- ========================================================== -->
 
     <!-- PASSO 1: SENHA -->
-    <div id="stepPassword" class="auth-step" style="display:block; max-width:420px; margin:40px auto;">
+    <div id="stepPassword" class="auth-step">
       <div class="auth-icon"><i class="fas fa-lock"></i></div>
       <h3>Digite sua senha</h3>
       <p class="auth-sub">Acesso restrito ao painel administrativo</p>
@@ -56,6 +169,7 @@
         <label for="adminPassword">Senha de acesso</label>
         <div class="password-wrapper">
           <input type="password" id="adminPassword" placeholder="••••••••" />
+          <button type="button" class="toggle-password" data-target="adminPassword"><i class="fas fa-eye"></i></button>
         </div>
       </div>
       <button class="btn-save" id="passwordBtn">Verificar senha</button>
@@ -63,7 +177,7 @@
     </div>
 
     <!-- PASSO 2: CÓDIGO -->
-    <div id="stepCode" class="auth-step" style="display:none; max-width:420px; margin:40px auto;">
+    <div id="stepCode" class="auth-step" style="display:none;">
       <div class="auth-icon"><i class="fas fa-shield-alt"></i></div>
       <h3>Verificação em duas etapas</h3>
       <p class="auth-sub">Informe o código enviado</p>
@@ -80,7 +194,7 @@
         <label for="adminCode22">Código de verificação</label>
         <input type="text" id="adminCode22" placeholder="Digite ou cole o código" maxlength="22" autocomplete="off" />
       </div>
-      <div style="display:flex; gap:10px;">
+      <div style="display:flex; gap:10px; width:100%;">
         <button class="btn-save" id="verifyCodeBtn" style="flex:2;"><i class="fas fa-check"></i> Verificar</button>
         <button class="btn-save" id="resendCodeBtn"
           style="flex:1; background: var(--filter-btn-bg) !important; color: var(--text-primary) !important;">Reenviar</button>
@@ -91,11 +205,10 @@
     <!-- ========================================================== -->
     <!-- CONTEÚDO ADMIN (visível apenas após autenticação)           -->
     <!-- ========================================================== -->
-  <div id="adminContent">
-    <!-- todo o conteúdo -->
-  </div>>
+<div id="adminContent"
+  style="display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important;">    style="display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important;">
 
-      <!-- ===== SUBHEADER (com botão Adicionar) ===== -->
+      <!-- ===== SUBHEADER ===== -->
       <div class="admin-subheader">
         <div>
           <h2>Gerenciar horários</h2>
@@ -221,7 +334,7 @@
     <!-- ===== RODAPÉ ===== -->
     <div class="admin-footer">
       <a href="../"><i class="fas fa-arrow-left"></i> Voltar para o site</a>
-      <span>&copy; 2026 VTM Integração – Tecnologia em mobilidade</span>
+      <span>&copy; 2026 Que Horas Passa – Tecnologia em mobilidade</span>
     </div>
 
   </div>
