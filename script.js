@@ -838,6 +838,104 @@ function init() {
     });
   }
 
+  // ================================================================
+  //  BOTÃO DE RELATÓRIO (REPORTE DE ERRO)
+  //  INSERIDO AQUI – após os modais existentes
+  // ================================================================
+  const reportBtn = document.getElementById('reportBtn');
+  const reportModal = document.getElementById('reportModal');
+  const reportClose = document.querySelector('.report-close');
+  const reportForm = document.getElementById('reportForm');
+  const reportMsg = document.getElementById('reportMsg');
+
+  if (reportBtn && reportModal) {
+    // Abrir modal
+    reportBtn.addEventListener('click', () => {
+      reportModal.classList.add('active');
+      if (reportMsg) reportMsg.textContent = '';
+    });
+
+    // Fechar com X
+    if (reportClose) {
+      reportClose.addEventListener('click', () => {
+        reportModal.classList.remove('active');
+      });
+    }
+
+    // Fechar clicando fora
+    reportModal.addEventListener('click', (e) => {
+      if (e.target === reportModal) {
+        reportModal.classList.remove('active');
+      }
+    });
+
+    // Enviar formulário
+    if (reportForm) {
+      reportForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const nome = document.getElementById('reportNome').value.trim();
+        const destino = document.getElementById('reportDestino').value.trim();
+        const horario = document.getElementById('reportHorario').value.trim();
+        const mensagem = document.getElementById('reportMensagem').value.trim();
+
+        if (!mensagem) {
+          if (reportMsg) {
+            reportMsg.textContent = 'Por favor, preencha a mensagem.';
+            reportMsg.style.color = '#ff6b6b';
+          }
+          return;
+        }
+
+        const payload = {
+          nome: sanitize(nome),
+          destino: sanitize(destino),
+          horario: sanitize(horario),
+          mensagem: sanitize(mensagem),
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          url: window.location.href
+        };
+
+        if (!rateLimit('report', 3, 60000)) {
+          if (reportMsg) {
+            reportMsg.textContent = '⏳ Muitos relatórios enviados. Aguarde um minuto.';
+            reportMsg.style.color = '#ffaa00';
+          }
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/report', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!res.ok) {
+            const errorData = await res.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Erro ao enviar relatório. Código: ' + res.status);
+          }
+
+          if (reportMsg) {
+            reportMsg.textContent = '✅ Relatório enviado com sucesso! Obrigado pela contribuição.';
+            reportMsg.style.color = '#00c864';
+          }
+          reportForm.reset();
+          setTimeout(() => {
+            reportModal.classList.remove('active');
+          }, 2000);
+        } catch (err) {
+          console.error('Erro ao enviar relatório:', err);
+          if (reportMsg) {
+            reportMsg.textContent = '❌ Erro ao enviar: ' + err.message;
+            reportMsg.style.color = '#ff6b6b';
+          }
+        }
+      });
+    }
+  }
+
   setInterval(() => {
     verificarAlertas();
     renderCards();
