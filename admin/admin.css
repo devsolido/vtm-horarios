@@ -1005,6 +1005,16 @@
   transform: scale(1.02);
 }
 
+
+/* ===== PROTEÇÃO CONTRA EXIBIÇÃO FORÇADA ===== */
+#adminContent {
+  display: none !important;
+}
+
+.admin-content-visible {
+  display: block !important;
+}
+
 /* ================================================================
    RESPONSIVIDADE
    ================================================================ */

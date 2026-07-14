@@ -214,18 +214,21 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  function autenticarSucesso() {
-    clearInterval(timerInterval);
-    showMessage(codeMsg, '✅ Autenticação completa!', 'success');
-    setTimeout(() => {
-      if (stepCode) stepCode.style.display = 'none';
-      if (adminContent) adminContent.style.display = 'block';
-      carregarDadosAdmin();
-      sessionStorage.setItem('adminAuthenticated', 'true');
-      if (logoutBtn) logoutBtn.style.display = 'flex';
-      carregarStatusManutencao();
-    }, 600);
-  }
+ function autenticarSucesso() {
+  clearInterval(timerInterval);
+  showMessage(codeMsg, '✅ Autenticação completa!', 'success');
+  setTimeout(() => {
+    if (stepCode) stepCode.style.display = 'none';
+    if (adminContent) {
+      adminContent.classList.add('admin-content-visible');
+      adminContent.style.display = '';
+    }
+    if (logoutBtn) logoutBtn.style.display = 'flex';
+    sessionStorage.setItem('adminAuthenticated', 'true');
+    carregarDadosAdmin();
+    carregarStatusManutencao();
+  }, 600);
+}
 
   // Eventos de autenticação
   if (passwordBtn) {
@@ -651,17 +654,15 @@ document.addEventListener('DOMContentLoaded', function() {
   carregarStatusManutencao();
 
   if (sessionStorage.getItem('adminAuthenticated') === 'true') {
-    if (stepPassword) stepPassword.style.display = 'none';
-    if (stepCode) stepCode.style.display = 'none';
-    if (adminContent) adminContent.style.display = 'block';
-    if (logoutBtn) logoutBtn.style.display = 'flex';
-    carregarDadosAdmin();
-  } else {
-    if (stepPassword) stepPassword.style.display = 'block';
-    if (stepCode) stepCode.style.display = 'none';
-    if (adminContent) adminContent.style.display = 'none';
-    if (logoutBtn) logoutBtn.style.display = 'none';
+  if (stepPassword) stepPassword.style.display = 'none';
+  if (stepCode) stepCode.style.display = 'none';
+  if (adminContent) {
+    adminContent.classList.add('admin-content-visible');
+    adminContent.style.display = '';
   }
+  if (logoutBtn) logoutBtn.style.display = 'flex';
+  carregarDadosAdmin();
+}
 
   // ================================================================
   //  17. EXPOR FUNÇÕES PARA USO GLOBAL
