@@ -1,7 +1,13 @@
 // ================================================================
-//  CONTROLE DE MANUTENÇÃO (via API)
+//  CONTROLE DE MANUTENÇÃO (via API) – com exceção para o admin
 // ================================================================
 async function verificarManutencao() {
+  // NÃO redireciona se estiver na página admin
+  if (window.location.pathname.startsWith('/admin')) {
+    console.log('🔵 Página admin – ignorando redirecionamento de manutenção.');
+    return;
+  }
+
   console.log('🔵 Verificando manutenção...');
   try {
     const res = await fetch('/api/manutencao');
