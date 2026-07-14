@@ -14,7 +14,7 @@
 
   <div class="admin-page">
 
-    <!-- ===== HEADER ===== -->
+    <!-- ===== HEADER (sempre visível) ===== -->
     <header class="admin-header">
       <div class="admin-header-left">
         <div class="admin-brand">
@@ -92,6 +92,17 @@
     <!-- CONTEÚDO ADMIN (visível apenas após autenticação)           -->
     <!-- ========================================================== -->
     <div id="adminContent" style="display:none;">
+
+      <!-- ===== SUBHEADER (com botão Adicionar) ===== -->
+      <div class="admin-subheader">
+        <div>
+          <h2>Gerenciar horários</h2>
+          <p>Gerencie os horários dos ônibus da Integração – Vale Transporte Marabá.</p>
+        </div>
+        <div class="admin-actions-top">
+          <button class="btn-add-row" id="adminAddRowBtn"><i class="fas fa-plus"></i> Adicionar horário</button>
+        </div>
+      </div>
 
       <!-- ===== CARDS ESTATÍSTICOS ===== -->
       <section class="stats-grid">
