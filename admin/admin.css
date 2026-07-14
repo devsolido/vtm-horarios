@@ -1,3 +1,8 @@
+/* ================================================================
+   ADMIN.CSS – Painel Administrativo VTM
+   Tema escuro, cards, tabela premium, switch, toasts, responsivo
+   ================================================================ */
+
 /* ===== RESET BASE ===== */
 .admin-page {
   max-width: 1300px;
@@ -8,9 +13,12 @@
   border-radius: 32px;
   border: 1px solid var(--border-app);
   box-shadow: var(--shadow);
+  transition: background 0.3s, border-color 0.3s;
 }
 
-/* ===== HEADER ===== */
+/* ================================================================
+   HEADER
+   ================================================================ */
 .admin-header {
   display: flex;
   justify-content: space-between;
@@ -114,7 +122,9 @@
   border-color: #ff6b6b;
 }
 
-/* ===== SUBHEADER ===== */
+/* ================================================================
+   SUBHEADER
+   ================================================================ */
 .admin-subheader {
   display: flex;
   justify-content: space-between;
@@ -163,7 +173,9 @@
   transform: scale(0.97);
 }
 
-/* ===== STATS ===== */
+/* ================================================================
+   CARDS ESTATÍSTICOS
+   ================================================================ */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -212,7 +224,9 @@
   color: var(--text-muted);
 }
 
-/* ===== TOOLBAR ===== */
+/* ================================================================
+   BARRA DE FERRAMENTAS (pesquisa + filtros + switch)
+   ================================================================ */
 .admin-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -352,7 +366,9 @@
   color: #00c864;
 }
 
-/* ===== TABELA ===== */
+/* ================================================================
+   TABELA
+   ================================================================ */
 .table-container {
   background: var(--card-bg);
   border-radius: 16px;
@@ -490,7 +506,9 @@
   background: rgba(255, 170, 0, 0.15);
 }
 
-/* ===== TABELA FOOTER ===== */
+/* ================================================================
+   TABELA FOOTER
+   ================================================================ */
 .table-footer {
   display: flex;
   justify-content: space-between;
@@ -532,7 +550,9 @@
   transform: none;
 }
 
-/* ===== SEGURANÇA ===== */
+/* ================================================================
+   SEGURANÇA
+   ================================================================ */
 .security-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -635,7 +655,9 @@
   border-color: var(--text-muted);
 }
 
-/* ===== TOAST ===== */
+/* ================================================================
+   TOAST
+   ================================================================ */
 #toast-container {
   position: fixed;
   top: 20px;
@@ -679,7 +701,9 @@
   transition: 0.3s;
 }
 
-/* ===== RODAPÉ ===== */
+/* ================================================================
+   RODAPÉ
+   ================================================================ */
 .admin-footer {
   display: flex;
   justify-content: space-between;
@@ -703,7 +727,9 @@
   opacity: 0.7;
 }
 
-/* ===== MODAL DE CONFIRMAÇÃO ===== */
+/* ================================================================
+   MODAL DE CONFIRMAÇÃO
+   ================================================================ */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -784,7 +810,9 @@
   transform: scale(1.02);
 }
 
-/* ===== RESPONSIVIDADE ===== */
+/* ================================================================
+   RESPONSIVIDADE
+   ================================================================ */
 /* Tablets e telas menores */
 @media (max-width: 900px) {
   .admin-page { padding: 16px; }

@@ -1,8 +1,15 @@
-// admin/admin.js – Painel redesenho
+// ================================================================
+//  ADMIN.JS – Painel Administrativo VTM
+//  Autenticação, CRUD, Manutenção, Estatísticas, Pesquisa, Filtros
+// ================================================================
 
 document.addEventListener('DOMContentLoaded', function() {
 
-  // ===== ELEMENTOS =====
+  // ================================================================
+  //  1. ELEMENTOS DO DOM
+  // ================================================================
+
+  // Autenticação
   const stepPassword = document.getElementById('stepPassword');
   const stepCode = document.getElementById('stepCode');
   const adminPassword = document.getElementById('adminPassword');
@@ -17,18 +24,46 @@ document.addEventListener('DOMContentLoaded', function() {
   const progressCircle = document.getElementById('progressCircle');
   const timerText = document.getElementById('timerText');
 
+  // Admin content
   const adminContent = document.getElementById('adminContent');
   const loginArea = document.getElementById('adminLoginArea');
 
+  // Segurança
   const STORAGE_KEY = 'vtm_admin_password';
   let storedPassword = localStorage.getItem(STORAGE_KEY) || 'admin123';
-
   const newPasswordInput = document.getElementById('newPassword');
   const confirmPasswordInput = document.getElementById('confirmPassword');
   const changePasswordBtn = document.getElementById('changePasswordBtn');
   const changePasswordMsg = document.getElementById('changePasswordMsg');
 
+  // Logout
   const logoutBtn = document.getElementById('logoutBtn');
+
+  // Manutenção
+  const maintenanceToggle = document.getElementById('maintenanceToggle');
+  const maintenanceStatusLabel = document.getElementById('maintenanceStatus');
+  const statManutencao = document.getElementById('statManutencao');
+
+  // Pesquisa e Filtros
+  const searchInput = document.getElementById('searchInput');
+  const filterChips = document.querySelectorAll('.filter-chip');
+
+  // Tabela e ações
+  const adminTableBody = document.getElementById('adminTableBody');
+  const adminRowCount = document.getElementById('adminRowCount');
+
+  // Modal de confirmação
+  const confirmModal = document.getElementById('confirmModal');
+  const confirmMessage = document.getElementById('confirmMessage');
+  const confirmCancelBtn = document.getElementById('confirmCancelBtn');
+  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+  // Toast container
+  const toastContainer = document.getElementById('toast-container');
+
+  // ================================================================
+  //  2. VARIÁVEIS DE ESTADO
+  // ================================================================
 
   let timerInterval = null;
   let timeLeft = 60;
@@ -36,23 +71,36 @@ document.addEventListener('DOMContentLoaded', function() {
   const CIRCUMFERENCE = 339.292;
 
   let manutencaoAtiva = false;
+  let searchTerm = '';
+  let activeFilter = 'all';
+  let pendingDeleteIdx = null;
 
-  // ===== TOAST =====
+  // ================================================================
+  //  3. TOAST (feedback visual)
+  // ================================================================
+
   function showToast(message, type = 'info') {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
+    if (!toastContainer) return;
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle', warning: 'fa-triangle-exclamation' };
+    const icons = {
+      success: 'fa-check-circle',
+      error: 'fa-exclamation-circle',
+      info: 'fa-info-circle',
+      warning: 'fa-triangle-exclamation'
+    };
     toast.innerHTML = `<i class="fas ${icons[type] || icons.info}"></i><span>${message}</span>`;
-    container.appendChild(toast);
+    toastContainer.appendChild(toast);
     setTimeout(() => {
       toast.classList.add('fade-out');
       setTimeout(() => toast.remove(), 400);
     }, 4000);
   }
 
-  // ===== ATUALIZA RELÓGIO E CLIMA =====
+  // ================================================================
+  //  4. RELÓGIO E CLIMA (compartilhados com script.js)
+  // ================================================================
+
   function atualizarAdmin() {
     if (typeof updateClock === 'function') updateClock();
     if (typeof updateDateAndGreeting === 'function') updateDateAndGreeting();
@@ -60,9 +108,14 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   atualizarAdmin();
   setInterval(atualizarAdmin, 1000);
-  setInterval(() => { if (typeof fetchWeather === 'function') fetchWeather(); }, 600000);
+  setInterval(() => {
+    if (typeof fetchWeather === 'function') fetchWeather();
+  }, 600000);
 
-  // ===== MOSTRAR MENSAGEM =====
+  // ================================================================
+  //  5. MENSAGENS
+  // ================================================================
+
   function showMessage(el, text, type = 'info') {
     if (!el) return;
     el.textContent = text;
@@ -72,7 +125,11 @@ document.addEventListener('DOMContentLoaded', function() {
     el._timeout = setTimeout(() => { el.style.display = 'none'; }, 5000);
   }
 
-  // ===== TIMER =====
+  // ================================================================
+  //  6. AUTENTICAÇÃO – SENHA + CÓDIGO DE 22 DÍGITOS
+  // ================================================================
+
+  // 6.1 Timer
   function startTimer() {
     clearInterval(timerInterval);
     timeLeft = TOTAL_TIME;
@@ -96,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
     timerText.style.color = timeLeft <= 10 ? '#ff6b6b' : '#00c6fb';
   }
 
-  // ===== GERAR CÓDIGO =====
+  // 6.2 Gerar e enviar código via e-mail
   function generateNewCode() {
     if (!resendCodeBtn) return;
     const btn = resendCodeBtn;
@@ -128,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  // ===== VERIFICAR CÓDIGO =====
+  // 6.3 Verificar código via API
   function verifyCode() {
     if (!adminCode22) return;
     const input = adminCode22.value.trim();
@@ -168,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  // ===== AUTENTICAÇÃO SUCESSO =====
+  // 6.4 Autenticação bem-sucedida
   function autenticarSucesso() {
     clearInterval(timerInterval);
     showMessage(codeMsg, '✅ Autenticação completa!', 'success');
@@ -186,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 600);
   }
 
-  // ===== PASSO 1: SENHA =====
+  // 6.5 Eventos de autenticação
   if (passwordBtn) {
     passwordBtn.addEventListener('click', function() {
       if (!adminPassword) return;
@@ -209,7 +266,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== PASSO 2: CÓDIGO =====
   if (verifyCodeBtn) verifyCodeBtn.addEventListener('click', verifyCode);
   if (adminCode22) {
     adminCode22.addEventListener('keydown', function(e) {
@@ -228,7 +284,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== LOGOUT =====
+  // ================================================================
+  //  7. LOGOUT
+  // ================================================================
+
   if (logoutBtn) {
     logoutBtn.addEventListener('click', function() {
       sessionStorage.removeItem('adminAuthenticated');
@@ -236,7 +295,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== ALTERAR SENHA =====
+  // ================================================================
+  //  8. ALTERAR SENHA
+  // ================================================================
+
   if (changePasswordBtn) {
     changePasswordBtn.addEventListener('click', function() {
       const newPass = newPasswordInput ? newPasswordInput.value.trim() : '';
@@ -257,10 +319,25 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== SWITCH DE MANUTENÇÃO =====
-  const maintenanceToggle = document.getElementById('maintenanceToggle');
-  const maintenanceStatusLabel = document.getElementById('maintenanceStatus');
-  const statManutencao = document.getElementById('statManutencao');
+  // ================================================================
+  //  9. TOGGLE VISIBILIDADE DA SENHA
+  // ================================================================
+
+  document.querySelectorAll('.toggle-password').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const targetId = this.dataset.target;
+      const input = document.getElementById(targetId);
+      if (input) {
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        this.innerHTML = isPassword ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+      }
+    });
+  });
+
+  // ================================================================
+  //  10. MANUTENÇÃO – SWITCH E API
+  // ================================================================
 
   async function carregarStatusManutencao() {
     try {
@@ -310,7 +387,6 @@ document.addEventListener('DOMContentLoaded', function() {
       } catch (e) {
         console.error('Erro ao alternar manutenção:', e);
         showToast('❌ Erro ao alternar manutenção', 'error');
-        // Reverte o estado
         this.checked = !this.checked;
       } finally {
         this.disabled = false;
@@ -318,7 +394,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== STATS =====
+  // ================================================================
+  //  11. ESTATÍSTICAS (CARDS)
+  // ================================================================
+
   function atualizarStats() {
     const total = allHorarios ? allHorarios.length : 0;
     const destinos = allHorarios ? [...new Set(allHorarios.map(h => h.destino))].length : 0;
@@ -328,12 +407,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('statStatus').style.color = '#00c864';
   }
 
-  // ===== PESQUISA E FILTROS =====
-  const searchInput = document.getElementById('searchInput');
-  const filterChips = document.querySelectorAll('.filter-chip');
-
-  let searchTerm = '';
-  let activeFilter = 'all';
+  // ================================================================
+  //  12. PESQUISA E FILTROS
+  // ================================================================
 
   function filtrarTabela() {
     const rows = document.querySelectorAll('#adminTableBody tr');
@@ -353,9 +429,8 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       row.style.display = (matchSearch && matchFilter) ? '' : 'none';
     });
-    const visiveis = document.querySelectorAll('#adminTableBody tr[style*="display: none;"]');
     const totalVisiveis = document.querySelectorAll('#adminTableBody tr:not([style*="display: none;"])').length;
-    document.getElementById('adminRowCount').textContent = totalVisiveis + ' horários';
+    if (adminRowCount) adminRowCount.textContent = totalVisiveis + ' horários';
   }
 
   if (searchInput) {
@@ -374,141 +449,49 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // ===== BOTÕES DO ADMIN (delegação) =====
-  if (adminContent) {
-    adminContent.addEventListener('click', function(e) {
-      const btnAdd = e.target.closest('#adminAddRowBtn');
-      if (btnAdd) {
-        if (typeof window.adicionarHorarioAdmin === 'function') {
-          window.adicionarHorarioAdmin();
-          setTimeout(() => filtrarTabela(), 100);
-        }
-      }
-      const btnSave = e.target.closest('#adminSaveBtn');
-      if (btnSave) {
-        if (typeof window.salvarHorariosAdmin === 'function') {
-          window.salvarHorariosAdmin();
-        }
-      }
-    });
-  }
+  // ================================================================
+  //  13. CRUD DE HORÁRIOS (compartilhado com script.js)
+  // ================================================================
 
-  // ===== CARREGAR HORÁRIOS =====
-  if (typeof carregarHorariosDoBanco === 'function') {
-    carregarHorariosDoBanco();
-  }
-
-  // ===== INIT =====
-  carregarStatusManutencao();
-
-  // ===== RECARREGAR STATS APÓS ALTERAÇÕES =====
-  const origLoad = window.loadAdminTable;
-  if (origLoad) {
-    window.loadAdminTable = function() {
-      origLoad.apply(this, arguments);
-      atualizarStats();
-      setTimeout(() => filtrarTabela(), 200);
-    };
-  }
-
-  // ===== VERIFICA SESSÃO =====
-  if (sessionStorage.getItem('adminAuthenticated') === 'true') {
-    if (stepPassword) stepPassword.style.display = 'none';
-    if (stepCode) stepCode.style.display = 'none';
-    if (adminContent) adminContent.style.display = 'block';
-    if (logoutBtn) logoutBtn.style.display = 'flex';
-    if (typeof loadAdminTable === 'function') {
-      loadAdminTable();
-      setTimeout(() => {
-        atualizarStats();
-        filtrarTabela();
-      }, 300);
+  // 13.1 Carregar tabela (já definida em script.js, mas garantimos que está disponível)
+  function loadAdminTable() {
+    // Essa função é definida no script.js – apenas chamamos
+    if (typeof window.loadAdminTable === 'function') {
+      window.loadAdminTable();
+    } else {
+      // Fallback caso não esteja definida
+      console.warn('loadAdminTable não definida – aguardando script.js');
     }
-    carregarStatusManutencao();
   }
 
-  // ===== TOGGLE SENHA =====
-  document.querySelectorAll('.toggle-password').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const targetId = this.dataset.target;
-      const input = document.getElementById(targetId);
-      if (input) {
-        const isPassword = input.type === 'password';
-        input.type = isPassword ? 'text' : 'password';
-        this.innerHTML = isPassword ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
-      }
-    });
-  });
-
-  // ===== CONFIRMAÇÃO DE EXCLUSÃO (delegação) =====
-  const confirmModal = document.getElementById('confirmModal');
-  const confirmMessage = document.getElementById('confirmMessage');
-  const confirmCancelBtn = document.getElementById('confirmCancelBtn');
-  const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-  let pendingDeleteIdx = null;
-
-  window.confirmarExclusao = function(idx, destino) {
-    pendingDeleteIdx = idx;
-    confirmMessage.textContent = `Tem certeza que deseja excluir o horário para ${destino}?`;
-    confirmModal.classList.add('active');
-  };
-
-  if (confirmCancelBtn) {
-    confirmCancelBtn.addEventListener('click', function() {
-      confirmModal.classList.remove('active');
-      pendingDeleteIdx = null;
-    });
-  }
-  if (confirmDeleteBtn) {
-    confirmDeleteBtn.addEventListener('click', function() {
-      if (pendingDeleteIdx !== null && typeof window.removerHorarioAdmin === 'function') {
-        window.removerHorarioAdmin(pendingDeleteIdx);
-      }
-      confirmModal.classList.remove('active');
-      pendingDeleteIdx = null;
-    });
-  }
-  if (confirmModal) {
-    confirmModal.addEventListener('click', function(e) {
-      if (e.target === this) {
-        confirmModal.classList.remove('active');
-        pendingDeleteIdx = null;
-      }
-    });
-  }
-
-  // Sobrescreve a exclusão para usar o modal
-  const origRemover = window.removerHorarioAdmin;
-  if (origRemover) {
-    window.removerHorarioAdmin = function(idx) {
-      if (allHorarios && allHorarios[idx]) {
-        window.confirmarExclusao(idx, allHorarios[idx].destino);
-      }
-    };
-  }
-
-  // ===== EXPOR FUNÇÕES GLOBAIS =====
-  window.removerHorarioAdmin = window.removerHorarioAdmin || function(idx) {
-    if (allHorarios && allHorarios[idx]) {
-      window.confirmarExclusao(idx, allHorarios[idx].destino);
-    }
-  };
-
+  // 13.2 Adicionar horário
   window.adicionarHorarioAdmin = function() {
+    if (typeof allHorarios === 'undefined') {
+      showToast('Erro: dados não carregados.', 'error');
+      return;
+    }
     allHorarios.push({
       destino: 'Novo destino',
       horario: '12:00',
       embarque: 'Local',
       dias: ['Segunda a Sexta']
     });
-    loadAdminTable();
-    const lastIdx = allHorarios.length - 1;
-    toggleEditRow(lastIdx);
-    showAdminMsg('Novo horário adicionado. Edite os campos e salve.', 'info');
-    setTimeout(() => atualizarStats(), 200);
+    if (typeof loadAdminTable === 'function') loadAdminTable();
+    if (typeof showAdminMsg === 'function') {
+      showAdminMsg('Novo horário adicionado. Edite os campos e salve.', 'info');
+    }
+    setTimeout(() => {
+      atualizarStats();
+      filtrarTabela();
+    }, 200);
   };
 
+  // 13.3 Salvar alterações
   window.salvarHorariosAdmin = function() {
+    if (typeof allHorarios === 'undefined') {
+      showToast('Erro: dados não carregados.', 'error');
+      return;
+    }
     const novasLinhas = [];
     let temErro = false;
     document.querySelectorAll('#adminTableBody tr').forEach(tr => {
@@ -532,21 +515,153 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
     if (temErro) {
-      showAdminMsg('⚠️ Preencha todos os campos (Destino e Horário são obrigatórios).', 'error');
+      if (typeof showAdminMsg === 'function') {
+        showAdminMsg('⚠️ Preencha todos os campos (Destino e Horário são obrigatórios).', 'error');
+      } else {
+        showToast('Preencha todos os campos (Destino e Horário são obrigatórios).', 'error');
+      }
       return;
     }
     if (!novasLinhas.length) {
-      showAdminMsg('Nenhum horário válido para salvar.', 'error');
+      if (typeof showAdminMsg === 'function') {
+        showAdminMsg('Nenhum horário válido para salvar.', 'error');
+      } else {
+        showToast('Nenhum horário válido para salvar.', 'error');
+      }
       return;
     }
     allHorarios = novasLinhas;
     allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
-    salvarHorariosNoBanco();
-    loadAdminTable();
-    renderCards();
+    if (typeof salvarHorariosNoBanco === 'function') {
+      salvarHorariosNoBanco();
+    } else {
+      console.warn('salvarHorariosNoBanco não definida');
+    }
+    if (typeof loadAdminTable === 'function') loadAdminTable();
+    if (typeof renderCards === 'function') renderCards();
     setTimeout(() => {
       atualizarStats();
       filtrarTabela();
     }, 300);
+    showToast('✅ Horários salvos com sucesso!', 'success');
   };
+
+  // 13.4 Remover horário (com modal)
+  window.confirmarExclusao = function(idx, destino) {
+    pendingDeleteIdx = idx;
+    confirmMessage.textContent = `Tem certeza que deseja excluir o horário para ${destino}?`;
+    confirmModal.classList.add('active');
+  };
+
+  window.removerHorarioAdmin = function(idx) {
+    if (typeof allHorarios !== 'undefined' && allHorarios[idx]) {
+      window.confirmarExclusao(idx, allHorarios[idx].destino);
+    }
+  };
+
+  if (confirmCancelBtn) {
+    confirmCancelBtn.addEventListener('click', function() {
+      confirmModal.classList.remove('active');
+      pendingDeleteIdx = null;
+    });
+  }
+  if (confirmDeleteBtn) {
+    confirmDeleteBtn.addEventListener('click', function() {
+      if (pendingDeleteIdx !== null && typeof allHorarios !== 'undefined') {
+        allHorarios.splice(pendingDeleteIdx, 1);
+        if (typeof loadAdminTable === 'function') loadAdminTable();
+        if (typeof salvarHorariosNoBanco === 'function') salvarHorariosNoBanco();
+        if (typeof showAdminMsg === 'function') {
+          showAdminMsg('Horário removido com sucesso.', 'info');
+        } else {
+          showToast('Horário removido.', 'info');
+        }
+        setTimeout(() => {
+          atualizarStats();
+          filtrarTabela();
+        }, 200);
+      }
+      confirmModal.classList.remove('active');
+      pendingDeleteIdx = null;
+    });
+  }
+  if (confirmModal) {
+    confirmModal.addEventListener('click', function(e) {
+      if (e.target === this) {
+        confirmModal.classList.remove('active');
+        pendingDeleteIdx = null;
+      }
+    });
+  }
+
+  // ================================================================
+  //  14. DELEGAÇÃO DE EVENTOS PARA BOTÕES DO ADMIN
+  // ================================================================
+
+  if (adminContent) {
+    adminContent.addEventListener('click', function(e) {
+      const btnAdd = e.target.closest('#adminAddRowBtn');
+      if (btnAdd) {
+        if (typeof window.adicionarHorarioAdmin === 'function') {
+          window.adicionarHorarioAdmin();
+          setTimeout(() => filtrarTabela(), 100);
+        }
+      }
+      const btnSave = e.target.closest('#adminSaveBtn');
+      if (btnSave) {
+        if (typeof window.salvarHorariosAdmin === 'function') {
+          window.salvarHorariosAdmin();
+        }
+      }
+    });
+  }
+
+  // ================================================================
+  //  15. CARREGAR DADOS E INICIALIZAR
+  // ================================================================
+
+  // Carregar horários do banco (função definida em script.js)
+  if (typeof carregarHorariosDoBanco === 'function') {
+    carregarHorariosDoBanco();
+  }
+
+  // Carregar status da manutenção
+  carregarStatusManutencao();
+
+  // Se já estiver autenticado, exibe o conteúdo
+  if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+    if (stepPassword) stepPassword.style.display = 'none';
+    if (stepCode) stepCode.style.display = 'none';
+    if (adminContent) adminContent.style.display = 'block';
+    if (logoutBtn) logoutBtn.style.display = 'flex';
+    if (typeof loadAdminTable === 'function') {
+      loadAdminTable();
+      setTimeout(() => {
+        atualizarStats();
+        filtrarTabela();
+      }, 300);
+    }
+    carregarStatusManutencao();
+  }
+
+  // Sobrescreve loadAdminTable para atualizar stats após carregar
+  const origLoad = window.loadAdminTable;
+  if (origLoad) {
+    window.loadAdminTable = function() {
+      origLoad.apply(this, arguments);
+      atualizarStats();
+      setTimeout(() => filtrarTabela(), 200);
+    };
+  }
+
+  // ================================================================
+  //  16. EXPOR FUNÇÕES PARA USO GLOBAL
+  // ================================================================
+
+  window.atualizarStats = atualizarStats;
+  window.filtrarTabela = filtrarTabela;
+  window.atualizarSwitchManutencao = atualizarSwitchManutencao;
+  window.carregarStatusManutencao = carregarStatusManutencao;
+
+  console.log('✅ Admin.js carregado com sucesso!');
 });
