@@ -457,35 +457,44 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // ================================================================
-  //  13. FUNÇÃO PARA CARREGAR DADOS DO ADMIN
+  //  13. FUNÇÃO PARA CARREGAR DADOS DO ADMIN (CORRIGIDA)
   // ================================================================
 
   function carregarDadosAdmin() {
-    // Primeiro, carregar os horários do banco (se ainda não estiverem carregados)
+    // Se já tiver dados, carrega imediatamente
+    if (typeof allHorarios !== 'undefined' && allHorarios.length > 0) {
+      if (typeof loadAdminTable === 'function') {
+        loadAdminTable();
+        atualizarStats();
+        setTimeout(filtrarTabela, 300);
+      }
+      return;
+    }
+
+    // Se não tiver dados, carrega do banco e depois recarrega a tabela
     if (typeof carregarHorariosDoBanco === 'function') {
-      // Se allHorarios já tiver dados, carregar tabela diretamente
-      if (typeof allHorarios !== 'undefined' && allHorarios.length > 0) {
-        if (typeof loadAdminTable === 'function') {
-          loadAdminTable();
-          atualizarStats();
-          setTimeout(filtrarTabela, 300);
-        }
-      } else {
-        // Se não tiver dados, carregar do banco e depois carregar tabela
-        carregarHorariosDoBanco();
-        // O carregamento assíncrono vai chamar loadAdminTable dentro da função,
-        // mas por segurança, aguardamos um pouco e chamamos novamente
-        setTimeout(() => {
+      carregarHorariosDoBanco();
+
+      // Aguarda um pouco e tenta carregar a tabela novamente
+      let tentativas = 0;
+      const maxTentativas = 10;
+      const intervalo = setInterval(() => {
+        tentativas++;
+        if (typeof allHorarios !== 'undefined' && allHorarios.length > 0) {
+          clearInterval(intervalo);
           if (typeof loadAdminTable === 'function') {
             loadAdminTable();
             atualizarStats();
             filtrarTabela();
+            console.log('✅ Tabela carregada após dados serem obtidos.');
           }
-        }, 1000);
-      }
+        } else if (tentativas >= maxTentativas) {
+          clearInterval(intervalo);
+          console.warn('⚠️ Não foi possível carregar os dados após várias tentativas.');
+        }
+      }, 300);
     } else {
-      // Fallback se carregarHorariosDoBanco não estiver definida
-      console.warn('carregarHorariosDoBanco não definida, usando dados locais');
+      // Fallback
       if (typeof loadAdminTable === 'function') {
         loadAdminTable();
         atualizarStats();
