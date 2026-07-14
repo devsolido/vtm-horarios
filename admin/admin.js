@@ -35,23 +35,24 @@ document.addEventListener('DOMContentLoaded', function() {
   const maintenanceBtn = document.getElementById('maintenanceBtn');
   const maintenanceStatus = document.getElementById('maintenanceStatus');
 
+  // ===== Estado da manutenção (variável de controle) =====
+  let manutencaoAtiva = false;
+
   let timerInterval = null;
   let timeLeft = 60;
   const TOTAL_TIME = 60;
   const CIRCUMFERENCE = 339.292;
 
   // ================================================================
-  //  FUNÇÕES AUXILIARES (declaradas antes de serem usadas)
+  //  FUNÇÕES AUXILIARES
   // ================================================================
 
-  // ===== Atualiza relógio e clima =====
   function atualizarAdmin() {
     if (typeof updateClock === 'function') updateClock();
     if (typeof updateDateAndGreeting === 'function') updateDateAndGreeting();
     if (typeof fetchWeather === 'function') fetchWeather();
   }
 
-  // ===== Mostrar mensagem =====
   function showMessage(el, text, type = 'info') {
     if (!el) return;
     el.textContent = text;
@@ -61,7 +62,6 @@ document.addEventListener('DOMContentLoaded', function() {
     el._timeout = setTimeout(() => { el.style.display = 'none'; }, 5000);
   }
 
-  // ===== Iniciar temporizador =====
   function startTimer() {
     clearInterval(timerInterval);
     timeLeft = TOTAL_TIME;
@@ -85,7 +85,6 @@ document.addEventListener('DOMContentLoaded', function() {
     timerText.style.color = timeLeft <= 10 ? '#ff6b6b' : '#00c6fb';
   }
 
-  // ===== Gerar e enviar código =====
   function generateNewCode() {
     if (!resendCodeBtn) return;
     const btn = resendCodeBtn;
@@ -118,7 +117,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  // ===== Verificar código via API =====
   function verifyCode() {
     if (!adminCode22) return;
     const input = adminCode22.value.trim();
@@ -159,7 +157,6 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
-  // ===== Autenticação bem-sucedida =====
   function autenticarSucesso() {
     clearInterval(timerInterval);
     showMessage(codeMsg, '✅ Autenticação completa!', 'success');
@@ -171,13 +168,12 @@ document.addEventListener('DOMContentLoaded', function() {
         showAdminMsg('Bem-vindo ao painel!', 'success');
       }
       sessionStorage.setItem('adminAuthenticated', 'true');
-      // Carrega status da manutenção após login
       carregarStatusManutencao();
     }, 600);
   }
 
   // ================================================================
-  //  MANUTENÇÃO (funções declaradas antes de serem usadas)
+  //  MANUTENÇÃO – lógica com variável de estado
   // ================================================================
 
   async function carregarStatusManutencao() {
@@ -185,7 +181,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const res = await fetch('/api/manutencao');
       if (!res.ok) throw new Error('Erro ao carregar status');
       const data = await res.json();
-      atualizarBotaoManutencao(data.ativo);
+      manutencaoAtiva = data.ativo;
+      atualizarBotaoManutencao(manutencaoAtiva);
     } catch (e) {
       console.warn('Erro ao carregar status de manutenção:', e);
       if (maintenanceStatus) maintenanceStatus.textContent = '⚠️ Erro';
@@ -193,6 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function atualizarBotaoManutencao(ativo) {
+    manutencaoAtiva = ativo;
     if (!maintenanceStatus) return;
     if (ativo) {
       maintenanceStatus.textContent = '🔧 Manutenção: ATIVA';
@@ -207,7 +205,6 @@ document.addEventListener('DOMContentLoaded', function() {
   //  EVENTOS
   // ================================================================
 
-  // ===== PASSO 1: Verificar senha =====
   if (passwordBtn) {
     passwordBtn.addEventListener('click', function() {
       if (!adminPassword) return;
@@ -230,7 +227,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== PASSO 2: Eventos do código =====
   if (verifyCodeBtn) {
     verifyCodeBtn.addEventListener('click', verifyCode);
   }
@@ -251,12 +247,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== ALTERAR SENHA =====
   if (changePasswordBtn) {
     changePasswordBtn.addEventListener('click', function() {
       const newPass = newPasswordInput ? newPasswordInput.value.trim() : '';
       const confirmPass = confirmPasswordInput ? confirmPasswordInput.value.trim() : '';
-
       if (!newPass || newPass.length < 4) {
         showMessage(changePasswordMsg, 'A nova senha deve ter pelo menos 4 caracteres.', 'error');
         return;
@@ -265,7 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
         showMessage(changePasswordMsg, 'As senhas não coincidem.', 'error');
         return;
       }
-
       localStorage.setItem(STORAGE_KEY, newPass);
       storedPassword = newPass;
       showMessage(changePasswordMsg, '✅ Senha alterada com sucesso!', 'success');
@@ -274,11 +267,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // ===== MANUTENÇÃO – EVENTO DO BOTÃO =====
+  // ===== BOTÃO DE MANUTENÇÃO (com variável de estado) =====
   if (maintenanceBtn) {
     maintenanceBtn.addEventListener('click', async function() {
-      const isAtivo = maintenanceStatus && maintenanceStatus.textContent.includes('ATIVA');
-      const novoStatus = !isAtivo;
+      const novoStatus = !manutencaoAtiva;
+      console.log('🔵 Alternando manutenção para:', novoStatus);
 
       try {
         if (maintenanceStatus) maintenanceStatus.textContent = '⏳ Alternando...';
@@ -300,9 +293,9 @@ document.addEventListener('DOMContentLoaded', function() {
           throw new Error('Resposta inválida');
         }
       } catch (e) {
-        console.error('Erro ao alternar manutenção:', e);
+        console.error('❌ Erro ao alternar manutenção:', e);
         if (maintenanceStatus) maintenanceStatus.textContent = '❌ Erro ao alternar';
-        carregarStatusManutencao(); // recarrega para consistência
+        carregarStatusManutencao();
       } finally {
         maintenanceBtn.disabled = false;
       }
@@ -332,10 +325,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // ===== Inicialização =====
   atualizarAdmin();
+  carregarStatusManutencao();
 });
 
 // ================================================================
-//  FUNÇÕES GLOBAIS (compatíveis com script.js)
+//  FUNÇÕES GLOBAIS
 // ================================================================
 
 window.adicionarHorarioAdmin = function() {
