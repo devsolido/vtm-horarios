@@ -7,7 +7,7 @@
   <title>Que Horas Passa - Painel Administrativo</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <link rel="stylesheet" href="../style.css" />
-  <link rel="stylesheet" href="admin.css?v=6" />
+  <link rel="stylesheet" href="admin.css?v=7" />
   <style>
     /* Correção temporária para garantir que os passos de autenticação fiquem centralizados */
     .admin-page {
@@ -37,7 +37,8 @@
     /* Garantir que os passos não apareçam junto com o conteúdo */
     #stepPassword,
     #stepCode {
-      display: none; /* controlado por JS */
+      display: none;
+      /* controlado por JS */
     }
 
     #stepPassword[style*="display:block"],
@@ -62,6 +63,7 @@
       width: 100%;
       margin-bottom: 16px;
     }
+
     .password-wrapper {
       display: flex;
       align-items: center;
@@ -70,6 +72,7 @@
       border-radius: 8px;
       padding: 0 12px;
     }
+
     .password-wrapper input {
       flex: 1;
       border: none;
@@ -79,9 +82,11 @@
       font-size: 16px;
       outline: none;
     }
+
     .password-wrapper input:focus {
       outline: none;
     }
+
     .toggle-password {
       background: none;
       border: none;
@@ -90,9 +95,11 @@
       font-size: 18px;
       padding: 4px 8px;
     }
+
     .toggle-password:hover {
       color: var(--text-primary);
     }
+
     .btn-save {
       width: 100%;
       padding: 12px;
@@ -105,18 +112,22 @@
       cursor: pointer;
       transition: 0.3s;
     }
+
     .btn-save:hover {
       transform: scale(1.02);
       box-shadow: 0 4px 15px rgba(0, 91, 234, 0.4);
     }
+
     .msg {
       margin-top: 12px;
       font-size: 14px;
       text-align: center;
     }
+
     .msg.error {
       color: #ff6b6b;
     }
+
     .msg.success {
       color: #00c864;
     }
@@ -205,9 +216,7 @@
     <!-- ========================================================== -->
     <!-- CONTEÚDO ADMIN (visível apenas após autenticação)           -->
     <!-- ========================================================== -->
-<div id="adminContent"
-  style="display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important;">    style="display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; height: 0 !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important;">
-
+    <div id="adminContent">
       <!-- ===== SUBHEADER ===== -->
       <div class="admin-subheader">
         <div>

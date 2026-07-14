@@ -6,9 +6,6 @@
 // ================================================================
 //  PROTEÇÃO: bloqueia exibição do conteúdo admin sem autenticação
 //  (executado assim que o DOM estiver pronto)
-/// ================================================================
-//  PROTEÇÃO: bloqueia exibição do conteúdo admin sem autenticação
-//  (executado assim que o DOM estiver pronto)
 // ================================================================
 document.addEventListener('DOMContentLoaded', function() {
   const content = document.getElementById('adminContent');
@@ -29,8 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     stepPassword.style.display = 'block';
   }
 
-  // 3. SE ESTIVER AUTENTICADO, EXIBE O CONTEÚDO (isso será feito depois pelo restante do código)
-  //    Mas NÃO fazemos nada aqui – deixamos o fluxo normal de autenticação decidir.
+  // 3. SE ESTIVER AUTENTICADO, O RESTANTE DO CÓDIGO CUIDARÁ DE EXIBIR
 });
 
 // ================================================================
@@ -308,23 +304,31 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ================================================================
-  //  AUTENTICAÇÃO BEM-SUCEDIDA (com !important para exibir)
+  //  AUTENTICAÇÃO BEM-SUCEDIDA (CORRIGIDA)
   // ================================================================
   function autenticarSucesso() {
     clearInterval(timerInterval);
     showMessage(codeMsg, '✅ Autenticação completa!', 'success');
-    // Log de login bem-sucedido
     logAdminAction('login', { sucesso: true });
+
     setTimeout(() => {
       if (stepCode) stepCode.style.display = 'none';
+      if (stepPassword) stepPassword.style.display = 'none';
+      if (logoutBtn) logoutBtn.style.display = 'flex';
+
+      const adminContent = document.getElementById('adminContent');
       if (adminContent) {
-        adminContent.style.setProperty('display', 'block', 'important');
+        // REMOVE TODOS OS ESTILOS INLINE PARA EVITAR CONFLITOS
+        adminContent.style.cssText = '';
+        // ADICIONA A CLASSE QUE O CSS USA PARA EXIBIR
         adminContent.classList.add('admin-content-visible');
       }
-      if (logoutBtn) logoutBtn.style.display = 'flex';
+
       sessionStorage.setItem('adminAuthenticated', 'true');
       carregarDadosAdmin();
       carregarStatusManutencao();
+
+      console.log('✅ Conteúdo admin exibido com sucesso.');
     }, 600);
   }
 
@@ -643,7 +647,6 @@ document.addEventListener('DOMContentLoaded', function() {
         embarque: 'Local',
         dias: ['Segunda a Sexta']
       });
-      // Log de ação
       logAdminAction('adicionar_horario', { destino: 'Novo destino' });
       if (typeof loadAdminTable === 'function') {
         loadAdminTable();
@@ -715,7 +718,6 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         console.warn('salvarHorariosNoBanco não definida');
       }
-      // Log de ação
       logAdminAction('salvar_horarios', { quantidade: novasLinhas.length });
       if (typeof loadAdminTable === 'function') loadAdminTable();
       if (typeof renderCards === 'function') renderCards();
@@ -761,7 +763,6 @@ document.addEventListener('DOMContentLoaded', function() {
           } else {
             showToast('Horário removido.', 'info');
           }
-          // Log de ação
           logAdminAction('remover_horario', { destino });
           setTimeout(() => {
             atualizarStats();
