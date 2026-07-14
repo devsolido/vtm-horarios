@@ -14,7 +14,7 @@
 
   <div class="admin-page">
 
-    <!-- ===== HEADER ===== -->
+    <!-- ===== HEADER (sempre visível) ===== -->
     <header class="admin-header">
       <div class="admin-header-left">
         <div class="admin-brand">
@@ -55,110 +55,162 @@
       </div>
     </div>
 
-    <!-- ===== CARDS ESTATÍSTICOS ===== -->
-    <section class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-bus"></i></div>
-        <div class="stat-info">
-          <span class="stat-value" id="statTotalHorarios">0</span>
-          <span class="stat-label">Horários</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-map-pin"></i></div>
-        <div class="stat-info">
-          <span class="stat-value" id="statDestinos">0</span>
-          <span class="stat-label">Destinos</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-circle" style="color: #00c864;"></i></div>
-        <div class="stat-info">
-          <span class="stat-value" id="statStatus">Online</span>
-          <span class="stat-label">Sistema</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon"><i class="fas fa-tools"></i></div>
-        <div class="stat-info">
-          <span class="stat-value" id="statManutencao">Desativada</span>
-          <span class="stat-label">Manutenção</span>
-        </div>
-      </div>
-    </section>
+    <!-- ========================================================== -->
+    <!-- AUTENTICAÇÃO – SENHA + CÓDIGO DE 22 DÍGITOS                 -->
+    <!-- ========================================================== -->
 
-    <!-- ===== BARRA DE FERRAMENTAS (pesquisa + filtros) ===== -->
-    <div class="admin-toolbar">
-      <div class="search-wrapper">
-        <i class="fas fa-search"></i>
-        <input type="text" id="searchInput" placeholder="Pesquisar por destino, embarque ou horário..." />
+    <!-- PASSO 1: SENHA -->
+    <div id="stepPassword" class="auth-step" style="display:block; max-width:420px; margin:30px auto;">
+      <div class="auth-icon"><i class="fas fa-lock"></i></div>
+      <h3>Digite sua senha</h3>
+      <div class="field">
+        <label for="adminPassword">Senha de acesso</label>
+        <div class="password-wrapper">
+          <input type="password" id="adminPassword" placeholder="••••••••" />
+        </div>
       </div>
-      <div class="filter-group">
-        <button class="filter-chip active" data-filter="all">Todos</button>
-        <button class="filter-chip" data-filter="Segunda a Sexta">Seg–Sexta</button>
-        <button class="filter-chip" data-filter="Sábado">Sábado</button>
-        <button class="filter-chip" data-filter="Domingo">Domingo</button>
-      </div>
-      <div class="maintenance-switch">
-        <span>🛠 Manutenção</span>
-        <label class="switch">
-          <input type="checkbox" id="maintenanceToggle" />
-          <span class="slider"></span>
-        </label>
-        <span id="maintenanceStatus" class="status-label">DESATIVADA</span>
-      </div>
+      <button class="btn-save" id="passwordBtn">Verificar senha</button>
+      <div id="passwordMsg" class="msg"></div>
     </div>
 
-    <!-- ===== TABELA ===== -->
-    <div class="table-container">
-      <table class="admin-table" id="adminTable">
-        <thead>
-          <tr>
-            <th>Destino</th>
-            <th>Horário</th>
-            <th>Embarque</th>
-            <th>Dias</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="adminTableBody"></tbody>
-      </table>
-      <div class="table-footer">
-        <span id="adminRowCount">0 horários</span>
-        <button class="btn-save" id="adminSaveBtn"><i class="fas fa-save"></i> Salvar alterações</button>
+    <!-- PASSO 2: CÓDIGO -->
+    <div id="stepCode" class="auth-step" style="display:none; max-width:420px; margin:30px auto;">
+      <div class="auth-icon"><i class="fas fa-shield-alt"></i></div>
+      <h3>Digite o código de verificação</h3>
+      <div class="timer-circle">
+        <svg viewBox="0 0 120 120" width="120" height="120">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(0,198,251,0.1)" stroke-width="8" />
+          <circle cx="60" cy="60" r="54" fill="none" stroke="#00c6fb" stroke-width="8" stroke-linecap="round"
+            stroke-dasharray="339.292" stroke-dashoffset="0" id="progressCircle" />
+        </svg>
+        <span class="timer-text" id="timerText">60s</span>
       </div>
+      <p class="code-notice">✅ Código de verificação enviado, informe-o.</p>
+      <div class="field">
+        <label for="adminCode22">Código de verificação</label>
+        <input type="text" id="adminCode22" placeholder="Digite ou cole o código" maxlength="22" autocomplete="off" />
+      </div>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-save" id="verifyCodeBtn" style="flex:2;"><i class="fas fa-check"></i> Verificar</button>
+        <button class="btn-save" id="resendCodeBtn"
+          style="flex:1; background: var(--filter-btn-bg) !important; color: var(--text-primary) !important;">Reenviar</button>
+      </div>
+      <div id="codeMsg" class="msg"></div>
     </div>
 
-    <!-- ===== SEGURANÇA ===== -->
-    <section class="security-card">
-      <div class="security-header">
-        <i class="fas fa-key"></i>
-        <div>
-          <h3>Segurança</h3>
-          <p>Altere sua senha de acesso ao painel</p>
-        </div>
-      </div>
-      <div class="security-form">
-        <div class="field">
-          <label>Nova senha</label>
-          <div class="password-wrapper">
-            <input type="password" id="newPassword" placeholder="Digite a nova senha" />
-            <button type="button" class="toggle-password" data-target="newPassword"><i class="fas fa-eye"></i></button>
+    <!-- ========================================================== -->
+    <!-- CONTEÚDO ADMIN (visível apenas após autenticação)           -->
+    <!-- ========================================================== -->
+    <div id="adminContent" style="display:none;">
+
+      <!-- ===== CARDS ESTATÍSTICOS ===== -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-bus"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statTotalHorarios">0</span>
+            <span class="stat-label">Horários</span>
           </div>
         </div>
-        <div class="field">
-          <label>Confirmar senha</label>
-          <div class="password-wrapper">
-            <input type="password" id="confirmPassword" placeholder="Confirme a nova senha" />
-            <button type="button" class="toggle-password" data-target="confirmPassword"><i
-                class="fas fa-eye"></i></button>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-map-pin"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statDestinos">0</span>
+            <span class="stat-label">Destinos</span>
           </div>
         </div>
-        <button class="btn-change-password" id="changePasswordBtn"><i class="fas fa-sync-alt"></i> Alterar
-          senha</button>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-circle" style="color: #00c864;"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statStatus">Online</span>
+            <span class="stat-label">Sistema</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-tools"></i></div>
+          <div class="stat-info">
+            <span class="stat-value" id="statManutencao">Desativada</span>
+            <span class="stat-label">Manutenção</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== BARRA DE FERRAMENTAS ===== -->
+      <div class="admin-toolbar">
+        <div class="search-wrapper">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Pesquisar por destino, embarque ou horário..." />
+        </div>
+        <div class="filter-group">
+          <button class="filter-chip active" data-filter="all">Todos</button>
+          <button class="filter-chip" data-filter="Segunda a Sexta">Seg–Sexta</button>
+          <button class="filter-chip" data-filter="Sábado">Sábado</button>
+          <button class="filter-chip" data-filter="Domingo">Domingo</button>
+        </div>
+        <div class="maintenance-switch">
+          <span>🛠 Manutenção</span>
+          <label class="switch">
+            <input type="checkbox" id="maintenanceToggle" />
+            <span class="slider"></span>
+          </label>
+          <span id="maintenanceStatus" class="status-label">DESATIVADA</span>
+        </div>
       </div>
-      <div id="changePasswordMsg" class="msg" style="margin-top:12px;"></div>
-    </section>
+
+      <!-- ===== TABELA ===== -->
+      <div class="table-container">
+        <table class="admin-table" id="adminTable">
+          <thead>
+            <tr>
+              <th>Destino</th>
+              <th>Horário</th>
+              <th>Embarque</th>
+              <th>Dias</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody"></tbody>
+        </table>
+        <div class="table-footer">
+          <span id="adminRowCount">0 horários</span>
+          <button class="btn-save" id="adminSaveBtn"><i class="fas fa-save"></i> Salvar alterações</button>
+        </div>
+      </div>
+
+      <!-- ===== SEGURANÇA ===== -->
+      <section class="security-card">
+        <div class="security-header">
+          <i class="fas fa-key"></i>
+          <div>
+            <h3>Segurança</h3>
+            <p>Altere sua senha de acesso ao painel</p>
+          </div>
+        </div>
+        <div class="security-form">
+          <div class="field">
+            <label>Nova senha</label>
+            <div class="password-wrapper">
+              <input type="password" id="newPassword" placeholder="Digite a nova senha" />
+              <button type="button" class="toggle-password" data-target="newPassword"><i
+                  class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Confirmar senha</label>
+            <div class="password-wrapper">
+              <input type="password" id="confirmPassword" placeholder="Confirme a nova senha" />
+              <button type="button" class="toggle-password" data-target="confirmPassword"><i
+                  class="fas fa-eye"></i></button>
+            </div>
+          </div>
+          <button class="btn-change-password" id="changePasswordBtn"><i class="fas fa-sync-alt"></i> Alterar
+            senha</button>
+        </div>
+        <div id="changePasswordMsg" class="msg" style="margin-top:12px;"></div>
+      </section>
+
+    </div>
+    <!-- ===== FIM DO adminContent ===== -->
 
     <!-- ===== TOAST ===== -->
     <div id="toast-container"></div>
