@@ -5,13 +5,19 @@
 
 // ================================================================
 //  PROTEÇÃO: bloqueia exibição do conteúdo admin sem autenticação
+//  (executado assim que o DOM estiver pronto)
 // ================================================================
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
   const content = document.getElementById('adminContent');
   if (content) {
-    content.style.setProperty('display', 'none', 'important');
+    // Se NÃO estiver autenticado, força ocultação
+    if (sessionStorage.getItem('adminAuthenticated') !== 'true') {
+      content.style.setProperty('display', 'none', 'important');
+      content.classList.remove('admin-content-visible');
+    }
+    // Se estiver autenticado, o restante do código cuidará de exibir
   }
-})();
+});
 
 // ================================================================
 //  FUNÇÃO PARA REGISTRAR ERROS (global)
