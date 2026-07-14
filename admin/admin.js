@@ -32,6 +32,22 @@ function logError(tipo, mensagem, stack = null, url = null) {
 }
 
 // ================================================================
+//  FUNÇÃO PARA REGISTRAR AÇÕES ADMINISTRATIVAS (global)
+// ================================================================
+function logAdminAction(acao, detalhes = null) {
+  try {
+    fetch('/api/log-admin-action', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        acao,
+        detalhes: detalhes || {}
+      })
+    }).catch(() => {});
+  } catch (_) {}
+}
+
+// ================================================================
 //  CAPTURA DE ERROS GLOBAIS
 // ================================================================
 window.addEventListener('unhandledrejection', function(event) {
@@ -277,6 +293,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function autenticarSucesso() {
     clearInterval(timerInterval);
     showMessage(codeMsg, '✅ Autenticação completa!', 'success');
+    // Log de login bem-sucedido
+    logAdminAction('login', { sucesso: true });
     setTimeout(() => {
       if (stepCode) stepCode.style.display = 'none';
       if (adminContent) {
@@ -390,6 +408,7 @@ document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem(STORAGE_KEY, newPass);
       storedPassword = newPass;
       showMessage(changePasswordMsg, '✅ Senha alterada com sucesso!', 'success');
+      logAdminAction('alterar_senha', { sucesso: true });
       if (newPasswordInput) newPasswordInput.value = '';
       if (confirmPasswordInput) confirmPasswordInput.value = '';
     });
@@ -457,6 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.success) {
           manutencaoAtiva = data.ativo;
           atualizarSwitchManutencao(manutencaoAtiva);
+          logAdminAction('alternar_manutencao', { ativo: data.ativo });
           showToast(manutencaoAtiva ? '⚠️ Manutenção ativada!' : '✅ Manutenção desativada!', manutencaoAtiva ? 'warning' : 'success');
         } else {
           throw new Error('Resposta inválida');
@@ -603,6 +623,8 @@ document.addEventListener('DOMContentLoaded', function() {
         embarque: 'Local',
         dias: ['Segunda a Sexta']
       });
+      // Log de ação
+      logAdminAction('adicionar_horario', { destino: 'Novo destino' });
       if (typeof loadAdminTable === 'function') {
         loadAdminTable();
       } else {
@@ -673,6 +695,8 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         console.warn('salvarHorariosNoBanco não definida');
       }
+      // Log de ação
+      logAdminAction('salvar_horarios', { quantidade: novasLinhas.length });
       if (typeof loadAdminTable === 'function') loadAdminTable();
       if (typeof renderCards === 'function') renderCards();
       setTimeout(() => {
@@ -708,6 +732,7 @@ document.addEventListener('DOMContentLoaded', function() {
     confirmDeleteBtn.addEventListener('click', function() {
       try {
         if (pendingDeleteIdx !== null && typeof allHorarios !== 'undefined') {
+          const destino = allHorarios[pendingDeleteIdx]?.destino || 'desconhecido';
           allHorarios.splice(pendingDeleteIdx, 1);
           if (typeof loadAdminTable === 'function') loadAdminTable();
           if (typeof salvarHorariosNoBanco === 'function') salvarHorariosNoBanco();
@@ -716,6 +741,8 @@ document.addEventListener('DOMContentLoaded', function() {
           } else {
             showToast('Horário removido.', 'info');
           }
+          // Log de ação
+          logAdminAction('remover_horario', { destino });
           setTimeout(() => {
             atualizarStats();
             filtrarTabela();
