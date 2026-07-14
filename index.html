@@ -126,6 +126,41 @@
       </div>
     </div>
 
+
+    <!-- ===== BOTÃO DE RELATÓRIO ===== -->
+    <button id="reportBtn" class="report-btn" title="Reportar erro ou horário incorreto">
+      <i class="fas fa-flag"></i>
+    </button>
+
+    <!-- ===== MODAL DE RELATÓRIO ===== -->
+    <div id="reportModal" class="report-modal">
+      <div class="report-modal-box">
+        <span class="report-close">&times;</span>
+        <h3>Reportar erro ou horário incorreto</h3>
+        <p>Ajude-nos a melhorar! Informe sobre horários incorretos, ônibus que não passaram, ou qualquer problema.</p>
+        <form id="reportForm">
+          <div class="field">
+            <label for="reportNome">Seu nome (opcional)</label>
+            <input type="text" id="reportNome" placeholder="Ex: João Silva" />
+          </div>
+          <div class="field">
+            <label for="reportDestino">Destino (opcional)</label>
+            <input type="text" id="reportDestino" placeholder="Ex: Liberdade" />
+          </div>
+          <div class="field">
+            <label for="reportHorario">Horário (opcional)</label>
+            <input type="text" id="reportHorario" placeholder="Ex: 07:15" />
+          </div>
+          <div class="field">
+            <label for="reportMensagem">Mensagem *</label>
+            <textarea id="reportMensagem" rows="4" placeholder="Descreva o problema..." required></textarea>
+          </div>
+          <button type="submit" class="btn-save report-submit">Enviar relatório</button>
+        </form>
+        <div id="reportMsg" class="msg" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
     <div class="note">
       <strong>⚠ Nota:</strong> Os horários podem sofrer alterações. O alerta é ativado 30 minutos antes do horário
       programado.
