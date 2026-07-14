@@ -1,5 +1,5 @@
 // ================================================================
-//  ADMIN.JS – Painel Administrativo VTM
+//  ADMIN.JS – Painel Administrativo VTM (CORRIGIDO)
 //  Autenticação, CRUD, Manutenção, Estatísticas, Pesquisa, Filtros
 // ================================================================
 
@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // ================================================================
-  //  13. FUNÇÃO PARA CARREGAR DADOS DO ADMIN (CORRIGIDA)
+  //  13. FUNÇÃO PARA CARREGAR DADOS DO ADMIN
   // ================================================================
 
   function carregarDadosAdmin() {
@@ -475,7 +475,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof carregarHorariosDoBanco === 'function') {
       carregarHorariosDoBanco();
 
-      // Aguarda um pouco e tenta carregar a tabela novamente
       let tentativas = 0;
       const maxTentativas = 10;
       const intervalo = setInterval(() => {
@@ -494,7 +493,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }, 300);
     } else {
-      // Fallback
       if (typeof loadAdminTable === 'function') {
         loadAdminTable();
         atualizarStats();
@@ -504,11 +502,12 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ================================================================
-  //  14. CRUD DE HORÁRIOS (compartilhado com script.js)
+  //  14. CRUD DE HORÁRIOS – CORRIGIDO COM DELEGAÇÃO GLOBAL
   // ================================================================
 
   // 14.1 Adicionar horário
   window.adicionarHorarioAdmin = function() {
+    console.log('🔵 Adicionando horário...');
     if (typeof allHorarios === 'undefined') {
       showToast('Erro: dados não carregados.', 'error');
       return;
@@ -519,7 +518,11 @@ document.addEventListener('DOMContentLoaded', function() {
       embarque: 'Local',
       dias: ['Segunda a Sexta']
     });
-    if (typeof loadAdminTable === 'function') loadAdminTable();
+    if (typeof loadAdminTable === 'function') {
+      loadAdminTable();
+    } else {
+      console.warn('loadAdminTable não definida');
+    }
     if (typeof showAdminMsg === 'function') {
       showAdminMsg('Novo horário adicionado. Edite os campos e salve.', 'info');
     }
@@ -531,6 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // 14.2 Salvar alterações
   window.salvarHorariosAdmin = function() {
+    console.log('🔵 Salvando alterações...');
     if (typeof allHorarios === 'undefined') {
       showToast('Erro: dados não carregados.', 'error');
       return;
@@ -638,26 +642,35 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ================================================================
-  //  15. DELEGAÇÃO DE EVENTOS PARA BOTÕES DO ADMIN
+  //  15. DELEGAÇÃO DE EVENTOS GLOBAL PARA BOTÕES (MAIS ROBUSTA)
   // ================================================================
 
-  if (adminContent) {
-    adminContent.addEventListener('click', function(e) {
-      const btnAdd = e.target.closest('#adminAddRowBtn');
-      if (btnAdd) {
-        if (typeof window.adicionarHorarioAdmin === 'function') {
-          window.adicionarHorarioAdmin();
-          setTimeout(() => filtrarTabela(), 100);
-        }
+  document.addEventListener('click', function(e) {
+    // Botão Adicionar horário
+    const btnAdd = e.target.closest('#adminAddRowBtn');
+    if (btnAdd) {
+      console.log('🔵 Clique no Adicionar horário detectado');
+      if (typeof window.adicionarHorarioAdmin === 'function') {
+        window.adicionarHorarioAdmin();
+        setTimeout(() => filtrarTabela(), 100);
+      } else {
+        console.error('adicionarHorarioAdmin não definida');
       }
-      const btnSave = e.target.closest('#adminSaveBtn');
-      if (btnSave) {
-        if (typeof window.salvarHorariosAdmin === 'function') {
-          window.salvarHorariosAdmin();
-        }
+      return;
+    }
+
+    // Botão Salvar alterações
+    const btnSave = e.target.closest('#adminSaveBtn');
+    if (btnSave) {
+      console.log('🔵 Clique no Salvar alterações detectado');
+      if (typeof window.salvarHorariosAdmin === 'function') {
+        window.salvarHorariosAdmin();
+      } else {
+        console.error('salvarHorariosAdmin não definida');
       }
-    });
-  }
+      return;
+    }
+  });
 
   // ================================================================
   //  16. CARREGAR DADOS E INICIALIZAR
@@ -668,16 +681,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Verificar se já está autenticado
   if (sessionStorage.getItem('adminAuthenticated') === 'true') {
-    // Esconder telas de autenticação
     if (stepPassword) stepPassword.style.display = 'none';
     if (stepCode) stepCode.style.display = 'none';
     if (adminContent) adminContent.style.display = 'block';
     if (logoutBtn) logoutBtn.style.display = 'flex';
 
-    // Carregar dados e tabela
     carregarDadosAdmin();
   } else {
-    // Se não autenticado, mostrar a tela de senha
     if (stepPassword) stepPassword.style.display = 'block';
     if (stepCode) stepCode.style.display = 'none';
     if (adminContent) adminContent.style.display = 'none';
