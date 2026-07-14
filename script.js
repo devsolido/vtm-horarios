@@ -473,7 +473,7 @@ function handleShare(e) {
   const horario = btn.dataset.horario;
   const embarque = btn.dataset.embarque;
   const msg =
-    '🚌 Ônibus para ' + destino + ' às ' + horario + ' - Embarque: ' + embarque + '. Emitido via Help VTM';
+    '🚌 Ônibus para ' + destino + ' às ' + horario + ' - Embarque: ' + embarque + '. Emitido via Help Que Horas Passa';
 
   if (!rateLimit('share', 3, 10000)) {
     alert('Aguarde alguns segundos antes de compartilhar novamente.');
@@ -481,7 +481,7 @@ function handleShare(e) {
   }
 
   if (navigator.share) {
-    navigator.share({ title: 'VTM Integração - Horário', text: msg }).catch(() => {});
+    navigator.share({ title: 'Que Horas Passa - Horário', text: msg }).catch(() => {});
   } else {
     const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
     window.open(url, '_blank');
@@ -539,7 +539,7 @@ function verificarAlertas() {
       alertMessage.innerHTML =
         '📢 <strong>Atenção!</strong> Faltam <strong>' +
         minutos +
-        ' minutos</strong> para o <strong>VTM "' +
+        ' minutos</strong> para o <strong>"' +
         sanitize(proximo.destino) +
         '"</strong> passar na parada <strong>' +
         sanitize(proximo.embarque) +
@@ -561,7 +561,7 @@ function verificarAlertas() {
     const msg =
       'Olá! Faltam ' +
       minutos +
-      ' minutos para o VTM da linha ' +
+      ' minutos para o ônibus da linha ' +
       proximo.destino +
       ' passar na parada ' +
       proximo.embarque +
