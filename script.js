@@ -1,19 +1,26 @@
 // ================================================================
-//  CONTROLE DE MANUTENÇÃO (caminho absoluto)
+//  CONTROLE DE MANUTENÇÃO (via API)
 // ================================================================
-fetch('/manutencao-status.json?' + new Date().getTime())
-  .then((res) => res.json())
-  .then((data) => {
+async function verificarManutencao() {
+  console.log('🔵 Verificando manutenção...');
+  try {
+    const res = await fetch('/api/manutencao');
+    if (!res.ok) throw new Error('Erro ao verificar manutenção');
+    const data = await res.json();
+    console.log('🔵 Status da manutenção:', data);
     if (data.ativo) {
+      console.log('🟢 Manutenção ATIVA – redirecionando...');
       localStorage.setItem('manutencao_ativa', 'true');
-      window.location.href = 'manutencao.html';
+      window.location.href = '/manutencao.html';
     } else {
+      console.log('🔵 Manutenção inativa.');
       localStorage.removeItem('manutencao_ativa');
     }
-  })
-  .catch(() => {
+  } catch (e) {
+    console.warn('⚠️ Erro ao verificar manutenção:', e);
     localStorage.removeItem('manutencao_ativa');
-  });
+  }
+}
 
 // ================================================================
 //  RATE LIMIT E SANITIZAÇÃO
@@ -241,12 +248,10 @@ async function fetchWeather() {
   const el = document.getElementById('weatherValue');
   const adminEl = document.getElementById('adminWeatherValue');
 
-  // Se nenhum dos elementos existir, não faz nada
   if (!el && !adminEl) return;
 
   const now = Date.now();
 
-  // Usa cache se disponível
   if (weatherCache && now - weatherCacheTime < WEATHER_CACHE_TTL) {
     if (el) el.textContent = weatherCache;
     if (adminEl) adminEl.textContent = weatherCache;
@@ -256,7 +261,6 @@ async function fetchWeather() {
   if (weatherFetchInProgress) return;
   weatherFetchInProgress = true;
 
-  // Mostra "Carregando..." nos elementos existentes
   if (el) el.textContent = '⏳ Carregando...';
   if (adminEl) adminEl.textContent = '⏳ Carregando...';
 
@@ -326,7 +330,7 @@ async function carregarHorariosDoBanco() {
 }
 
 // ================================================================
-//  RENDER CARDS (com verificações de existência)
+//  RENDER CARDS
 // ================================================================
 function renderCards() {
   if (!container) return;
@@ -498,7 +502,7 @@ function findNextTomorrow() {
 }
 
 // ================================================================
-//  VERIFICAÇÃO DE ALERTAS (com verificação)
+//  VERIFICAÇÃO DE ALERTAS
 // ================================================================
 function verificarAlertas() {
   const agora = getCurrentMinutes();
@@ -561,7 +565,7 @@ function verificarAlertas() {
 }
 
 // ================================================================
-//  FILTROS (com verificação)
+//  FILTROS
 // ================================================================
 function initFilters() {
   const btns = document.querySelectorAll('.filter-btn');
@@ -798,6 +802,9 @@ function init() {
 
   carregarHorariosDoBanco();
 
+  // ===== VERIFICA A MANUTENÇÃO AO CARREGAR A PÁGINA =====
+  verificarManutencao();
+
   const welcomeModal = document.getElementById('welcomeModal');
   if (welcomeModal) {
     const closeModalBtn = document.getElementById('closeModalBtn');
@@ -835,5 +842,8 @@ function init() {
     renderCards();
   }, 60000);
 }
+
+// ===== VERIFICA A MANUTENÇÃO A CADA 10 SEGUNDOS (detecta mudanças em tempo real) =====
+setInterval(verificarManutencao, 10000);
 
 document.addEventListener('DOMContentLoaded', init);
