@@ -224,14 +224,18 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
 
+  // ================================================================
+  //  AUTENTICAÇÃO BEM-SUCEDIDA (com !important para exibir)
+  // ================================================================
   function autenticarSucesso() {
     clearInterval(timerInterval);
     showMessage(codeMsg, '✅ Autenticação completa!', 'success');
     setTimeout(() => {
       if (stepCode) stepCode.style.display = 'none';
       if (adminContent) {
+        // Força a exibição com !important para sobrescrever qualquer tentativa de ocultação
+        adminContent.style.setProperty('display', 'block', 'important');
         adminContent.classList.add('admin-content-visible');
-        adminContent.style.display = '';
       }
       if (logoutBtn) logoutBtn.style.display = 'flex';
       sessionStorage.setItem('adminAuthenticated', 'true');
@@ -667,8 +671,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (stepPassword) stepPassword.style.display = 'none';
     if (stepCode) stepCode.style.display = 'none';
     if (adminContent) {
+      // Força a exibição com !important também para a sessão ativa
+      adminContent.style.setProperty('display', 'block', 'important');
       adminContent.classList.add('admin-content-visible');
-      adminContent.style.display = '';
     }
     if (logoutBtn) logoutBtn.style.display = 'flex';
     carregarDadosAdmin();

@@ -1015,6 +1015,18 @@
   display: block !important;
 }
 
+
+
+/* Força ocultação por padrão */
+#adminContent {
+  display: none !important;
+}
+
+/* Exibe apenas quando autenticado */
+.admin-content-visible {
+  display: block !important;
+}
+
 /* ================================================================
    RESPONSIVIDADE
    ================================================================ */
