@@ -103,7 +103,7 @@ body {
 }
 
 .logo-img {
-  height: 44px;
+  height: 56px;  /* AUMENTADO: antes 44px */
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0, 91, 234, 0.3));
@@ -1428,7 +1428,7 @@ body {
   .cards-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .card .horario { font-size: 20px; }
   .card .destino { font-size: 15px; }
-  .logo-img { height: 38px; }
+  .logo-img { height: 48px; }  /* ANTES: 38px */
   .date-display { font-size: 14px; }
   .version { font-size: 9px; }
   .card .share-btn { width: 26px; height: 26px; font-size: 11px; bottom: 8px; right: 8px; }
@@ -1439,7 +1439,7 @@ body {
   .info-bar { flex-wrap: wrap; justify-content: center; }
   .info-item { font-size: 11px; padding: 3px 8px; min-height: 28px; }
   .filter-btn { font-size: 11px; padding: 4px 12px; min-height: 32px; }
-  .logo-img { height: 32px; }
+  .logo-img { height: 42px; }  /* ANTES: 32px */
   .version { font-size: 8px; }
   .card { padding: 12px 14px; }
   .card .horario { font-size: 20px; }
@@ -1466,7 +1466,7 @@ body {
 @media (max-width: 380px) {
   .info-item { font-size: 10px; padding: 2px 6px; }
   .filter-btn { font-size: 10px; padding: 3px 10px; min-height: 28px; }
-  .logo-img { height: 28px; }
+  .logo-img { height: 36px; }  /* ANTES: 28px */
   .card .horario { font-size: 18px; }
   .card .destino { font-size: 14px; }
   .card .share-btn { width: 20px; height: 20px; font-size: 9px; bottom: 4px; right: 4px; }
