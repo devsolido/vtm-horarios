@@ -232,18 +232,20 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
       if (stepCode) stepCode.style.display = 'none';
       if (adminContent) adminContent.style.display = 'block';
-      if (typeof loadAdminTable === 'function') loadAdminTable();
-      if (typeof showAdminMsg === 'function') {
-        showAdminMsg('Bem-vindo ao painel!', 'success');
-      }
+      
+      // CARREGA A TABELA E ATUALIZA ESTATÍSTICAS
+      carregarDadosAdmin();
+
       sessionStorage.setItem('adminAuthenticated', 'true');
       if (logoutBtn) logoutBtn.style.display = 'flex';
       carregarStatusManutencao();
-      atualizarStats();
     }, 600);
   }
 
-  // 6.5 Eventos de autenticação
+  // ================================================================
+  //  6.5 EVENTOS DE AUTENTICAÇÃO
+  // ================================================================
+
   if (passwordBtn) {
     passwordBtn.addEventListener('click', function() {
       if (!adminPassword) return;
@@ -401,10 +403,15 @@ document.addEventListener('DOMContentLoaded', function() {
   function atualizarStats() {
     const total = allHorarios ? allHorarios.length : 0;
     const destinos = allHorarios ? [...new Set(allHorarios.map(h => h.destino))].length : 0;
-    document.getElementById('statTotalHorarios').textContent = total;
-    document.getElementById('statDestinos').textContent = destinos;
-    document.getElementById('statStatus').textContent = 'Online';
-    document.getElementById('statStatus').style.color = '#00c864';
+    const elTotal = document.getElementById('statTotalHorarios');
+    const elDestinos = document.getElementById('statDestinos');
+    if (elTotal) elTotal.textContent = total;
+    if (elDestinos) elDestinos.textContent = destinos;
+    const elStatus = document.getElementById('statStatus');
+    if (elStatus) {
+      elStatus.textContent = 'Online';
+      elStatus.style.color = '#00c864';
+    }
   }
 
   // ================================================================
@@ -450,21 +457,48 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // ================================================================
-  //  13. CRUD DE HORÁRIOS (compartilhado com script.js)
+  //  13. FUNÇÃO PARA CARREGAR DADOS DO ADMIN
   // ================================================================
 
-  // 13.1 Carregar tabela (já definida em script.js, mas garantimos que está disponível)
-  function loadAdminTable() {
-    // Essa função é definida no script.js – apenas chamamos
-    if (typeof window.loadAdminTable === 'function') {
-      window.loadAdminTable();
+  function carregarDadosAdmin() {
+    // Primeiro, carregar os horários do banco (se ainda não estiverem carregados)
+    if (typeof carregarHorariosDoBanco === 'function') {
+      // Se allHorarios já tiver dados, carregar tabela diretamente
+      if (typeof allHorarios !== 'undefined' && allHorarios.length > 0) {
+        if (typeof loadAdminTable === 'function') {
+          loadAdminTable();
+          atualizarStats();
+          setTimeout(filtrarTabela, 300);
+        }
+      } else {
+        // Se não tiver dados, carregar do banco e depois carregar tabela
+        carregarHorariosDoBanco();
+        // O carregamento assíncrono vai chamar loadAdminTable dentro da função,
+        // mas por segurança, aguardamos um pouco e chamamos novamente
+        setTimeout(() => {
+          if (typeof loadAdminTable === 'function') {
+            loadAdminTable();
+            atualizarStats();
+            filtrarTabela();
+          }
+        }, 1000);
+      }
     } else {
-      // Fallback caso não esteja definida
-      console.warn('loadAdminTable não definida – aguardando script.js');
+      // Fallback se carregarHorariosDoBanco não estiver definida
+      console.warn('carregarHorariosDoBanco não definida, usando dados locais');
+      if (typeof loadAdminTable === 'function') {
+        loadAdminTable();
+        atualizarStats();
+        setTimeout(filtrarTabela, 300);
+      }
     }
   }
 
-  // 13.2 Adicionar horário
+  // ================================================================
+  //  14. CRUD DE HORÁRIOS (compartilhado com script.js)
+  // ================================================================
+
+  // 14.1 Adicionar horário
   window.adicionarHorarioAdmin = function() {
     if (typeof allHorarios === 'undefined') {
       showToast('Erro: dados não carregados.', 'error');
@@ -486,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 200);
   };
 
-  // 13.3 Salvar alterações
+  // 14.2 Salvar alterações
   window.salvarHorariosAdmin = function() {
     if (typeof allHorarios === 'undefined') {
       showToast('Erro: dados não carregados.', 'error');
@@ -546,7 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
     showToast('✅ Horários salvos com sucesso!', 'success');
   };
 
-  // 13.4 Remover horário (com modal)
+  // 14.3 Remover horário (com modal)
   window.confirmarExclusao = function(idx, destino) {
     pendingDeleteIdx = idx;
     confirmMessage.textContent = `Tem certeza que deseja excluir o horário para ${destino}?`;
@@ -595,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ================================================================
-  //  14. DELEGAÇÃO DE EVENTOS PARA BOTÕES DO ADMIN
+  //  15. DELEGAÇÃO DE EVENTOS PARA BOTÕES DO ADMIN
   // ================================================================
 
   if (adminContent) {
@@ -617,51 +651,39 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // ================================================================
-  //  15. CARREGAR DADOS E INICIALIZAR
+  //  16. CARREGAR DADOS E INICIALIZAR
   // ================================================================
 
-  // Carregar horários do banco (função definida em script.js)
-  if (typeof carregarHorariosDoBanco === 'function') {
-    carregarHorariosDoBanco();
-  }
-
-  // Carregar status da manutenção
+  // Carregar status da manutenção (sempre)
   carregarStatusManutencao();
 
-  // Se já estiver autenticado, exibe o conteúdo
+  // Verificar se já está autenticado
   if (sessionStorage.getItem('adminAuthenticated') === 'true') {
+    // Esconder telas de autenticação
     if (stepPassword) stepPassword.style.display = 'none';
     if (stepCode) stepCode.style.display = 'none';
     if (adminContent) adminContent.style.display = 'block';
     if (logoutBtn) logoutBtn.style.display = 'flex';
-    if (typeof loadAdminTable === 'function') {
-      loadAdminTable();
-      setTimeout(() => {
-        atualizarStats();
-        filtrarTabela();
-      }, 300);
-    }
-    carregarStatusManutencao();
-  }
 
-  // Sobrescreve loadAdminTable para atualizar stats após carregar
-  const origLoad = window.loadAdminTable;
-  if (origLoad) {
-    window.loadAdminTable = function() {
-      origLoad.apply(this, arguments);
-      atualizarStats();
-      setTimeout(() => filtrarTabela(), 200);
-    };
+    // Carregar dados e tabela
+    carregarDadosAdmin();
+  } else {
+    // Se não autenticado, mostrar a tela de senha
+    if (stepPassword) stepPassword.style.display = 'block';
+    if (stepCode) stepCode.style.display = 'none';
+    if (adminContent) adminContent.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'none';
   }
 
   // ================================================================
-  //  16. EXPOR FUNÇÕES PARA USO GLOBAL
+  //  17. EXPOR FUNÇÕES PARA USO GLOBAL
   // ================================================================
 
   window.atualizarStats = atualizarStats;
   window.filtrarTabela = filtrarTabela;
   window.atualizarSwitchManutencao = atualizarSwitchManutencao;
   window.carregarStatusManutencao = carregarStatusManutencao;
+  window.carregarDadosAdmin = carregarDadosAdmin;
 
   console.log('✅ Admin.js carregado com sucesso!');
 });
