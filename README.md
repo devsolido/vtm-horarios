@@ -27,15 +27,6 @@
 - 🚨 **Reporte de erros** (formulário integrado com envio de e‑mail para o administrador).
 - ☁️ **Clima em tempo real** e relógio no cabeçalho.
 
-### 🔐 Painel Administrativo (Área restrita)
-- 🔑 **Autenticação em duas etapas**: senha + código temporário enviado por e‑mail.
-- 📊 **Dashboard com estatísticas** (total de horários, destinos, status do sistema).
-- ➕ **CRUD completo** de horários (adicionar, editar, excluir, salvar).
-- 🔍 **Pesquisa e filtros** por destino, embarque ou horário.
-- 🛠 **Controle de manutenção** (switch para ativar/desativar o modo manutenção no site).
-- 👤 **Alteração de senha** do administrador.
-- 📝 **Registro de ações** (log de login, alterações, etc.) via API.
-
 ### ⚙️ Backend & APIs
 - 🗄️ **Banco de dados Supabase** (PostgreSQL) – armazenamento de horários e relatórios.
 - 📧 **Envio de e‑mails** via Nodemailer (Gmail/Sendinblue).
