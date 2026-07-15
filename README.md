@@ -12,8 +12,6 @@
 
 **Que Horas Passa** é uma aplicação web para consulta de horários de transporte público da região de Marabá. O sistema permite que os usuários visualizem rapidamente os próximos ônibus, filtre por dias da semana, receba alertas sonoros e visuais, e reporte erros nos horários – tudo com uma interface limpa, responsiva e com suporte a tema claro/escuro.
 
-O painel administrativo oferece controle completo sobre os horários, além de gerenciamento de manutenção e autenticação em duas etapas (senha + código por e‑mail).
-
 ---
 
 ## ✨ Funcionalidades
