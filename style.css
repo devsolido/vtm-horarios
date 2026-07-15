@@ -103,7 +103,7 @@ body {
 }
 
 .logo-img {
-  height: 56px;  /* AUMENTADO: antes 44px */
+  height: 56px;
   width: auto;
   object-fit: contain;
   filter: drop-shadow(0 4px 12px rgba(0, 91, 234, 0.3));
@@ -525,7 +525,7 @@ body {
 
 /* ===== ALERTS SECTION (ocultada) ===== */
 .alerts-section {
-  display: none; /* funcionalidade em desenvolvimento */
+  display: none;
 }
 
 /* ===== NOTE ===== */
@@ -565,7 +565,7 @@ body {
   transition: opacity 0.4s, visibility 0.4s;
   padding: 16px;
   will-change: opacity, visibility;
-  overflow-y: auto; /* CRUCIAL: permite rolagem quando o conteúdo é maior que a tela */
+  overflow-y: auto;
 }
 
 .modal-overlay.active {
@@ -585,7 +585,7 @@ body {
   box-shadow: var(--shadow);
   transform: scale(0.9) translateY(20px);
   transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  margin: auto; /* centraliza verticalmente com o overflow do overlay */
+  margin: auto;
 }
 
 .modal-overlay.active .modal-box {
@@ -722,15 +722,15 @@ body {
    ============================================================ */
 
 .admin-panel .modal-box {
-  max-height: 80vh;      /* Limita a altura do modal */
-  overflow-y: auto;      /* Habilita rolagem interna se o conteúdo ultrapassar */
+  max-height: 80vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
 .admin-table-wrapper {
-  max-height: 50vh;      /* Limita a altura da tabela para rolar internamente */
-  overflow-y: auto;      /* Habilita rolagem vertical na tabela */
+  max-height: 50vh;
+  overflow-y: auto;
   overflow-x: auto;
   flex: 1 1 auto;
 }
@@ -741,7 +741,6 @@ body {
   flex: 1;
 }
 
-/* Cabeçalho com duas áreas: título à esquerda, info à direita */
 .admin-header {
   display: flex;
   justify-content: space-between;
@@ -1428,7 +1427,7 @@ body {
   .cards-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .card .horario { font-size: 20px; }
   .card .destino { font-size: 15px; }
-  .logo-img { height: 48px; }  /* ANTES: 38px */
+  .logo-img { height: 48px; }
   .date-display { font-size: 14px; }
   .version { font-size: 9px; }
   .card .share-btn { width: 26px; height: 26px; font-size: 11px; bottom: 8px; right: 8px; }
@@ -1439,7 +1438,7 @@ body {
   .info-bar { flex-wrap: wrap; justify-content: center; }
   .info-item { font-size: 11px; padding: 3px 8px; min-height: 28px; }
   .filter-btn { font-size: 11px; padding: 4px 12px; min-height: 32px; }
-  .logo-img { height: 42px; }  /* ANTES: 32px */
+  .logo-img { height: 42px; }
   .version { font-size: 8px; }
   .card { padding: 12px 14px; }
   .card .horario { font-size: 20px; }
@@ -1453,7 +1452,6 @@ body {
   .modal-box { padding: 28px 20px 24px; }
   .modal-box h2 { font-size: 20px; }
   .card .share-btn { width: 24px; height: 24px; font-size: 10px; bottom: 6px; right: 6px; }
-
   .report-btn {
     width: 48px;
     height: 48px;
@@ -1466,11 +1464,10 @@ body {
 @media (max-width: 380px) {
   .info-item { font-size: 10px; padding: 2px 6px; }
   .filter-btn { font-size: 10px; padding: 3px 10px; min-height: 28px; }
-  .logo-img { height: 36px; }  /* ANTES: 28px */
+  .logo-img { height: 36px; }
   .card .horario { font-size: 18px; }
   .card .destino { font-size: 14px; }
   .card .share-btn { width: 20px; height: 20px; font-size: 9px; bottom: 4px; right: 4px; }
-
   .report-btn {
     width: 40px;
     height: 40px;
@@ -1478,4 +1475,33 @@ body {
     bottom: 12px;
     right: 12px;
   }
+}
+
+/* ============================================================
+   LOADER INICIAL – evita piscar antes da verificação de manutenção
+   ============================================================ */
+body.loading .app {
+  display: none !important;
+}
+
+body.loading::before {
+  content: "⏳ Carregando...";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg-body);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: var(--text-secondary);
+  z-index: 9999;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }

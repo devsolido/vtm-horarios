@@ -809,7 +809,9 @@ function init() {
   carregarHorariosDoBanco();
 
   // ===== VERIFICA A MANUTENÇÃO AO CARREGAR A PÁGINA =====
-  verificarManutencao();
+  verificarManutencao().finally(() => {
+    document.body.classList.remove('loading');
+  });
 
   const welcomeModal = document.getElementById('welcomeModal');
   if (welcomeModal) {
