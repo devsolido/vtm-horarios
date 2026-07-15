@@ -808,9 +808,11 @@ function init() {
 
   carregarHorariosDoBanco();
 
-  // ===== VERIFICA A MANUTENÇÃO AO CARREGAR A PÁGINA =====
+    // ===== VERIFICA A MANUTENÇÃO AO CARREGAR A PÁGINA =====
   verificarManutencao().finally(() => {
-    document.body.classList.remove('loading');
+    const body = document.body;
+    body.classList.remove('loading');
+    body.style.display = ''; // remove o display: none inline
   });
 
   const welcomeModal = document.getElementById('welcomeModal');
