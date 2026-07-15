@@ -1,60 +1,65 @@
-<!-- ================================================================
-     BADGES / INSÍGNIAS (TECNOLÓGICAS)
-     ================================================================ -->
+# 🚌 Que Horas Passa?
 
-<div align="center">
+[![Vercel](https://img.shields.io/badge/deploy-Vercel-000?logo=vercel)](https://quehoraspassa.vercel.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Supabase](https://img.shields.io/badge/database-Supabase-3ecf8e?logo=supabase)](https://supabase.com)
 
-# 🚌 VTM Integração – Consulta de Horários
-
-**Sistema de horários de ônibus da Vale Transporte Marabá**  
-com design futurista, responsivo e dados em tempo real.
-
-</div>
-
-<br />
-
-<div align="center">
-
-<!-- Badges (tecnologia, versão, status, etc.) -->
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![Font Awesome](https://img.shields.io/badge/Font_Awesome-528DD7?style=for-the-badge&logo=fontawesome&logoColor=white)
-![OpenWeather](https://img.shields.io/badge/OpenWeather-FF6B00?style=for-the-badge&logo=openweather&logoColor=white)
-![Live Server](https://img.shields.io/badge/Live_Server-1E8CBE?style=for-the-badge&logo=visual-studio-code&logoColor=white)
-![Version](https://img.shields.io/badge/version-1.0.0-blue?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-
-</div>
-
-<br />
+> **Consulta de horários de ônibus com interface moderna, painel administrativo e alertas inteligentes.**
 
 ---
 
-## ✨ Visão Geral
+## 📖 Sobre o projeto
 
-> Criado para  exibir horários de ônibus da **Vale Transporte Marabá** com filtros por dia, relógio em tempo real, clima local e uma interface **100% responsiva** (celular, tablet e PC).
+**Que Horas Passa** é uma aplicação web para consulta de horários de transporte público da região de Marabá. O sistema permite que os usuários visualizem rapidamente os próximos ônibus, filtre por dias da semana, receba alertas sonoros e visuais, e reporte erros nos horários – tudo com uma interface limpa, responsiva e com suporte a tema claro/escuro.
 
----
-
-## 🔥 Funcionalidades
-
-| Funcionalidade | Descrição |
-|----------------|-----------|
-| 🕒 **Relógio ao vivo** | Hora atualizada a cada segundo |
-| 🌦️ **Clima em Marabá** | Temperatura e ícone (API OpenWeather) |
-| 📅 **Filtros inteligentes** | Segunda a Sexta / Sábado / Domingo |
-| 🚌 **Horários crescentes** | Lista ordenada do mais cedo ao mais tarde |
-| 📱 **Totalmente responsivo** | Adapta‑se a qualquer tela |
-| 🎨 **Design tecnológico** | Efeito glassmorphism, gradientes animados, neon |
+O painel administrativo oferece controle completo sobre os horários, além de gerenciamento de manutenção e autenticação em duas etapas (senha + código por e‑mail).
 
 ---
 
-## 📂 Estrutura do Projeto
+## ✨ Funcionalidades
 
-```bash
-vtm-horarios/
-├── index.html          # Página principal (código completo)
-├── README.md           # Este documento
-└── .vscode/
-    └── settings.json   # Configurações para VS Code (opcional)
+### 👥 Usuários (front-end)
+- 📋 **Listagem de horários** organizada em cards com destino, horário, ponto de embarque e dias da semana.
+- 🔍 **Filtros por dia** (Segunda a Sexta, Sábado, Domingo).
+- 🕒 **Próximo ônibus** com contagem regressiva em tempo real.
+- 🌙 **Tema claro/escuro** (persistente no localStorage).
+- 📱 **Responsivo** – adaptado para desktop, tablet e celular.
+- 🔔 **Alertas inteligentes** (30 minutos antes do horário) com som e notificação visual.
+- 📤 **Compartilhamento rápido** via WhatsApp ou nativo.
+- 🚨 **Reporte de erros** (formulário integrado com envio de e‑mail para o administrador).
+- ☁️ **Clima em tempo real** e relógio no cabeçalho.
+
+### 🔐 Painel Administrativo (Área restrita)
+- 🔑 **Autenticação em duas etapas**: senha + código temporário enviado por e‑mail.
+- 📊 **Dashboard com estatísticas** (total de horários, destinos, status do sistema).
+- ➕ **CRUD completo** de horários (adicionar, editar, excluir, salvar).
+- 🔍 **Pesquisa e filtros** por destino, embarque ou horário.
+- 🛠 **Controle de manutenção** (switch para ativar/desativar o modo manutenção no site).
+- 👤 **Alteração de senha** do administrador.
+- 📝 **Registro de ações** (log de login, alterações, etc.) via API.
+
+### ⚙️ Backend & APIs
+- 🗄️ **Banco de dados Supabase** (PostgreSQL) – armazenamento de horários e relatórios.
+- 📧 **Envio de e‑mails** via Nodemailer (Gmail/Sendinblue).
+- 🌤 **API de clima** (dados meteorológicos).
+- 🛡 **Verificação de manutenção** com fallback.
+- 📊 **Logs de erro** e **registro de ações administrativas**.
+
+---
+
+## 🧰 Tecnologias utilizadas
+
+| Camada | Tecnologia |
+|--------|------------|
+| Frontend | HTML5, CSS3, JavaScript (vanilla) |
+| Backend | Node.js (serverless functions na Vercel) |
+| Banco de dados | Supabase (PostgreSQL) |
+| Autenticação | API de verificação de senha + e‑mail com código 2FA |
+| E‑mail | Nodemailer + Gmail / Sendinblue |
+| Deploy | Vercel |
+| Ícones | Font Awesome |
+| Fontes | Segoe UI, system fonts |
+| CI/CD | GitHub + Vercel (deploy automático) |
+
+---
+
