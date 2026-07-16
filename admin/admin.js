@@ -844,7 +844,7 @@ document.addEventListener('DOMContentLoaded', function() {
   window.carregarDadosAdmin = carregarDadosAdmin;
 
   // ================================================================
-  //  BOTÃO DE LIMPEZA DE DUPLICADOS
+  //  BOTÃO DE LIMPEZA DE DUPLICADOS (VIA SQL)
   // ================================================================
   const cleanBtn = document.getElementById('cleanDuplicatesBtn');
   if (cleanBtn) {
@@ -853,17 +853,14 @@ document.addEventListener('DOMContentLoaded', function() {
       this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
 
       try {
-        const res = await fetch('/api/clean-duplicates', {
+        const res = await fetch('/api/clean-sql', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' }
         });
         const data = await res.json();
 
         if (data.success) {
-          const msg = data.removidos > 0
-            ? `🧹 ${data.removidos} horários duplicados removidos.`
-            : '✅ Nenhum horário duplicado encontrado.';
-          showToast(msg, data.removidos > 0 ? 'warning' : 'info');
+          showToast(data.message, data.removidos > 0 ? 'warning' : 'success');
           if (typeof carregarHorariosDoBanco === 'function') {
             carregarHorariosDoBanco();
           }
@@ -871,7 +868,7 @@ document.addEventListener('DOMContentLoaded', function() {
           showToast(`❌ ${data.error || 'Erro ao limpar duplicados.'}`, 'error');
         }
       } catch (err) {
-        console.error('Erro ao chamar /api/clean-duplicates:', err);
+        console.error('Erro ao chamar /api/clean-sql:', err);
         showToast('❌ Erro ao conectar com o servidor.', 'error');
       } finally {
         this.disabled = false;
