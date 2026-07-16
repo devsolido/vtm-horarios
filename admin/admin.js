@@ -843,39 +843,36 @@ document.addEventListener('DOMContentLoaded', function() {
   window.carregarStatusManutencao = carregarStatusManutencao;
   window.carregarDadosAdmin = carregarDadosAdmin;
 
-  // ================================================================
-  //  BOTÃO DE LIMPEZA DE DUPLICADOS (VIA SQL)
-  // ================================================================
-  const cleanBtn = document.getElementById('cleanDuplicatesBtn');
-  if (cleanBtn) {
-    cleanBtn.addEventListener('click', async function() {
-      this.disabled = true;
-      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
+ // ================================================================
+//  BOTÃO DE LIMPEZA DE DUPLICADOS (VIA SQL)
+// ================================================================
+const cleanBtn = document.getElementById('cleanDuplicatesBtn');
+if (cleanBtn) {
+  cleanBtn.addEventListener('click', async function() {
+    this.disabled = true;
+    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
 
-      try {
-        const res = await fetch('/api/clean-sql', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        const data = await res.json();
+    try {
+      const res = await fetch('/api/clean', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await res.json();
 
-        if (data.success) {
-          showToast(data.message, data.removidos > 0 ? 'warning' : 'success');
-          if (typeof carregarHorariosDoBanco === 'function') {
-            carregarHorariosDoBanco();
-          }
-        } else {
-          showToast(`❌ ${data.error || 'Erro ao limpar duplicados.'}`, 'error');
+      if (data.success) {
+        showToast(data.message, data.removidos > 0 ? 'warning' : 'success');
+        if (typeof carregarHorariosDoBanco === 'function') {
+          carregarHorariosDoBanco();
         }
-      } catch (err) {
-        console.error('Erro ao chamar /api/clean-sql:', err);
-        showToast('❌ Erro ao conectar com o servidor.', 'error');
-      } finally {
-        this.disabled = false;
-        this.innerHTML = '<i class="fas fa-broom"></i> Limpar duplicados';
+      } else {
+        showToast(`❌ ${data.error || 'Erro ao limpar duplicados.'}`, 'error');
       }
-    });
-  }
-
-  console.log('✅ Admin.js carregado com sucesso!');
-});
+    } catch (err) {
+      console.error('Erro ao chamar /api/clean:', err);
+      showToast('❌ Erro ao conectar com o servidor.', 'error');
+    } finally {
+      this.disabled = false;
+      this.innerHTML = '<i class="fas fa-broom"></i> Limpar duplicados';
+    }
+  });
+}
