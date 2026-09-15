@@ -240,7 +240,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if (adminCode22) adminCode22.value = '';
 
     fetch('/api/send-code-email', { method: 'POST' })
-      .then(res => res.json())
+      .then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || 'Não foi possível enviar o código.');
+        }
+        return data;
+      })
       .then(data => {
         if (data.success) {
           showMessage(codeMsg, '✅ Código de verificação enviado.', 'success');
@@ -253,8 +259,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       })
       .catch((err) => {
-        showMessage(codeMsg, '❌ Falha na comunicação com o servidor.', 'error');
-        if (generatedCodeSpan) generatedCodeSpan.textContent = '❌ Erro de conexão';
+        showMessage(codeMsg, '❌ ' + (err.message || 'Falha na comunicação com o servidor.'), 'error');
+        if (generatedCodeSpan) generatedCodeSpan.textContent = '❌ Falha no envio';
         logError('Erro envio código', err.message, err.stack);
       })
       .finally(() => {
@@ -876,3 +882,4 @@ if (cleanBtn) {
     }
   });
 }
+});

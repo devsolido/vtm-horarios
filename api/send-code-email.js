@@ -1,11 +1,6 @@
 import nodemailer from 'nodemailer';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método não permitido' });
@@ -17,9 +12,19 @@ export default async function handler(req, res) {
 
   if (!user || !pass || !toEmail) {
     return res.status(500).json({
-      error: 'Configuração de e-mail incompleta. Verifique EMAIL_USER, EMAIL_PASS e EMAIL_TO.'
+      error: 'Serviço de e-mail não configurado. Verifique as variáveis do deploy.'
     });
   }
+
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+    console.error('Configuração do Supabase incompleta.');
+    return res.status(500).json({ error: 'Banco de dados não configurado.' });
+  }
+
+  const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_ANON_KEY
+  );
 
   // Gerar código de 22 dígitos
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -70,6 +75,11 @@ export default async function handler(req, res) {
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('❌ Erro ao enviar e-mail ou salvar no banco:', error);
-    return res.status(500).json({ error: 'Falha ao enviar e-mail', details: error.message });
+    const isAuthError = error.code === 'EAUTH' || error.responseCode === 535;
+    return res.status(500).json({
+      error: isAuthError
+        ? 'Credenciais do e-mail inválidas. Atualize EMAIL_PASS no deploy.'
+        : 'Falha ao enviar e-mail. Tente novamente mais tarde.'
+    });
   }
 }
