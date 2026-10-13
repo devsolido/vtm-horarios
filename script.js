@@ -173,41 +173,66 @@ function getCurrentMinutes() {
   return n.getHours() * 60 + n.getMinutes();
 }
 
-function getNextArrivalEstimate(durationMinutes) {
+function getRoutePassageStatus(passageOffsetMinutes) {
   if (allHorarios.length === 0) return null;
 
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const events = [];
 
-  for (let dayOffset = 0; dayOffset < 8; dayOffset++) {
+  for (let dayOffset = -7; dayOffset < 8; dayOffset++) {
     const serviceDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset);
     const serviceDay = getCurrentDay(serviceDate);
-    let earliestArrival = null;
 
     allHorarios.forEach((horario) => {
       if (!horario.dias.includes(serviceDay)) return;
 
-      const arrivalMinutes =
-        dayOffset * 1440 + getMinutesFromTime(horario.horario) + durationMinutes;
-      if (arrivalMinutes < currentMinutes) return;
-
-      if (earliestArrival === null || arrivalMinutes < earliestArrival) {
-        earliestArrival = arrivalMinutes;
-      }
+      const departureMinutes = dayOffset * 1440 + getMinutesFromTime(horario.horario);
+      const passageMinutes = departureMinutes + passageOffsetMinutes;
+      events.push({
+        departureMinutes,
+        passageMinutes,
+        passageDayOffset: Math.floor(passageMinutes / 1440),
+      });
     });
-
-    if (earliestArrival !== null) {
-      const minutesOfDay = earliestArrival % 1440;
-      const hours = String(Math.floor(minutesOfDay / 60)).padStart(2, '0');
-      const minutes = String(minutesOfDay % 60).padStart(2, '0');
-      return {
-        horario: hours + ':' + minutes,
-        minutosAteChegada: earliestArrival - currentMinutes,
-      };
-    }
   }
 
-  return null;
+  const lastPassage = events
+    .filter((event) => event.passageMinutes < currentMinutes)
+    .sort((a, b) => b.passageMinutes - a.passageMinutes)[0] || null;
+  const nextPassage = events
+    .filter((event) => event.passageMinutes > currentMinutes)
+    .sort((a, b) => a.passageMinutes - b.passageMinutes)[0] || null;
+  const passingNow = events.find((event) => event.passageMinutes === currentMinutes) || null;
+  const enRoute = events.find(
+    (event) => event.departureMinutes <= currentMinutes && event.passageMinutes > currentMinutes
+  ) || null;
+
+  let state = 'upcoming';
+  if (passingNow) state = 'now';
+  else if (enRoute) state = 'en-route';
+  else if (lastPassage && lastPassage.passageDayOffset === 0) state = 'passed';
+
+  return { state, lastPassage, nextPassage, passingNow, enRoute, currentMinutes };
+}
+
+function formatRoutePassageTime(totalMinutes) {
+  const dayOffset = Math.floor(totalMinutes / 1440);
+  const minutesOfDay = ((totalMinutes % 1440) + 1440) % 1440;
+  const hours = String(Math.floor(minutesOfDay / 60)).padStart(2, '0');
+  const minutes = String(minutesOfDay % 60).padStart(2, '0');
+  const date = new Date();
+  date.setDate(date.getDate() + dayOffset);
+  const dayLabel =
+    dayOffset === 0
+      ? 'hoje'
+      : dayOffset === 1
+        ? 'amanhã'
+        : dayOffset === -1
+          ? 'ontem'
+          : date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+
+  return dayLabel + ' às ' + hours + ':' + minutes;
 }
 
 function formatDateFull(d) {
@@ -517,18 +542,81 @@ function renderRouteEstimates() {
   if (!estimatesContainer) return;
 
   const estimates = [
-    { label: 'Terminal → Bela Vista (≈13 min)', estimate: getNextArrivalEstimate(13) },
-    { label: 'Bela Vista → Terminal (≈19 min)', estimate: getNextArrivalEstimate(19) },
+    {
+      direction: 'IDA',
+      route: 'Terminal → Bela Vista',
+      icon: 'fa-arrow-right',
+      duration: 13,
+      passageOffset: 13,
+      arrivalOffset: 0,
+    },
+    {
+      direction: 'VOLTA',
+      route: 'Bela Vista → Terminal',
+      icon: 'fa-arrow-left',
+      duration: 19,
+      passageOffset: 0,
+      arrivalOffset: 19,
+    },
   ];
+  const stateLabels = {
+    now: 'PASSANDO AGORA',
+    'en-route': 'A CAMINHO',
+    passed: 'JÁ PASSOU',
+    upcoming: 'PRÓXIMO',
+  };
 
-  estimatesContainer.innerHTML = estimates
-    .map(({ label, estimate }) => {
-      const arrival = estimate
-        ? estimate.horario + ' · ' + formatCountdown(estimate.minutosAteChegada)
-        : 'Sem previsão';
-      return '<div class="route-estimate"><span>' + label + '</span><strong>' + arrival + '</strong></div>';
-    })
-    .join('');
+  estimatesContainer.innerHTML = estimates.map((estimate) => {
+    const status = getRoutePassageStatus(estimate.passageOffset);
+    let detail = 'Percurso aproximado: ' + estimate.duration + ' min.';
+
+    if (status) {
+      if (status.state === 'now') {
+        detail += ' Ônibus passando pela parada neste momento.';
+      } else if (status.state === 'en-route' && status.nextPassage) {
+        const minutesUntil = status.nextPassage.passageMinutes - status.currentMinutes;
+        detail +=
+          ' Chega ' + formatRoutePassageTime(status.nextPassage.passageMinutes) +
+          ' · faltam ' + formatCountdown(minutesUntil) + '.';
+      } else if (status.state === 'passed' && status.lastPassage) {
+        detail += ' Última passagem: ' + formatRoutePassageTime(status.lastPassage.passageMinutes) + '.';
+        if (status.nextPassage) {
+          const minutesUntil = status.nextPassage.passageMinutes - status.currentMinutes;
+          detail +=
+            ' Próxima: ' + formatRoutePassageTime(status.nextPassage.passageMinutes) +
+            ' · ' + formatCountdown(minutesUntil) + '.';
+        }
+      } else if (status.nextPassage) {
+        const minutesUntil = status.nextPassage.passageMinutes - status.currentMinutes;
+        detail =
+          'Percurso aproximado: ' + estimate.duration + ' min. Próxima passagem ' +
+          formatRoutePassageTime(status.nextPassage.passageMinutes) +
+          ' · ' + formatCountdown(minutesUntil) + '.';
+      }
+
+      if (estimate.arrivalOffset && status.nextPassage) {
+        detail +=
+          ' Chegada ao Terminal ≈ ' +
+          formatRoutePassageTime(status.nextPassage.passageMinutes + estimate.arrivalOffset) + '.';
+      }
+    } else {
+      detail += ' Sem horários cadastrados para esta direção.';
+    }
+
+    const state = status ? status.state : 'empty';
+    const stateLabel = status ? stateLabels[state] : 'SEM PREVISÃO';
+    return (
+      '<div class="route-estimate route-estimate--' + state + '">' +
+      '<div class="route-estimate-heading">' +
+      '<span class="route-estimate-direction"><i class="fas ' + estimate.icon + '"></i> ' +
+      estimate.direction + '</span>' +
+      '<span class="route-estimate-state">' + stateLabel + '</span>' +
+      '</div>' +
+      '<div class="route-estimate-route">' + estimate.route + '</div>' +
+      '<p class="route-estimate-detail">' + detail + '</p>' +
+      '</div>'
+    );
+  }).join('');
 }
 
 function handleShare(e) {
