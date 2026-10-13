@@ -134,7 +134,6 @@ horariosFallback.sort((a, b) => a.horario.localeCompare(b.horario));
 //  DOM REFS (com verificação para páginas que não têm esses elementos)
 // ================================================================
 const container = document.getElementById('cardsContainer');
-const fullDateSpan = document.getElementById('fullDate');
 const alertModal = document.getElementById('alertModal');
 const alertMessage = document.getElementById('alertMessage');
 const alertSubMsg = document.getElementById('alertSubMsg');
@@ -239,14 +238,6 @@ function formatDateFull(d) {
   return d
     .toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
     .replace(/^(\d+)\s+de\s+(\w+)/, (_, day, month) => day + ' de ' + month.charAt(0).toUpperCase() + month.slice(1));
-}
-
-function formatCountdown(minDiff) {
-  if (minDiff < 0) return 'Já passou';
-  if (minDiff < 1) return 'Agora!';
-  const h = Math.floor(minDiff / 60);
-  const m = Math.round(minDiff % 60);
-  return h > 0 ? h + 'h ' + m + 'min' : m + ' min';
 }
 
 function speak(text) {
@@ -422,11 +413,6 @@ function renderCards() {
       ? [...allHorarios]
       : allHorarios.filter((h) => h.dias.includes(currentFilter));
 
-  const disponiveisHoje = filtered.filter((h) => h.dias.includes(diaAtual));
-  const futurosHoje = disponiveisHoje
-    .filter((h) => getMinutesFromTime(h.horario) >= nowMin)
-    .sort((a, b) => a.horario.localeCompare(b.horario));
-
   const futurosTodos = filtered
     .filter((h) => getMinutesFromTime(h.horario) >= nowMin)
     .sort((a, b) => a.horario.localeCompare(b.horario));
@@ -582,25 +568,6 @@ function handleShare(e) {
     const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(msg);
     window.open(url, '_blank');
   }
-}
-
-function findNextTomorrow() {
-  const today = new Date().getDay();
-  const tomorrow = (today + 1) % 7;
-  const map = {
-    0: 'Domingo',
-    1: 'Segunda a Sexta',
-    2: 'Segunda a Sexta',
-    3: 'Segunda a Sexta',
-    4: 'Segunda a Sexta',
-    5: 'Segunda a Sexta',
-    6: 'Sábado',
-  };
-  const label = map[tomorrow];
-  const list = allHorarios.filter((h) => h.dias.includes(label));
-  if (!list.length) return null;
-  list.sort((a, b) => a.horario.localeCompare(b.horario));
-  return list[0];
 }
 
 // ================================================================

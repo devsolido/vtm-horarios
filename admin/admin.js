@@ -110,7 +110,6 @@ document.addEventListener('DOMContentLoaded', function() {
   const timerText = document.getElementById('timerText');
 
   const adminContent = document.getElementById('adminContent');
-  const loginArea = document.getElementById('adminLoginArea');
 
   // 🔑 Senha – usada apenas para alteração (localStorage)
   const STORAGE_KEY = 'vtm_admin_password';

@@ -1,24 +1,30 @@
 /* ===== VARIÁVEIS (TEMA ESCURO PADRÃO) ===== */
 :root {
-  --bg-body: #0b0e1a;
-  --bg-app: rgba(255, 255, 255, 0.03);
-  --border-app: rgba(255, 255, 255, 0.06);
-  --text-primary: #fff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --text-muted: rgba(255, 255, 255, 0.3);
-  --card-bg: rgba(255, 255, 255, 0.03);
-  --card-border: rgba(255, 255, 255, 0.05);
-  --card-hover-bg: rgba(255, 255, 255, 0.06);
-  --input-bg: rgba(255, 255, 255, 0.05);
-  --input-border: rgba(255, 255, 255, 0.08);
+  --bg-body: #0b130d;
+  --bg-app: rgba(21, 32, 23, 0.9);
+  --border-app: rgba(198, 226, 175, 0.11);
+  --text-primary: #f1f6e9;
+  --text-secondary: rgba(225, 235, 216, 0.74);
+  --text-muted: rgba(194, 211, 184, 0.48);
+  --card-bg: rgba(28, 43, 30, 0.82);
+  --card-border: rgba(198, 226, 175, 0.12);
+  --card-hover-bg: rgba(39, 58, 39, 0.94);
+  --input-bg: rgba(12, 22, 14, 0.72);
+  --input-border: rgba(198, 226, 175, 0.18);
   --input-color: #fff;
-  --shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-  --badge-bg: rgba(0, 198, 251, 0.1);
-  --badge-color: #00c6fb;
-  --filter-btn-bg: rgba(255, 255, 255, 0.04);
-  --filter-btn-color: rgba(255, 255, 255, 0.6);
-  --filter-btn-hover-bg: rgba(255, 255, 255, 0.08);
-  --filter-btn-active: linear-gradient(135deg, #00c6fb, #005bea);
+  --shadow: 0 24px 72px rgba(2, 9, 4, 0.72);
+  --accent-primary: #c2eb6a;
+  --accent-deep: #37633b;
+  --accent-warm: #e6a15b;
+  --accent-warm-soft: rgba(230, 161, 91, 0.2);
+  --accent-text: #d8efa8;
+  --accent-soft: rgba(194, 235, 106, 0.13);
+  --badge-bg: var(--accent-soft);
+  --badge-color: var(--accent-primary);
+  --filter-btn-bg: rgba(219, 235, 207, 0.06);
+  --filter-btn-color: rgba(225, 235, 216, 0.76);
+  --filter-btn-hover-bg: rgba(194, 235, 106, 0.1);
+  --filter-btn-active: linear-gradient(135deg, var(--accent-deep), #203b29);
   --note-bg: #fff3cd;
   --note-color: #856404;
   --note-border: #ffe69c;
@@ -27,25 +33,31 @@
 
 /* ===== TEMA CLARO ===== */
 body.light-mode {
-  --bg-body: #f0f2f5;
-  --bg-app: rgba(255, 255, 255, 0.7);
-  --border-app: rgba(0, 0, 0, 0.1);
-  --text-primary: #1a1a2e;
-  --text-secondary: rgba(0, 0, 0, 0.7);
-  --text-muted: rgba(0, 0, 0, 0.4);
-  --card-bg: rgba(255, 255, 255, 0.7);
-  --card-border: rgba(0, 0, 0, 0.08);
-  --card-hover-bg: rgba(255, 255, 255, 0.9);
-  --input-bg: rgba(255, 255, 255, 0.8);
-  --input-border: rgba(0, 0, 0, 0.15);
-  --input-color: #1a1a2e;
-  --shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-  --badge-bg: rgba(0, 198, 251, 0.15);
-  --badge-color: #005bea;
-  --filter-btn-bg: rgba(0, 0, 0, 0.05);
-  --filter-btn-color: rgba(0, 0, 0, 0.6);
-  --filter-btn-hover-bg: rgba(0, 0, 0, 0.08);
-  --filter-btn-active: linear-gradient(135deg, #00c6fb, #005bea);
+  --bg-body: #edf2e8;
+  --bg-app: rgba(255, 255, 255, 0.9);
+  --border-app: rgba(37, 61, 38, 0.14);
+  --text-primary: #1d2b20;
+  --text-secondary: rgba(29, 43, 32, 0.76);
+  --text-muted: rgba(46, 68, 47, 0.55);
+  --card-bg: rgba(255, 255, 255, 0.86);
+  --card-border: rgba(52, 83, 48, 0.13);
+  --card-hover-bg: #f8fbf3;
+  --input-bg: rgba(255, 255, 255, 0.92);
+  --input-border: rgba(52, 83, 48, 0.2);
+  --input-color: #1d2b20;
+  --shadow: 0 24px 72px rgba(34, 59, 35, 0.14);
+  --accent-primary: #5c812f;
+  --accent-deep: #315a36;
+  --accent-warm: #a85d2a;
+  --accent-warm-soft: rgba(168, 93, 42, 0.12);
+  --accent-text: #476b2e;
+  --accent-soft: rgba(92, 129, 47, 0.12);
+  --badge-bg: var(--accent-soft);
+  --badge-color: var(--accent-deep);
+  --filter-btn-bg: rgba(44, 68, 42, 0.06);
+  --filter-btn-color: rgba(29, 43, 32, 0.74);
+  --filter-btn-hover-bg: rgba(92, 129, 47, 0.1);
+  --filter-btn-active: linear-gradient(135deg, var(--accent-deep), #203b29);
   --note-bg: #fff3cd;
   --note-color: #856404;
   --note-border: #ffe69c;
@@ -106,7 +118,7 @@ body {
   height: 56px;
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(0, 91, 234, 0.3));
+  filter: drop-shadow(0 4px 12px rgba(55, 99, 59, 0.3));
   border-radius: 8px;
 }
 
@@ -132,7 +144,7 @@ body {
 }
 
 .info-item i {
-  color: #00c6fb;
+  color: var(--accent-primary);
   font-size: 14px;
 }
 
@@ -240,13 +252,13 @@ body {
   background: var(--filter-btn-active);
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 6px 20px rgba(0, 91, 234, 0.35);
+  box-shadow: 0 6px 20px rgba(55, 99, 59, 0.35);
 }
 
 /* ===== NEXT BUS ===== */
 .next-bus {
-  background: rgba(0, 198, 251, 0.06);
-  border: 1px solid rgba(0, 198, 251, 0.2);
+  background: rgba(194, 235, 106, 0.06);
+  border: 1px solid rgba(194, 235, 106, 0.2);
   border-radius: 12px;
   padding: 12px 16px;
   margin-bottom: 20px;
@@ -267,7 +279,7 @@ body {
 }
 
 .next-bus .label i {
-  color: #00c6fb;
+  color: var(--accent-primary);
 }
 
 .bus-status-list {
@@ -311,25 +323,25 @@ body {
   max-width: 100%;
   padding: 4px 9px;
   border-radius: 999px;
-  background: rgba(0, 198, 251, 0.14);
-  color: #73dff6;
+  background: var(--accent-soft);
+  color: var(--accent-text);
   font-size: 10px;
   font-weight: 700;
 }
 
 .bus-status-item--outbound .bus-status-badge {
-  background: rgba(0, 154, 133, 0.2);
-  color: #6ce0c8;
+  background: var(--accent-soft);
+  color: var(--accent-primary);
 }
 
 .bus-status-item--returning .bus-status-badge {
-  background: rgba(222, 150, 38, 0.2);
-  color: #ffd37c;
+  background: var(--accent-warm-soft);
+  color: var(--accent-warm);
 }
 
 .bus-status-item--terminal .bus-status-badge {
-  background: rgba(0, 198, 251, 0.14);
-  color: #73dff6;
+  background: rgba(117, 163, 76, 0.18);
+  color: #b9df8c;
 }
 
 .bus-status-item--empty .bus-status-badge {
@@ -354,15 +366,20 @@ body {
 }
 
 body.light-mode .bus-status-badge {
-  color: #006b87;
+  color: var(--accent-deep);
 }
 
 body.light-mode .bus-status-item--outbound .bus-status-badge {
-  color: #006e60;
+  color: var(--accent-deep);
 }
 
 body.light-mode .bus-status-item--returning .bus-status-badge {
-  color: #8a5600;
+  color: var(--accent-warm);
+}
+
+body.light-mode .bus-status-item--terminal .bus-status-badge {
+  background: var(--accent-soft);
+  color: var(--accent-deep);
 }
 
 body.light-mode .bus-status-item--empty .bus-status-badge {
@@ -450,8 +467,8 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .card.next {
-  border-color: rgba(0, 198, 251, 0.5);
-  box-shadow: 0 0 30px rgba(0, 198, 251, 0.08);
+  border-color: rgba(194, 235, 106, 0.5);
+  box-shadow: 0 0 30px rgba(194, 235, 106, 0.08);
 }
 
 .card.next::after {
@@ -461,12 +478,12 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
   right: 10px;
   font-size: 9px;
   font-weight: 700;
-  color: #00c6fb;
-  background: rgba(0, 198, 251, 0.12);
+  color: var(--accent-primary);
+  background: rgba(194, 235, 106, 0.12);
   padding: 2px 8px;
   border-radius: 20px;
   letter-spacing: 0.5px;
-  border: 1px solid rgba(0, 198, 251, 0.15);
+  border: 1px solid rgba(194, 235, 106, 0.15);
 }
 
 .card::before {
@@ -476,7 +493,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #00c6fb, #005bea);
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-deep));
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -503,7 +520,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .card .destino i {
-  color: #00c6fb;
+  color: var(--accent-primary);
   font-size: 15px;
 }
 
@@ -518,7 +535,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 .card .horario {
   font-size: 24px;
   font-weight: 700;
-  color: #b0caff;
+  color: var(--accent-text);
   letter-spacing: 0.5px;
   margin-bottom: 2px;
 }
@@ -534,7 +551,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .card .embarque i {
   font-size: 11px;
-  color: #00c6fb;
+  color: var(--accent-primary);
 }
 
 .card .dias {
@@ -551,7 +568,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
   font-weight: 600;
   padding: 2px 10px;
   border-radius: 20px;
-  border: 1px solid rgba(0, 198, 251, 0.12);
+  border: 1px solid rgba(194, 235, 106, 0.12);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -577,9 +594,9 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .card .share-btn:hover {
-  background: rgba(0, 198, 251, 0.15);
-  color: #00c6fb;
-  border-color: rgba(0, 198, 251, 0.3);
+  background: rgba(194, 235, 106, 0.15);
+  color: var(--accent-primary);
+  border-color: rgba(194, 235, 106, 0.3);
   transform: scale(1.1);
 }
 
@@ -659,7 +676,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .modal-box .icon-big {
   font-size: 44px;
-  background: linear-gradient(135deg, #00c6fb, #005bea);
+  background: linear-gradient(135deg, var(--accent-deep), #203b29);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -682,7 +699,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .modal-box .btn-primary {
-  background: linear-gradient(135deg, #00c6fb, #005bea);
+  background: linear-gradient(135deg, var(--accent-deep), #203b29);
   border: none;
   color: #fff;
   font-size: 16px;
@@ -691,7 +708,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s;
-  box-shadow: 0 8px 30px rgba(0, 91, 234, 0.4);
+  box-shadow: 0 8px 30px rgba(55, 99, 59, 0.4);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -699,7 +716,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .modal-box .btn-primary:hover {
   transform: scale(1.03);
-  box-shadow: 0 12px 40px rgba(0, 91, 234, 0.6);
+  box-shadow: 0 12px 40px rgba(55, 99, 59, 0.6);
 }
 
 /* ===== ALERT MODAL ===== */
@@ -731,7 +748,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
   max-width: 440px;
   width: 100%;
   text-align: center;
-  border: 1px solid rgba(0, 198, 251, 0.25);
+  border: 1px solid rgba(194, 235, 106, 0.25);
   box-shadow: var(--shadow);
   transform: scale(0.95) translateY(10px);
   animation: alertPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
@@ -750,7 +767,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .alert-modal .icon-big {
   font-size: 48px;
-  background: linear-gradient(135deg, #00c6fb, #005bea);
+  background: linear-gradient(135deg, var(--accent-deep), #203b29);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -772,7 +789,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .alert-modal .msg strong {
-  color: #00c6fb;
+  color: var(--accent-primary);
 }
 
 .alert-modal .sub-msg {
@@ -831,7 +848,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .admin-header-left .admin-title i {
   font-size: 28px;
-  color: #00c6fb;
+  color: var(--accent-primary);
 }
 
 .admin-header-left .admin-title h2 {
@@ -862,7 +879,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .admin-header-right .admin-user i {
   font-size: 20px;
-  color: #00c6fb;
+  color: var(--accent-primary);
 }
 
 .admin-header-right .admin-user span {
@@ -883,7 +900,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .admin-header-right .admin-info-item i {
-  color: #00c6fb;
+  color: var(--accent-primary);
   font-size: 14px;
 }
 
@@ -921,7 +938,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .btn-add-row {
-  background: linear-gradient(135deg, #00c6fb, #005bea);
+  background: linear-gradient(135deg, var(--accent-deep), #203b29);
   border: none;
   color: #fff;
   padding: 8px 18px;
@@ -937,7 +954,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .btn-add-row:hover {
   transform: scale(1.03);
-  box-shadow: 0 4px 15px rgba(0, 91, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(55, 99, 59, 0.4);
 }
 
 .btn-add-row:active {
@@ -998,7 +1015,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .admin-table .admin-input:focus {
-  border-color: #00c6fb;
+  border-color: var(--accent-primary);
 }
 
 .admin-table .admin-input[readonly] {
@@ -1047,8 +1064,8 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .admin-table .btn-action:hover {
-  color: #00c6fb;
-  background: rgba(0, 198, 251, 0.1);
+  color: var(--accent-primary);
+  background: rgba(194, 235, 106, 0.1);
 }
 
 .admin-table .btn-action.danger:hover {
@@ -1081,7 +1098,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .admin-table .dias-checkboxes input[type="checkbox"] {
-  accent-color: #00c6fb;
+  accent-color: var(--accent-primary);
   width: 14px;
   height: 14px;
   cursor: pointer;
@@ -1111,13 +1128,13 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .admin-msg.info {
   display: block;
-  background: rgba(0, 198, 251, 0.1);
-  color: #00c6fb;
-  border: 1px solid rgba(0, 198, 251, 0.2);
+  background: rgba(194, 235, 106, 0.1);
+  color: var(--accent-primary);
+  border: 1px solid rgba(194, 235, 106, 0.2);
 }
 
 .admin-form .btn-save {
-  background: linear-gradient(135deg, #00c6fb, #005bea);
+  background: linear-gradient(135deg, var(--accent-deep), #203b29);
   border: none;
   color: #fff;
   font-weight: 600;
@@ -1133,7 +1150,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .admin-form .btn-save:hover {
   transform: scale(1.02);
-  box-shadow: 0 8px 20px rgba(0, 91, 234, 0.35);
+  box-shadow: 0 8px 20px rgba(55, 99, 59, 0.35);
 }
 
 .admin-form .btn-save:active {
@@ -1255,7 +1272,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .footer a {
-  color: #00c6fb;
+  color: var(--accent-primary);
   text-decoration: none;
   transition: opacity 0.3s;
 }
@@ -1317,12 +1334,12 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 198, 251, 0.3);
+  background: rgba(194, 235, 106, 0.3);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 198, 251, 0.6);
+  background: rgba(194, 235, 106, 0.6);
 }
 
 /* ============================================================
@@ -1334,14 +1351,14 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
   bottom: 24px;
   right: 24px;
   z-index: 999;
-  background: linear-gradient(135deg, #00c6fb, #005bea);
+  background: linear-gradient(135deg, var(--accent-deep), #203b29);
   color: #fff;
   border: none;
   border-radius: 50%;
   width: 56px;
   height: 56px;
   font-size: 24px;
-  box-shadow: 0 6px 20px rgba(0, 91, 234, 0.5);
+  box-shadow: 0 6px 20px rgba(55, 99, 59, 0.5);
   cursor: pointer;
   transition: all 0.3s;
   display: flex;
@@ -1352,7 +1369,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .report-btn:hover {
   transform: scale(1.08);
-  box-shadow: 0 8px 30px rgba(0, 91, 234, 0.7);
+  box-shadow: 0 8px 30px rgba(55, 99, 59, 0.7);
 }
 
 .report-btn:active {
@@ -1446,7 +1463,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .report-modal-box input:focus,
 .report-modal-box textarea:focus {
-  border-color: #00c6fb;
+  border-color: var(--accent-primary);
 }
 
 .report-modal-box textarea {
@@ -1455,7 +1472,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 }
 
 .report-submit {
-  background: linear-gradient(135deg, #00c6fb, #005bea);
+  background: linear-gradient(135deg, var(--accent-deep), #203b29);
   border: none;
   color: #fff;
   font-weight: 600;
@@ -1470,7 +1487,7 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
 
 .report-submit:hover {
   transform: scale(1.02);
-  box-shadow: 0 8px 20px rgba(0, 91, 234, 0.35);
+  box-shadow: 0 8px 20px rgba(55, 99, 59, 0.35);
 }
 
 .report-modal-box .msg {
