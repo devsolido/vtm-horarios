@@ -270,138 +270,103 @@ body {
   color: #00c6fb;
 }
 
-.next-bus .bus-info {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 14px;
-}
-
-.next-bus .destino {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.next-bus .horario {
-  font-size: 16px;
-  font-weight: 600;
-  color: #b0caff;
-}
-
-.next-bus .countdown {
-  font-size: 14px;
-  font-weight: 600;
-  color: #00c6fb;
-  background: rgba(0, 198, 251, 0.12);
-  padding: 2px 14px;
-  border-radius: 30px;
-  border: 1px solid rgba(0, 198, 251, 0.15);
-  min-width: 70px;
-  text-align: center;
-}
-
-.next-bus .countdown.passed {
-  color: #ff6b6b;
-  border-color: rgba(255, 107, 107, 0.3);
-  background: rgba(255, 107, 107, 0.08);
-}
-
-.next-bus .empty-msg {
-  color: var(--text-muted);
-  font-size: 14px;
-}
-
-.route-estimates {
+.bus-status-list {
   flex: 0 0 100%;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 0;
-  margin-top: 4px;
+  margin-top: 2px;
   padding-top: 10px;
   border-top: 1px solid var(--card-border);
 }
 
-.route-estimate {
-  min-width: 0;
-  padding: 8px 18px 4px;
-}
-
-.route-estimate + .route-estimate {
-  border-left: 1px solid var(--card-border);
-}
-
-.route-estimate-heading {
-  display: flex;
+.bus-status-item {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.8fr) minmax(0, 1.5fr);
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 8px 18px;
+  padding: 10px 4px;
 }
 
-.route-estimate-direction {
-  color: var(--text-secondary);
-  font-size: 11px;
-  font-weight: 700;
+.bus-status-item + .bus-status-item {
+  border-top: 1px solid var(--card-border);
 }
 
-.route-estimate-direction i {
-  margin-right: 4px;
-  color: #00a9cc;
+.bus-status-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
 }
 
-.route-estimate-state {
-  flex: 0 0 auto;
-  padding: 4px 8px;
+.bus-status-heading strong {
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.bus-status-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 4px 9px;
   border-radius: 999px;
-  background: rgba(0, 198, 251, 0.12);
+  background: rgba(0, 198, 251, 0.14);
   color: #73dff6;
   font-size: 10px;
   font-weight: 700;
 }
 
-.route-estimate--passed .route-estimate-state {
-  background: rgba(221, 91, 80, 0.18);
-  color: #ff9a91;
-}
-
-.route-estimate--en-route .route-estimate-state {
+.bus-status-item--outbound .bus-status-badge {
   background: rgba(0, 154, 133, 0.2);
   color: #6ce0c8;
 }
 
-.route-estimate--now .route-estimate-state {
+.bus-status-item--returning .bus-status-badge {
   background: rgba(222, 150, 38, 0.2);
   color: #ffd37c;
 }
 
-body.light-mode .route-estimate-state {
-  color: #006b87;
+.bus-status-item--terminal .bus-status-badge {
+  background: rgba(0, 198, 251, 0.14);
+  color: #73dff6;
 }
 
-body.light-mode .route-estimate--passed .route-estimate-state {
-  color: #a7332a;
+.bus-status-item--empty .bus-status-badge {
+  background: rgba(221, 91, 80, 0.18);
+  color: #ff9a91;
 }
 
-body.light-mode .route-estimate--en-route .route-estimate-state {
-  color: #006e60;
-}
-
-body.light-mode .route-estimate--now .route-estimate-state {
-  color: #8a5600;
-}
-
-.route-estimate-route {
-  margin-top: 8px;
-  color: var(--text-primary);
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.route-estimate-detail {
-  margin: 5px 0 0;
+.bus-status-item p {
+  min-width: 0;
+  margin: 0;
   color: var(--text-secondary);
   font-size: 12px;
   line-height: 1.5;
+}
+
+.bus-status-note {
+  flex: 0 0 100%;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+body.light-mode .bus-status-badge {
+  color: #006b87;
+}
+
+body.light-mode .bus-status-item--outbound .bus-status-badge {
+  color: #006e60;
+}
+
+body.light-mode .bus-status-item--returning .bus-status-badge {
+  color: #8a5600;
+}
+
+body.light-mode .bus-status-item--empty .bus-status-badge {
+  color: #a7332a;
 }
 
 /* ===== CARDS ===== */
@@ -540,6 +505,14 @@ body.light-mode .route-estimate--now .route-estimate-state {
 .card .destino i {
   color: #00c6fb;
   font-size: 15px;
+}
+
+.card .horario-label {
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .card .horario {
@@ -1515,10 +1488,7 @@ body.light-mode .route-estimate--now .route-estimate-state {
   .info-bar { justify-content: center; gap: 6px; }
   .info-item { font-size: 12px; padding: 4px 10px; min-height: 32px; }
   .next-bus { flex-direction: column; align-items: stretch; text-align: center; }
-  .next-bus .bus-info { justify-content: center; }
-  .route-estimates { grid-template-columns: 1fr; text-align: left; }
-  .route-estimate { padding: 12px 4px; }
-  .route-estimate + .route-estimate { border-left: 0; border-top: 1px solid var(--card-border); }
+  .bus-status-item { grid-template-columns: 1fr; gap: 6px; text-align: left; }
   .cards-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
   .card .horario { font-size: 20px; }
   .card .destino { font-size: 15px; }

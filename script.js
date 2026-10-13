@@ -134,7 +134,6 @@ horariosFallback.sort((a, b) => a.horario.localeCompare(b.horario));
 //  DOM REFS (com verificação para páginas que não têm esses elementos)
 // ================================================================
 const container = document.getElementById('cardsContainer');
-const nextBusInfo = document.getElementById('nextBusInfo');
 const fullDateSpan = document.getElementById('fullDate');
 const alertModal = document.getElementById('alertModal');
 const alertMessage = document.getElementById('alertMessage');
@@ -173,14 +172,14 @@ function getCurrentMinutes() {
   return n.getHours() * 60 + n.getMinutes();
 }
 
-function getRoutePassageStatus(passageOffsetMinutes) {
+function getBusMovementStatus() {
   if (allHorarios.length === 0) return null;
 
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const events = [];
+  const trips = [];
 
-  for (let dayOffset = -7; dayOffset < 8; dayOffset++) {
+  for (let dayOffset = -1; dayOffset < 9; dayOffset++) {
     const serviceDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset);
     const serviceDay = getCurrentDay(serviceDate);
 
@@ -188,32 +187,33 @@ function getRoutePassageStatus(passageOffsetMinutes) {
       if (!horario.dias.includes(serviceDay)) return;
 
       const departureMinutes = dayOffset * 1440 + getMinutesFromTime(horario.horario);
-      const passageMinutes = departureMinutes + passageOffsetMinutes;
-      events.push({
+      trips.push({
+        departure: horario.horario,
         departureMinutes,
-        passageMinutes,
-        passageDayOffset: Math.floor(passageMinutes / 1440),
+        stopPassageMinutes: departureMinutes + 13,
+        terminalArrivalMinutes: departureMinutes + 32,
       });
     });
   }
 
-  const lastPassage = events
-    .filter((event) => event.passageMinutes < currentMinutes)
-    .sort((a, b) => b.passageMinutes - a.passageMinutes)[0] || null;
-  const nextPassage = events
-    .filter((event) => event.passageMinutes > currentMinutes)
-    .sort((a, b) => a.passageMinutes - b.passageMinutes)[0] || null;
-  const passingNow = events.find((event) => event.passageMinutes === currentMinutes) || null;
-  const enRoute = events.find(
-    (event) => event.departureMinutes <= currentMinutes && event.passageMinutes > currentMinutes
-  ) || null;
+  const outboundTrips = trips
+    .filter((trip) => trip.departureMinutes <= currentMinutes && trip.stopPassageMinutes > currentMinutes)
+    .sort((a, b) => a.stopPassageMinutes - b.stopPassageMinutes);
+  const returningTrips = trips
+    .filter((trip) => trip.stopPassageMinutes <= currentMinutes && trip.terminalArrivalMinutes > currentMinutes)
+    .sort((a, b) => a.terminalArrivalMinutes - b.terminalArrivalMinutes);
+  const nextDeparture = trips
+    .filter((trip) => trip.departureMinutes > currentMinutes)
+    .sort((a, b) => a.departureMinutes - b.departureMinutes)[0] || null;
 
-  let state = 'upcoming';
-  if (passingNow) state = 'now';
-  else if (enRoute) state = 'en-route';
-  else if (lastPassage && lastPassage.passageDayOffset === 0) state = 'passed';
+  return { outboundTrips, returningTrips, nextDeparture };
+}
 
-  return { state, lastPassage, nextPassage, passingNow, enRoute, currentMinutes };
+function formatClockTime(totalMinutes) {
+  const minutesOfDay = ((totalMinutes % 1440) + 1440) % 1440;
+  const hours = String(Math.floor(minutesOfDay / 60)).padStart(2, '0');
+  const minutes = String(minutesOfDay % 60).padStart(2, '0');
+  return hours + ':' + minutes;
 }
 
 function formatRoutePassageTime(totalMinutes) {
@@ -441,20 +441,24 @@ function renderCards() {
   } else {
     let html = '';
     sorted.forEach((h, idx) => {
-      const passed = getMinutesFromTime(h.horario) < nowMin;
+      const departureMinutes = getMinutesFromTime(h.horario);
+      const departurePassed = departureMinutes < nowMin;
+      const passed = departureMinutes + 32 < nowMin;
       const operaHoje = h.dias.includes(diaAtual);
       const isOutroDia = currentFilter === 'all' && !operaHoje;
       let isNext = false;
       if (currentFilter === 'all') {
-        isNext = idx === 0 && !passed && operaHoje;
+        isNext = idx === 0 && !departurePassed && operaHoje;
       } else {
-        isNext = idx === 0 && !passed;
+        isNext = idx === 0 && !departurePassed;
       }
       const cls =
         'card' +
         (passed ? ' passed' : '') +
         (isNext ? ' next' : '') +
         (isOutroDia ? ' outro-dia' : '');
+      const stopPassageTime = formatClockTime(departureMinutes + 13);
+      const terminalArrivalTime = formatClockTime(departureMinutes + 32);
 
       let diaBadge = '';
       if (isOutroDia) {
@@ -469,25 +473,25 @@ function renderCards() {
         '" style="animation-delay:' +
         idx * 0.04 +
         's">' +
-        '<div class="destino"><i class="fas fa-map-pin"></i> ' +
-        sanitize(h.destino) +
+        '<div class="destino"><i class="fas fa-map-pin"></i> C5 · Jardim União/Bela Vista' +
         '</div>' +
+        '<div class="horario-label">Saída do Terminal</div>' +
         '<div class="horario">' +
         sanitize(h.horario) +
         '</div>' +
         '<div class="embarque"><i class="fas fa-location-dot"></i> ' +
-        sanitize(h.embarque) +
+        'Parada Bela Vista ≈ ' + stopPassageTime + ' · Terminal ≈ ' + terminalArrivalTime +
         '</div>' +
         '<div class="dias">' +
         h.dias.map((d) => '<span>' + sanitize(d) + '</span>').join('') +
         '</div>' +
         diaBadge +
-        '<button class="share-btn" data-destino="' +
-        sanitize(h.destino) +
+        '<button class="share-btn" data-destino="Bela Vista" data-embarque="Terminal" data-parada="' +
+        stopPassageTime +
         '" data-horario="' +
         sanitize(h.horario) +
-        '" data-embarque="' +
-        sanitize(h.embarque) +
+        '" data-terminal-chegada="' +
+        terminalArrivalTime +
         '" title="Compartilhar"><i class="fas fa-share-alt"></i></button>' +
         '</div>';
     });
@@ -499,124 +503,59 @@ function renderCards() {
     });
   }
 
-  if (nextBusInfo) {
-    if (futurosHoje.length > 0) {
-      const nxt = futurosHoje[0];
-      const diff = getMinutesFromTime(nxt.horario) - nowMin;
-      const txt = formatCountdown(diff);
-      const cls = diff < 0 ? 'passed' : '';
-      nextBusInfo.innerHTML =
-        '<span class="destino">' +
-        sanitize(nxt.destino) +
-        '</span>' +
-        '<span class="horario">' +
-        sanitize(nxt.horario) +
-        '</span>' +
-        '<span class="countdown ' +
-        cls +
-        '">' +
-        txt +
-        '</span>';
-    } else {
-      const amanha = findNextTomorrow();
-      if (amanha) {
-        nextBusInfo.innerHTML =
-          '<span class="destino">' +
-          sanitize(amanha.destino) +
-          '</span>' +
-          '<span class="horario">' +
-          sanitize(amanha.horario) +
-          '</span>' +
-          '<span class="countdown" style="color:#ffaa00;">Amanhã</span>';
-      } else {
-        nextBusInfo.innerHTML = '<span class="empty-msg">Nenhum ônibus programado para hoje</span>';
-      }
-    }
-  }
-
-  renderRouteEstimates();
+  renderBusStatus();
 }
 
-function renderRouteEstimates() {
-  const estimatesContainer = document.getElementById('routeEstimates');
-  if (!estimatesContainer) return;
+function renderBusStatus() {
+  const statusContainer = document.getElementById('busStatus');
+  if (!statusContainer) return;
 
-  const estimates = [
-    {
-      direction: 'IDA',
-      route: 'Terminal → Bela Vista',
-      icon: 'fa-arrow-right',
-      duration: 13,
-      passageOffset: 13,
-      arrivalOffset: 0,
-    },
-    {
-      direction: 'VOLTA',
-      route: 'Bela Vista → Terminal',
-      icon: 'fa-arrow-left',
-      duration: 19,
-      passageOffset: 0,
-      arrivalOffset: 19,
-    },
-  ];
-  const stateLabels = {
-    now: 'PASSANDO AGORA',
-    'en-route': 'A CAMINHO',
-    passed: 'JÁ PASSOU',
-    upcoming: 'PRÓXIMO',
-  };
+  const status = getBusMovementStatus();
+  if (!status) {
+    statusContainer.innerHTML =
+      '<div class="bus-status-item bus-status-item--empty"><span class="bus-status-badge">SEM PREVISÃO</span>' +
+      '<p>Não há horários cadastrados para esta linha.</p></div>';
+    return;
+  }
 
-  estimatesContainer.innerHTML = estimates.map((estimate) => {
-    const status = getRoutePassageStatus(estimate.passageOffset);
-    let detail = 'Percurso aproximado: ' + estimate.duration + ' min.';
-
-    if (status) {
-      if (status.state === 'now') {
-        detail += ' Ônibus passando pela parada neste momento.';
-      } else if (status.state === 'en-route' && status.nextPassage) {
-        const minutesUntil = status.nextPassage.passageMinutes - status.currentMinutes;
-        detail +=
-          ' Chega ' + formatRoutePassageTime(status.nextPassage.passageMinutes) +
-          ' · faltam ' + formatCountdown(minutesUntil) + '.';
-      } else if (status.state === 'passed' && status.lastPassage) {
-        detail += ' Última passagem: ' + formatRoutePassageTime(status.lastPassage.passageMinutes) + '.';
-        if (status.nextPassage) {
-          const minutesUntil = status.nextPassage.passageMinutes - status.currentMinutes;
-          detail +=
-            ' Próxima: ' + formatRoutePassageTime(status.nextPassage.passageMinutes) +
-            ' · ' + formatCountdown(minutesUntil) + '.';
-        }
-      } else if (status.nextPassage) {
-        const minutesUntil = status.nextPassage.passageMinutes - status.currentMinutes;
-        detail =
-          'Percurso aproximado: ' + estimate.duration + ' min. Próxima passagem ' +
-          formatRoutePassageTime(status.nextPassage.passageMinutes) +
-          ' · ' + formatCountdown(minutesUntil) + '.';
-      }
-
-      if (estimate.arrivalOffset && status.nextPassage) {
-        detail +=
-          ' Chegada ao Terminal ≈ ' +
-          formatRoutePassageTime(status.nextPassage.passageMinutes + estimate.arrivalOffset) + '.';
-      }
-    } else {
-      detail += ' Sem horários cadastrados para esta direção.';
-    }
-
-    const state = status ? status.state : 'empty';
-    const stateLabel = status ? stateLabels[state] : 'SEM PREVISÃO';
-    return (
-      '<div class="route-estimate route-estimate--' + state + '">' +
-      '<div class="route-estimate-heading">' +
-      '<span class="route-estimate-direction"><i class="fas ' + estimate.icon + '"></i> ' +
-      estimate.direction + '</span>' +
-      '<span class="route-estimate-state">' + stateLabel + '</span>' +
-      '</div>' +
-      '<div class="route-estimate-route">' + estimate.route + '</div>' +
-      '<p class="route-estimate-detail">' + detail + '</p>' +
+  const items = [];
+  status.outboundTrips.forEach((trip) => {
+    items.push(
+      '<div class="bus-status-item bus-status-item--outbound">' +
+      '<div class="bus-status-heading"><span class="bus-status-badge">EM ROTA PARA A PARADA</span>' +
+      '<strong>Terminal → Bela Vista</strong></div>' +
+      '<p>Saída do Terminal às ' + formatRoutePassageTime(trip.departureMinutes) +
+      '. Vá à parada Bela Vista; passagem prevista às ' + formatRoutePassageTime(trip.stopPassageMinutes) + '.</p>' +
       '</div>'
     );
-  }).join('');
+  });
+
+  status.returningTrips.forEach((trip) => {
+    items.push(
+      '<div class="bus-status-item bus-status-item--returning">' +
+      '<div class="bus-status-heading"><span class="bus-status-badge">PASSOU NA PARADA · EM ROTA AO TERMINAL</span>' +
+      '<strong>Bela Vista → Terminal</strong></div>' +
+      '<p>Passagem em Bela Vista às ' + formatRoutePassageTime(trip.stopPassageMinutes) +
+      '. Chegada estimada ao Terminal às ' + formatRoutePassageTime(trip.terminalArrivalMinutes) + '.</p>' +
+      '</div>'
+    );
+  });
+
+  if (items.length === 0) {
+    const nextDeparture = status.nextDeparture;
+    const detail = nextDeparture
+      ? 'Próxima saída do Terminal: ' + formatRoutePassageTime(nextDeparture.departureMinutes) +
+        '. O ônibus aguarda no Terminal.'
+      : 'Não há próxima saída prevista na grade cadastrada.';
+    items.push(
+      '<div class="bus-status-item bus-status-item--terminal">' +
+      '<div class="bus-status-heading"><span class="bus-status-badge">NO TERMINAL</span>' +
+      '<strong>Aguardando saída</strong></div>' +
+      '<p>' + detail + '</p></div>'
+    );
+  }
+
+  statusContainer.innerHTML = items.join('');
 }
 
 function handleShare(e) {
@@ -625,8 +564,12 @@ function handleShare(e) {
   const destino = btn.dataset.destino;
   const horario = btn.dataset.horario;
   const embarque = btn.dataset.embarque;
+  const parada = btn.dataset.parada;
+  const terminalChegada = btn.dataset.terminalChegada;
   const msg =
-    '🚌 Ônibus para ' + destino + ' às ' + horario + ' - Embarque: ' + embarque + '. Emitido via Help Que Horas Passa';
+    '🚌 Linha C5 - Jardim União/Bela Vista: saída do ' + embarque + ' às ' + horario +
+    '; parada ' + destino + ' por volta de ' + parada +
+    '; retorno ao Terminal estimado às ' + terminalChegada + '. Emitido via Help Que Horas Passa';
 
   if (!rateLimit('share', 3, 10000)) {
     alert('Aguarde alguns segundos antes de compartilhar novamente.');
