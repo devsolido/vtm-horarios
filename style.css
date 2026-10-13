@@ -312,6 +312,30 @@ body {
   font-size: 14px;
 }
 
+.route-estimates {
+  flex: 0 0 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 8px 20px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 198, 251, 0.16);
+}
+
+.route-estimate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.route-estimate strong {
+  color: var(--text-primary);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
 /* ===== CARDS ===== */
 .cards-grid {
   display: grid;

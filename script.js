@@ -109,17 +109,24 @@ if ('serviceWorker' in navigator) {
 //  HORÁRIOS INICIAIS (fallback)
 // ================================================================
 const horariosFallback = [
-  { destino: 'Morada Nova', horario: '11:35', embarque: 'Antônio Vilhena', dias: ['Sábado'] },
-  { destino: 'Morada Nova', horario: '16:48', embarque: 'Antônio Vilhena', dias: ['Domingo'] },
-  { destino: 'Morada Nova', horario: '17:42', embarque: 'Antônio Vilhena', dias: ['Domingo'] },
-  { destino: 'Liberdade', horario: '07:15', embarque: 'Terminal de Integração', dias: ['Segunda a Sexta'] },
-  { destino: 'Bela Vista', horario: '13:40', embarque: 'Terminal', dias: ['Segunda a Sexta'] },
-  { destino: 'Liberdade', horario: '13:09', embarque: 'Praça São Francisco', dias: ['Sábado'] },
-  { destino: 'Liberdade', horario: '12:41', embarque: 'Terminal', dias: ['Sábado'] },
-  { destino: 'São Félix', horario: '06:10', embarque: 'Antônio Vilhena', dias: ['Segunda a Sexta'] },
-  { destino: 'Liberdade', horario: '12:18', embarque: 'Cidade Nova - Praça', dias: ['Segunda a Sexta'] },
-  { destino: 'Liberdade', horario: '16:00', embarque: 'Praça', dias: ['Segunda a Sexta'] },
-  { destino: 'Liberdade', horario: '18:30', embarque: 'Praça São Francisco', dias: ['Segunda a Sexta'] },
+  { destino: 'Terminal (chegada 06:10)', horario: '05:30', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 07:20)', horario: '05:50', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 08:40)', horario: '07:10', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 09:10)', horario: '07:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 10:40)', horario: '09:10', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 11:10)', horario: '09:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 12:40)', horario: '11:10', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 12:50)', horario: '11:20', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 14:40)', horario: '13:10', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 15:10)', horario: '13:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 16:40)', horario: '15:10', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 17:10)', horario: '15:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 18:20)', horario: '16:50', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 19:10)', horario: '17:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 20:30)', horario: '19:00', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 21:30)', horario: '20:00', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 22:30)', horario: '21:00', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 23:30)', horario: '22:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
 ];
 horariosFallback.sort((a, b) => a.horario.localeCompare(b.horario));
 
@@ -138,13 +145,13 @@ const filterIndicator = document.getElementById('filterIndicator');
 // ================================================================
 //  UTILITÁRIOS
 // ================================================================
-function getCurrentDay() {
+function getCurrentDay(date = new Date()) {
   const days = [
     'Domingo', 'Segunda a Sexta', 'Segunda a Sexta',
     'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta',
     'Sábado'
   ];
-  return days[new Date().getDay()];
+  return days[date.getDay()];
 }
 
 function getDiaLabel(dia) {
@@ -164,6 +171,43 @@ function getMinutesFromTime(t) {
 function getCurrentMinutes() {
   const n = new Date();
   return n.getHours() * 60 + n.getMinutes();
+}
+
+function getNextArrivalEstimate(durationMinutes) {
+  if (allHorarios.length === 0) return null;
+
+  const now = new Date();
+  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+  for (let dayOffset = 0; dayOffset < 8; dayOffset++) {
+    const serviceDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset);
+    const serviceDay = getCurrentDay(serviceDate);
+    let earliestArrival = null;
+
+    allHorarios.forEach((horario) => {
+      if (!horario.dias.includes(serviceDay)) return;
+
+      const arrivalMinutes =
+        dayOffset * 1440 + getMinutesFromTime(horario.horario) + durationMinutes;
+      if (arrivalMinutes < currentMinutes) return;
+
+      if (earliestArrival === null || arrivalMinutes < earliestArrival) {
+        earliestArrival = arrivalMinutes;
+      }
+    });
+
+    if (earliestArrival !== null) {
+      const minutesOfDay = earliestArrival % 1440;
+      const hours = String(Math.floor(minutesOfDay / 60)).padStart(2, '0');
+      const minutes = String(minutesOfDay % 60).padStart(2, '0');
+      return {
+        horario: hours + ':' + minutes,
+        minutosAteChegada: earliestArrival - currentMinutes,
+      };
+    }
+  }
+
+  return null;
 }
 
 function formatDateFull(d) {
@@ -464,6 +508,27 @@ function renderCards() {
       }
     }
   }
+
+  renderRouteEstimates();
+}
+
+function renderRouteEstimates() {
+  const estimatesContainer = document.getElementById('routeEstimates');
+  if (!estimatesContainer) return;
+
+  const estimates = [
+    { label: 'Terminal → Bela Vista (≈13 min)', estimate: getNextArrivalEstimate(13) },
+    { label: 'Bela Vista → Terminal (≈19 min)', estimate: getNextArrivalEstimate(19) },
+  ];
+
+  estimatesContainer.innerHTML = estimates
+    .map(({ label, estimate }) => {
+      const arrival = estimate
+        ? estimate.horario + ' · ' + formatCountdown(estimate.minutosAteChegada)
+        : 'Sem previsão';
+      return '<div class="route-estimate"><span>' + label + '</span><strong>' + arrival + '</strong></div>';
+    })
+    .join('');
 }
 
 function handleShare(e) {
