@@ -161,6 +161,13 @@ const alertSubMsg = document.getElementById('alertSubMsg');
 const closeAlertBtn = document.getElementById('closeAlertBtn');
 const filterIndicator = document.getElementById('filterIndicator');
 const precisionStatus = document.getElementById('precisionStatus');
+const passageConfirmDialog = document.getElementById('passageConfirmDialog');
+const passageConfirmForm = document.getElementById('passageConfirmForm');
+const passageTripSelect = document.getElementById('passageTrip');
+const passageObservedTime = document.getElementById('passageObservedTime');
+const passageConfirmResult = document.getElementById('passageConfirmResult');
+const submitPassageConfirm = document.getElementById('submitPassageConfirm');
+const confirmedPassageTrips = new Set();
 
 // ================================================================
 //  UTILITÁRIOS
@@ -579,24 +586,47 @@ function getPassageModeLabel(prediction) {
   return `adaptativa · ${prediction.n} observações`;
 }
 
-function canConfirmPassage(horario, prediction, nowMinutes) {
+function openPassageConfirmation(selectedScheduleKey = '') {
+  if (!passageConfirmDialog || !passageTripSelect || !passageConfirmResult) return;
   const serviceDate = getCurrentServiceDate();
-  if (!serviceDate || !document.body.dataset.gradeHash || !horario.schedule_key
-    || !horario.dias.includes(getCurrentDay())) return false;
-  if (prediction && !prediction.can_confirm) return false;
-  const tripKey = `${document.body.dataset.gradeHash}|${horario.schedule_key}|${serviceDate}`;
-  if (confirmedPassageTrips.has(tripKey)) return false;
-  const departureMinutes = getMinutesFromTime(horario.horario);
-  const elapsed = nowMinutes - departureMinutes;
-  return elapsed >= 0 && elapsed <= 120;
+  passageTripSelect.replaceChildren(new Option('Selecione a linha/viagem', ''));
+  passageConfirmResult.textContent = serviceDate
+    ? `Data da passagem: ${serviceDate.split('-').reverse().join('/')}. Informe a hora que você viu o ônibus passar.`
+    : 'A hora do servidor está indisponível. Tente novamente.';
+  if (!serviceDate) return;
+
+  const serviceDay = getCurrentDay();
+  allHorarios
+    .filter((horario) => horario.dias.includes(serviceDay) && horario.schedule_key)
+    .forEach((horario) => {
+      const key = `${document.body.dataset.gradeHash}|${horario.schedule_key}|${serviceDate}`;
+      if (confirmedPassageTrips.has(key) || horario.passage_prediction?.can_confirm === false) return;
+      const label = `C5 · ${horario.embarque} · saída ${horario.horario}`;
+      passageTripSelect.add(new Option(label, horario.schedule_key));
+    });
+
+  if (selectedScheduleKey) passageTripSelect.value = selectedScheduleKey;
+  passageObservedTime.value = '';
+  passageTripSelect.disabled = false;
+  passageObservedTime.disabled = false;
+  submitPassageConfirm.disabled = false;
+  submitPassageConfirm.textContent = 'Confirmar embarque';
+  passageConfirmDialog.showModal();
 }
 
-const confirmedPassageTrips = new Set();
+async function submitPassageConfirmation(event) {
+  event.preventDefault();
+  if (!passageConfirmForm.reportValidity()) return;
 
-async function handlePassageConfirmation(event) {
-  const button = event.currentTarget;
-  button.disabled = true;
-  button.textContent = 'Registrando…';
+  const scheduleKey = passageTripSelect.value;
+  const serviceDate = getCurrentServiceDate();
+  if (!scheduleKey || !serviceDate || !document.body.dataset.gradeHash) return;
+
+  submitPassageConfirm.disabled = true;
+  passageTripSelect.disabled = true;
+  passageObservedTime.disabled = true;
+  submitPassageConfirm.textContent = 'Registrando…';
+  passageConfirmResult.textContent = 'Registrando sua confirmação…';
 
   try {
     const response = await fetch('/api/precision', {
@@ -604,8 +634,9 @@ async function handlePassageConfirmation(event) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         grade_hash: document.body.dataset.gradeHash,
-        schedule_key: button.dataset.scheduleKey,
-        service_date: button.dataset.serviceDate,
+        schedule_key: scheduleKey,
+        service_date: serviceDate,
+        observed_time: passageObservedTime.value,
       }),
     });
     const data = await response.json();
@@ -614,22 +645,43 @@ async function handlePassageConfirmation(event) {
       error.status = response.status;
       throw error;
     }
-    confirmedPassageTrips.add(
-      `${document.body.dataset.gradeHash}|${button.dataset.scheduleKey}|${button.dataset.serviceDate}`,
-    );
+
+    confirmedPassageTrips.add(`${document.body.dataset.gradeHash}|${scheduleKey}|${serviceDate}`);
+    const registeredAt = new Date(data.registered_at);
+    if (!Number.isFinite(registeredAt.getTime())) throw new Error('O servidor retornou a hora de registro inválida.');
+    const recordedDate = new Intl.DateTimeFormat('pt-BR', {
+      timeZone: SERVICE_TIME_ZONE,
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(registeredAt);
+    const recordedTime = registeredAt.toLocaleTimeString('pt-BR', {
+      timeZone: SERVICE_TIME_ZONE,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+    passageConfirmResult.textContent =
+      `Passagem às ${passageObservedTime.value} confirmada. Registro: ${recordedDate} às ${recordedTime}.`;
+    submitPassageConfirm.textContent = 'Concluído';
+    submitPassageConfirm.disabled = true;
     await carregarPrecisaoHorarios(document.body.dataset.gradeHash);
     renderCards();
-    alert('Obrigado! Confirmação registrada para esta viagem.');
   } catch (error) {
     console.error('Erro ao registrar passagem:', error);
+    passageConfirmResult.textContent = error.message || 'Não foi possível registrar a confirmação. Tente novamente.';
     if (error.status === 409) {
       await carregarPrecisaoHorarios(document.body.dataset.gradeHash);
       renderCards();
+      submitPassageConfirm.textContent = 'Já confirmado';
+      submitPassageConfirm.disabled = true;
     } else {
-      button.disabled = false;
-      button.innerHTML = '<i class="fas fa-check"></i> Confirmar passagem';
+      passageTripSelect.disabled = false;
+      passageObservedTime.disabled = false;
+      submitPassageConfirm.textContent = 'Tentar novamente';
+      submitPassageConfirm.disabled = false;
     }
-    alert(error.message || 'Não foi possível registrar a confirmação. Tente novamente.');
   }
 }
 
@@ -692,12 +744,6 @@ function renderCards() {
       const terminalArrivalTime = h.horario_terminal;
       const passageRange = formatPassageRange(h.horario, prediction);
       const passageLabel = getPassageModeLabel(prediction);
-      const confirmButton = canConfirmPassage(h, prediction, nowMin)
-        ? '<button class="passage-confirm-button" data-schedule-key="' + h.schedule_key +
-          '" data-service-date="' + getCurrentServiceDate() +
-          '" title="Confirme somente no momento em que o ônibus passar pela parada"' +
-          '><i class="fas fa-check"></i> Confirmar passagem</button>'
-        : '';
 
       let diaBadge = '';
       if (isOutroDia) {
@@ -726,7 +772,6 @@ function renderCards() {
         h.dias.map((d) => '<span>' + sanitize(d) + '</span>').join('') +
         '</div>' +
         diaBadge +
-        confirmButton +
         '<button class="share-btn" data-destino="Bela Vista" data-embarque="Terminal" data-parada="' +
         passageRange +
         '" data-horario="' +
@@ -741,9 +786,6 @@ function renderCards() {
     document.querySelectorAll('.share-btn').forEach((btn) => {
       btn.removeEventListener('click', handleShare);
       btn.addEventListener('click', handleShare);
-    });
-    document.querySelectorAll('.passage-confirm-button').forEach((btn) => {
-      btn.addEventListener('click', handlePassageConfirmation);
     });
   }
 
@@ -1152,6 +1194,18 @@ async function salvarHorariosNoBanco() {
 //  INICIALIZAÇÃO
 // ================================================================
 function init() {
+  const openPassageConfirm = document.getElementById('openPassageConfirm');
+  const cancelPassageConfirm = document.getElementById('cancelPassageConfirm');
+  if (openPassageConfirm && passageConfirmDialog && passageConfirmForm) {
+    openPassageConfirm.addEventListener('click', () => openPassageConfirmation());
+    passageConfirmForm.addEventListener('submit', submitPassageConfirmation);
+    if (cancelPassageConfirm) {
+      cancelPassageConfirm.addEventListener('click', () => passageConfirmDialog.close());
+    }
+    passageConfirmDialog.addEventListener('click', (event) => {
+      if (event.target === passageConfirmDialog) passageConfirmDialog.close();
+    });
+  }
   synchronizeServerTime();
   setInterval(synchronizeServerTime, 300000);
   window.addEventListener('focus', synchronizeServerTime);

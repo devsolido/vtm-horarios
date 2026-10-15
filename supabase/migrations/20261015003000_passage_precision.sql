@@ -7,6 +7,7 @@ CREATE TABLE public.passage_observations (
   service_date date NOT NULL,
   scheduled_departure timestamptz NOT NULL,
   observed_at timestamptz NOT NULL,
+  confirmed_at timestamptz NOT NULL DEFAULT now(),
   travel_minutes numeric(6, 2) NOT NULL
     CHECK (travel_minutes BETWEEN 1 AND 120),
   structural_prediction_minutes numeric(6, 2) NOT NULL

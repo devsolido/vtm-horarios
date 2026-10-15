@@ -70,6 +70,9 @@
       <div class="bus-status-list" id="busStatus"></div>
       <p class="bus-status-note" id="precisionStatus">A janela mostra p10–p90. Confirme a passagem somente ao presenciar o ônibus; sem dados suficientes, o sistema exibe o prior.
       </p>
+      <button type="button" class="passage-confirm-button" id="openPassageConfirm">
+        <i class="fas fa-check"></i> Confirmar passagem do ônibus
+      </button>
     </div>
 
     <div class="filter-bar">
@@ -136,6 +139,24 @@
       <span class="version">2.8.0</span>
     </div>
   </div>
+
+  <dialog id="passageConfirmDialog" class="passage-confirm-dialog">
+    <form id="passageConfirmForm">
+      <h2>Confirmar passagem do ônibus</h2>
+      <p>Informe a linha/viagem e o horário em que você viu o ônibus passar pela parada.</p>
+      <label for="passageTrip">Linha e saída programada</label>
+      <select id="passageTrip" required>
+        <option value="">Selecione a viagem de hoje</option>
+      </select>
+      <label for="passageObservedTime">Hora em que passou</label>
+      <input id="passageObservedTime" type="time" step="60" required />
+      <div class="passage-confirm-result" id="passageConfirmResult" aria-live="polite"></div>
+      <div class="passage-confirm-actions">
+        <button type="button" class="passage-confirm-cancel" id="cancelPassageConfirm">Cancelar</button>
+        <button type="submit" class="passage-confirm-submit" id="submitPassageConfirm">Confirmar embarque</button>
+      </div>
+    </form>
+  </dialog>
 
   <!-- ===== BOTÃO DE RELATÓRIO (FORA DO APP) ===== -->
   <button id="reportBtn" class="report-btn" title="Reportar erro ou horário incorreto">

@@ -106,6 +106,7 @@ test('POST measures passage with server time and stores a pre-observation shadow
     return;
   }
   const departureTime = `${String(Math.floor(departureMinute / 60)).padStart(2, '0')}:${String(departureMinute % 60).padStart(2, '0')}`;
+  const observedTime = `${String(parts.hour).padStart(2, '0')}:${String(parts.minute).padStart(2, '0')}`;
   const rows = [{
     destino: 'Terminal',
     horario: departureTime,
@@ -135,6 +136,7 @@ test('POST measures passage with server time and stores a pre-observation shadow
       grade_hash: schedule.grade_hash,
       schedule_key: schedule.horarios[0].schedule_key,
       service_date: serviceDate,
+      observed_time: observedTime,
     },
   }, res);
 
@@ -146,6 +148,8 @@ test('POST measures passage with server time and stores a pre-observation shadow
   assert.equal(observation.adaptive_ready, false);
   assert.equal(observation.prior_prediction_minutes, 13);
   assert.equal(observation.travel_minutes, Number((
-    (Date.parse(observation.observed_at) - getServiceDateTime(serviceDate, departureTime)) / 60_000
+    (getServiceDateTime(serviceDate, observedTime) - getServiceDateTime(serviceDate, departureTime)) / 60_000
   ).toFixed(2)));
+  assert.equal(observation.observed_at, new Date(getServiceDateTime(serviceDate, observedTime)).toISOString());
+  assert.ok(Date.parse(observation.confirmed_at) >= Date.parse(observation.observed_at));
 });

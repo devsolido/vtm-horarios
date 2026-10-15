@@ -581,6 +581,90 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
   cursor: wait;
 }
 
+.passage-confirm-dialog {
+  width: min(440px, calc(100% - 28px));
+  padding: 0;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+}
+
+.passage-confirm-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+}
+
+.passage-confirm-dialog form {
+  display: grid;
+  gap: 10px;
+  padding: 22px;
+}
+
+.passage-confirm-dialog h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.passage-confirm-dialog p {
+  margin: 0 0 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.passage-confirm-dialog label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.passage-confirm-dialog select,
+.passage-confirm-dialog input {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  background: var(--filter-btn-bg);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.passage-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.passage-confirm-actions button {
+  min-height: 38px;
+  padding: 8px 13px;
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.passage-confirm-cancel {
+  background: var(--filter-btn-bg);
+  color: var(--text-secondary);
+}
+
+.passage-confirm-submit {
+  border-color: var(--accent-primary) !important;
+  background: var(--accent-primary);
+  color: var(--accent-deep);
+}
+
+.passage-confirm-result {
+  color: var(--accent-text);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .card .dias span {
   background: var(--badge-bg);
   color: var(--badge-color);

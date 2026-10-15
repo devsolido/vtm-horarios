@@ -59,7 +59,7 @@ async function loadObservations(supabaseUrl, serviceKey, gradeHash) {
   const observations = [];
   const cutoff = new Date(Date.now() - OBSERVATION_WINDOW_MS).toISOString();
   const query = new URLSearchParams({
-    select: 'observed_at,scheduled_departure,travel_minutes,structural_prediction_minutes,prior_prediction_minutes,adaptive_prediction_minutes,adaptive_ready,schedule_key,service_date',
+    select: 'observed_at,confirmed_at,scheduled_departure,travel_minutes,structural_prediction_minutes,prior_prediction_minutes,adaptive_prediction_minutes,adaptive_ready,schedule_key,service_date',
     grade_hash: `eq.${gradeHash}`,
     observed_at: `gte.${cutoff}`,
     order: 'observed_at.asc',
@@ -139,8 +139,9 @@ function validatePostBody(body) {
   if (!body || typeof body !== 'object' || Array.isArray(body)
     || typeof body.grade_hash !== 'string' || !/^[a-f0-9]{64}$/.test(body.grade_hash)
     || typeof body.schedule_key !== 'string' || !/^[a-f0-9]{64}$/.test(body.schedule_key)
-    || typeof body.service_date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(body.service_date)) {
-    return 'Informe a viagem e a versão da grade.';
+    || typeof body.service_date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(body.service_date)
+    || typeof body.observed_time !== 'string' || !/^([01]\d|2[0-3]):[0-5]\d$/.test(body.observed_time)) {
+    return 'Informe a viagem, a data e o horário em que o ônibus passou.';
   }
   return null;
 }
@@ -186,9 +187,13 @@ export default async function handler(req, res) {
     }
 
     const departureTimestamp = getServiceDateTime(req.body.service_date, row.horario);
-    const elapsedMinutes = (now.getTime() - departureTimestamp) / 60_000;
-    if (elapsedMinutes < 0 || elapsedMinutes > 120) {
-      return res.status(400).json({ error: 'A confirmação só fica disponível após a saída e por até 2 horas.' });
+    const observedAtTimestamp = getServiceDateTime(req.body.service_date, req.body.observed_time);
+    const travelMinutes = (observedAtTimestamp - departureTimestamp) / 60_000;
+    const confirmationDelay = (now.getTime() - observedAtTimestamp) / 60_000;
+    if (travelMinutes < 1 || travelMinutes > 120 || confirmationDelay < -1 || confirmationDelay > 120) {
+      return res.status(400).json({
+        error: 'Informe uma passagem depois da saída programada, ocorrida agora ou nos últimos 2 horas.',
+      });
     }
 
     const observations = await loadObservations(supabaseUrl, serviceKey, schedule.grade_hash);
@@ -206,8 +211,9 @@ export default async function handler(req, res) {
         schedule_key: req.body.schedule_key,
         service_date: req.body.service_date,
         scheduled_departure: snapshot.scheduled_departure,
-        observed_at: now.toISOString(),
-        travel_minutes: Number(elapsedMinutes.toFixed(2)),
+        observed_at: new Date(observedAtTimestamp).toISOString(),
+        confirmed_at: now.toISOString(),
+        travel_minutes: Number(travelMinutes.toFixed(2)),
         structural_prediction_minutes: snapshot.structural_prediction_minutes,
         prior_prediction_minutes: snapshot.prior_prediction_minutes,
         adaptive_prediction_minutes: snapshot.adaptive_prediction_minutes,
@@ -223,7 +229,12 @@ export default async function handler(req, res) {
       throw new Error(`Falha ao salvar confirmação (HTTP ${insert.status}): ${details}`);
     }
 
-    return res.status(201).json({ success: true, service_date: req.body.service_date });
+    return res.status(201).json({
+      success: true,
+      service_date: req.body.service_date,
+      observed_at: new Date(observedAtTimestamp).toISOString(),
+      registered_at: now.toISOString(),
+    });
   } catch (error) {
     console.error('Erro na API de precisão:', error);
     return res.status(500).json({ error: 'Não foi possível carregar ou registrar a precisão dos horários.' });
