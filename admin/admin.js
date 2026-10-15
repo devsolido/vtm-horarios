@@ -671,7 +671,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
 
-  window.salvarHorariosAdmin = function() {
+  window.salvarHorariosAdmin = async function() {
+    const horariosAnteriores = allHorarios;
     try {
       console.log('🔵 Salvando alterações...');
       if (typeof allHorarios === 'undefined') {
@@ -687,7 +688,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const destino = inputs[0].value.trim();
           const horario = inputs[1].value.trim();
           const embarque = inputs[2].value.trim();
-          if (!destino || !horario) {
+          if (!destino || !embarque || !/^([01]\d|2[0-3]):[0-5]\d$/.test(horario)) {
             temErro = true;
             tr.style.border = '2px solid #ff6b6b';
             return;
@@ -695,16 +696,19 @@ document.addEventListener('DOMContentLoaded', function() {
           tr.style.border = '';
           const dias = [];
           checkboxes.forEach(cb => { if (cb.checked) dias.push(cb.value); });
-          if (destino && horario && embarque && dias.length) {
-            novasLinhas.push({ destino, horario, embarque, dias });
+          if (!dias.length) {
+            temErro = true;
+            tr.style.border = '2px solid #ff6b6b';
+            return;
           }
+          novasLinhas.push({ destino, horario, embarque, dias });
         }
       });
       if (temErro) {
         if (typeof showAdminMsg === 'function') {
-          showAdminMsg('⚠️ Preencha todos os campos (Destino e Horário são obrigatórios).', 'error');
+          showAdminMsg('⚠️ Preencha destino e embarque, informe horário válido (HH:mm) e selecione ao menos um dia.', 'error');
         } else {
-          showToast('Preencha todos os campos (Destino e Horário são obrigatórios).', 'error');
+          showToast('Preencha destino e embarque, informe horário válido (HH:mm) e selecione ao menos um dia.', 'error');
         }
         return;
       }
@@ -716,12 +720,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return;
       }
-      allHorarios = novasLinhas;
-      allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
+      const horariosAnteriores = allHorarios;
+      novasLinhas.sort((a, b) => a.horario.localeCompare(b.horario));
       if (typeof salvarHorariosNoBanco === 'function') {
-        salvarHorariosNoBanco();
+        allHorarios = novasLinhas;
+        await salvarHorariosNoBanco();
       } else {
-        console.warn('salvarHorariosNoBanco não definida');
+        throw new Error('salvarHorariosNoBanco não definida');
       }
       logAdminAction('salvar_horarios', { quantidade: novasLinhas.length });
       if (typeof loadAdminTable === 'function') loadAdminTable();
@@ -732,6 +737,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }, 300);
       showToast('✅ Horários salvos com sucesso!', 'success');
     } catch (e) {
+      allHorarios = horariosAnteriores;
       showToast('❌ Erro ao salvar horários.', 'error');
       logError('Erro salvar horários', e.message, e.stack);
     }

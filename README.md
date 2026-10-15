@@ -12,6 +12,8 @@
 
 **Que Horas Passa** é uma aplicação web para consulta de horários de transporte público da região de Marabá. O sistema permite que os usuários visualizem rapidamente os próximos ônibus, filtre por dias da semana, receba alertas sonoros e visuais, e reporte erros nos horários – tudo com uma interface limpa, responsiva e com suporte a tema claro/escuro.
 
+Para detalhes técnicos sobre a origem, interpretação e precisão dos horários, consulte [Documentação técnica: horários e precisão](./HORARIOS_E_PRECISAO.md).
+
 ---
 
 ## ✨ Funcionalidades
@@ -26,15 +28,23 @@
 - 📤 **Compartilhamento rápido** via WhatsApp ou nativo.
 - 🚨 **Reporte de erros** (formulário integrado com envio de e‑mail para o administrador).
 - ☁️ **Clima em tempo real** e relógio no cabeçalho.
+- 🕒 **Hora de serviço sincronizada no servidor** (`/api/time`), sem depender do relógio configurado no aparelho.
+- 📈 **Previsão adaptativa em modo sombra**: confirmações voluntárias de passagem, janela p10–p90 e ativação condicionada a backtesting.
 
 ### ⚙️ Backend & APIs
 - 🗄️ **Banco de dados Supabase** (PostgreSQL) – armazenamento de horários e relatórios.
 - 📧 **Envio de e‑mails** via Nodemailer (Gmail/Sendinblue).
 - 🌤 **API de clima** (dados meteorológicos).
+- 🕒 **API de hora do servidor** com fuso de serviço `America/Belem`.
+- 📈 **Calibração de passagem**: aprendizado por faixa de três horas (20 viagens confirmadas), resíduo de curto prazo com decaimento de 45 minutos e liberação após MAE pelo menos 10% menor em 30 avaliações.
 - 🛡 **Verificação de manutenção** com fallback.
 - 📊 **Logs de erro** e **registro de ações administrativas**.
 
 ---
+
+### Ativação da calibração de passagem
+
+Antes de receber confirmações, aplique a migration [`20261015003000_passage_precision.sql`](./supabase/migrations/20261015003000_passage_precision.sql) no Supabase e configure `SUPABASE_SERVICE_ROLE_KEY` como variável de ambiente server-side na Vercel. Essa chave não deve ser enviada ao navegador. Até cumprir os mínimos de observações e backtesting, a aplicação mantém o prior e identifica esse estado na tela.
 
 ## 🧰 Tecnologias utilizadas
 
@@ -51,4 +61,3 @@
 | CI/CD | GitHub + Vercel (deploy automático) |
 
 ---
-

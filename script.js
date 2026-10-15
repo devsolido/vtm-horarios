@@ -34,7 +34,7 @@ async function verificarManutencao() {
 const rateLimit = (() => {
   const timestamps = {};
   return (action, limit = 3, windowMs = 5000) => {
-    const now = Date.now();
+    const now = performance.now();
     if (!timestamps[action]) timestamps[action] = [];
     timestamps[action] = timestamps[action].filter((t) => now - t < windowMs);
     if (timestamps[action].length >= limit) {
@@ -64,6 +64,27 @@ const WEATHER_CACHE_TTL = 600000;
 let currentFilter = 'all';
 let allHorarios = [];
 let alertaDisparado = {};
+let serverTimeAnchorMs = null;
+let serverTimeAnchorPerformance = null;
+let serverTimeSyncInProgress = false;
+let filterWasManuallySelected = false;
+let precisionFetchInProgress = false;
+let precisionServiceDate = null;
+const SERVICE_TIME_ZONE = 'America/Belem';
+const SERVICE_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  timeZone: SERVICE_TIME_ZONE,
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  second: '2-digit',
+  hourCycle: 'h23',
+});
+const SERVICE_WEEKDAY_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  timeZone: SERVICE_TIME_ZONE,
+  weekday: 'short',
+});
 
 // ================================================================
 //  TEMA – com verificação
@@ -109,24 +130,24 @@ if ('serviceWorker' in navigator) {
 //  HORÁRIOS INICIAIS (fallback)
 // ================================================================
 const horariosFallback = [
-  { destino: 'Terminal (chegada 06:10)', horario: '05:30', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 07:20)', horario: '05:50', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 08:40)', horario: '07:10', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 09:10)', horario: '07:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 10:40)', horario: '09:10', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 11:10)', horario: '09:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 12:40)', horario: '11:10', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 12:50)', horario: '11:20', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 14:40)', horario: '13:10', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 15:10)', horario: '13:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 16:40)', horario: '15:10', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 17:10)', horario: '15:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 18:20)', horario: '16:50', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 19:10)', horario: '17:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 20:30)', horario: '19:00', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 21:30)', horario: '20:00', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 22:30)', horario: '21:00', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
-  { destino: 'Terminal (chegada 23:30)', horario: '22:40', embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 06:10)', horario: '05:30', horario_parada: '05:43', horario_terminal: '06:02', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 07:20)', horario: '05:50', horario_parada: '06:03', horario_terminal: '06:22', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 08:40)', horario: '07:10', horario_parada: '07:23', horario_terminal: '07:42', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 09:10)', horario: '07:40', horario_parada: '07:53', horario_terminal: '08:12', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 10:40)', horario: '09:10', horario_parada: '09:23', horario_terminal: '09:42', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 11:10)', horario: '09:40', horario_parada: '09:53', horario_terminal: '10:12', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 12:40)', horario: '11:10', horario_parada: '11:23', horario_terminal: '11:42', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 12:50)', horario: '11:20', horario_parada: '11:33', horario_terminal: '11:52', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 14:40)', horario: '13:10', horario_parada: '13:23', horario_terminal: '13:42', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 15:10)', horario: '13:40', horario_parada: '13:53', horario_terminal: '14:12', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 16:40)', horario: '15:10', horario_parada: '15:23', horario_terminal: '15:42', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 17:10)', horario: '15:40', horario_parada: '15:53', horario_terminal: '16:12', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 18:20)', horario: '16:50', horario_parada: '17:03', horario_terminal: '17:22', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 19:10)', horario: '17:40', horario_parada: '17:53', horario_terminal: '18:12', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 20:30)', horario: '19:00', horario_parada: '19:13', horario_terminal: '19:32', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 21:30)', horario: '20:00', horario_parada: '20:13', horario_terminal: '20:32', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 22:30)', horario: '21:00', horario_parada: '21:13', horario_terminal: '21:32', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
+  { destino: 'Terminal (chegada 23:30)', horario: '22:40', horario_parada: '22:53', horario_terminal: '23:12', parada_dia_offset: 0, terminal_dia_offset: 0, embarque: 'Bela Vista | C5 - Jardim União/Bela Vista', dias: ['Segunda a Sexta', 'Sábado', 'Domingo'] },
 ];
 horariosFallback.sort((a, b) => a.horario.localeCompare(b.horario));
 
@@ -139,17 +160,89 @@ const alertMessage = document.getElementById('alertMessage');
 const alertSubMsg = document.getElementById('alertSubMsg');
 const closeAlertBtn = document.getElementById('closeAlertBtn');
 const filterIndicator = document.getElementById('filterIndicator');
+const precisionStatus = document.getElementById('precisionStatus');
 
 // ================================================================
 //  UTILITÁRIOS
 // ================================================================
-function getCurrentDay(date = new Date()) {
+function getCurrentDay(date) {
   const days = [
     'Domingo', 'Segunda a Sexta', 'Segunda a Sexta',
     'Segunda a Sexta', 'Segunda a Sexta', 'Segunda a Sexta',
     'Sábado'
   ];
-  return days[date.getDay()];
+  const now = date ? null : getServerNow();
+  if (!date && !now) return null;
+  const weekday = date ? null : SERVICE_WEEKDAY_FORMATTER.format(now);
+  const weekdayIndex = date
+    ? date.getUTCDay()
+    : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(weekday);
+  return days[weekdayIndex];
+}
+
+function getServerNow() {
+  if (serverTimeAnchorMs === null || serverTimeAnchorPerformance === null) return null;
+  return new Date(serverTimeAnchorMs + performance.now() - serverTimeAnchorPerformance);
+}
+
+function getServiceDateParts(date) {
+  if (!date) return null;
+  const parts = SERVICE_DATE_FORMATTER.formatToParts(date);
+  return Object.fromEntries(parts
+    .filter(({ type }) => type !== 'literal')
+    .map(({ type, value }) => [type, Number(value)]));
+}
+
+function getCurrentServiceDate() {
+  const parts = getServiceDateParts(getServerNow());
+  return parts
+    ? `${parts.year}-${String(parts.month).padStart(2, '0')}-${String(parts.day).padStart(2, '0')}`
+    : null;
+}
+
+function addCalendarDays(year, month, day, offset) {
+  const date = new Date(Date.UTC(year, month - 1, day + offset));
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth() + 1,
+    day: date.getUTCDate(),
+    weekday: date.getUTCDay(),
+  };
+}
+
+async function synchronizeServerTime() {
+  if (serverTimeSyncInProgress) return;
+  serverTimeSyncInProgress = true;
+  const requestStartedAt = performance.now();
+
+  try {
+    const res = await fetch('/api/time', { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    const serverTimestamp = Date.parse(data?.server_time);
+    if (!Number.isFinite(serverTimestamp) || data?.time_zone !== SERVICE_TIME_ZONE) {
+      throw new Error('Resposta inválida da API de hora do servidor.');
+    }
+
+    const responseReceivedAt = performance.now();
+    serverTimeAnchorMs = serverTimestamp;
+    serverTimeAnchorPerformance = (requestStartedAt + responseReceivedAt) / 2;
+    updateClock();
+    updateDateAndGreeting();
+    if (document.body.dataset.gradeHash
+      && precisionServiceDate !== getCurrentServiceDate()) {
+      await carregarPrecisaoHorarios(document.body.dataset.gradeHash);
+    }
+    if (!filterWasManuallySelected) applyDefaultFilter();
+    renderCards();
+  } catch (error) {
+    console.error('Erro ao sincronizar a hora do servidor:', error);
+    updateClock();
+    updateDateAndGreeting();
+    renderCards();
+  } finally {
+    serverTimeSyncInProgress = false;
+  }
 }
 
 function getDiaLabel(dia) {
@@ -167,30 +260,43 @@ function getMinutesFromTime(t) {
 }
 
 function getCurrentMinutes() {
-  const n = new Date();
-  return n.getHours() * 60 + n.getMinutes();
+  const parts = getServiceDateParts(getServerNow());
+  return parts ? parts.hour * 60 + parts.minute : null;
 }
 
 function getBusMovementStatus() {
   if (allHorarios.length === 0) return null;
 
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const now = getServiceDateParts(getServerNow());
+  if (!now) return null;
+  const currentMinutes = now.hour * 60 + now.minute;
   const trips = [];
 
   for (let dayOffset = -1; dayOffset < 9; dayOffset++) {
-    const serviceDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + dayOffset);
-    const serviceDay = getCurrentDay(serviceDate);
+    const serviceDate = addCalendarDays(now.year, now.month, now.day, dayOffset);
+    const serviceDay = getCurrentDay(new Date(Date.UTC(serviceDate.year, serviceDate.month - 1, serviceDate.day)));
 
     allHorarios.forEach((horario) => {
       if (!horario.dias.includes(serviceDay)) return;
 
       const departureMinutes = dayOffset * 1440 + getMinutesFromTime(horario.horario);
+      const stopDayOffset = dayOffset + horario.parada_dia_offset;
+      const terminalDayOffset = dayOffset + horario.terminal_dia_offset;
       trips.push({
         departure: horario.horario,
         departureMinutes,
-        stopPassageMinutes: departureMinutes + 13,
-        terminalArrivalMinutes: departureMinutes + 32,
+        stopPassageMinutes: stopDayOffset * 1440 + getMinutesFromTime(horario.horario_parada),
+        stopPassageP10Minutes: horario.passage_prediction
+          ? dayOffset * 1440
+            + getMinutesFromTime(horario.passage_prediction.horario_parada_p10)
+            + horario.passage_prediction.parada_dia_offset_p10 * 1440
+          : departureMinutes + 8,
+        stopPassageP90Minutes: horario.passage_prediction
+          ? dayOffset * 1440
+            + getMinutesFromTime(horario.passage_prediction.horario_parada_p90)
+            + horario.passage_prediction.parada_dia_offset_p90 * 1440
+          : departureMinutes + 18,
+        terminalArrivalMinutes: terminalDayOffset * 1440 + getMinutesFromTime(horario.horario_terminal),
       });
     });
   }
@@ -220,8 +326,10 @@ function formatRoutePassageTime(totalMinutes) {
   const minutesOfDay = ((totalMinutes % 1440) + 1440) % 1440;
   const hours = String(Math.floor(minutesOfDay / 60)).padStart(2, '0');
   const minutes = String(minutesOfDay % 60).padStart(2, '0');
-  const date = new Date();
-  date.setDate(date.getDate() + dayOffset);
+  const now = getServiceDateParts(getServerNow());
+  if (!now) return '--';
+  const date = addCalendarDays(now.year, now.month, now.day, dayOffset);
+  const dateForLabel = new Date(Date.UTC(date.year, date.month - 1, date.day));
   const dayLabel =
     dayOffset === 0
       ? 'hoje'
@@ -229,14 +337,24 @@ function formatRoutePassageTime(totalMinutes) {
         ? 'amanhã'
         : dayOffset === -1
           ? 'ontem'
-          : date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+          : dateForLabel.toLocaleDateString('pt-BR', {
+            timeZone: 'UTC',
+            weekday: 'short',
+            day: '2-digit',
+            month: '2-digit',
+          });
 
   return dayLabel + ' às ' + hours + ':' + minutes;
 }
 
 function formatDateFull(d) {
   return d
-    .toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })
+    .toLocaleDateString('pt-BR', {
+      timeZone: SERVICE_TIME_ZONE,
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
     .replace(/^(\d+)\s+de\s+(\w+)/, (_, day, month) => day + ' de ' + month.charAt(0).toUpperCase() + month.slice(1));
 }
 
@@ -276,13 +394,13 @@ function playBeep() {
 //  RELÓGIO, DATA, SAUDAÇÃO
 // ================================================================
 function updateClock() {
-  const n = new Date();
+  const parts = getServiceDateParts(getServerNow());
   const timeStr =
-    String(n.getHours()).padStart(2, '0') +
+    String(parts?.hour ?? '--').padStart(2, '0') +
     ':' +
-    String(n.getMinutes()).padStart(2, '0') +
+    String(parts?.minute ?? '--').padStart(2, '0') +
     ':' +
-    String(n.getSeconds()).padStart(2, '0');
+    String(parts?.second ?? '--').padStart(2, '0');
 
   const clockEl = document.getElementById('clockValue');
   if (clockEl) clockEl.textContent = timeStr;
@@ -292,8 +410,8 @@ function updateClock() {
 }
 
 function updateDateAndGreeting() {
-  const n = new Date();
-  const dateStr = formatDateFull(n);
+  const n = getServerNow();
+  const dateStr = n ? formatDateFull(n) : 'Hora do servidor indisponível';
 
   const dateEl = document.getElementById('fullDate');
   if (dateEl) dateEl.textContent = dateStr;
@@ -301,8 +419,8 @@ function updateDateAndGreeting() {
   const adminDate = document.getElementById('adminDateValue');
   if (adminDate) adminDate.textContent = dateStr;
 
-  const h = n.getHours();
-  let g = h < 12 ? 'Bom dia!' : h < 18 ? 'Boa tarde!' : 'Boa noite!';
+  const hour = getServiceDateParts(n)?.hour;
+  const g = hour === undefined ? 'Horário indisponível' : hour < 12 ? 'Bom dia!' : hour < 18 ? 'Boa tarde!' : 'Boa noite!';
   const greetingEl = document.getElementById('greetingValue');
   if (greetingEl) greetingEl.textContent = g;
 }
@@ -316,7 +434,7 @@ async function fetchWeather() {
 
   if (!el && !adminEl) return;
 
-  const now = Date.now();
+  const now = performance.now();
 
   if (weatherCache && now - weatherCacheTime < WEATHER_CACHE_TTL) {
     if (el) el.textContent = weatherCache;
@@ -374,12 +492,16 @@ async function carregarHorariosDoBanco() {
     const res = await fetch('/api/horarios');
     if (!res.ok) throw new Error('Erro ao carregar horários: ' + res.status);
     const data = await res.json();
+    if (!data || !Array.isArray(data.horarios) || typeof data.grade_hash !== 'string') {
+      throw new Error('Resposta da API de horários inválida.');
+    }
 
-    allHorarios = data.map(({ id, created_at, horario, ...rest }) => ({
+    allHorarios = data.horarios.map(({ id, created_at, ...rest }) => ({
       ...rest,
-      horario: horario.substring(0, 5)
     }));
+    document.body.dataset.gradeHash = data.grade_hash;
     allHorarios.sort((a, b) => a.horario.localeCompare(b.horario));
+    await carregarPrecisaoHorarios(data.grade_hash);
     renderCards();
 
     const adminContent = document.getElementById('adminContent');
@@ -390,8 +512,122 @@ async function carregarHorariosDoBanco() {
     console.error('Erro ao carregar horários do banco:', e);
     if (allHorarios.length === 0) {
       allHorarios = [...horariosFallback];
+      delete document.body.dataset.gradeHash;
       renderCards();
     }
+  }
+}
+
+async function carregarPrecisaoHorarios(gradeHash) {
+  if (precisionFetchInProgress) return;
+  precisionFetchInProgress = true;
+  try {
+    const response = await fetch('/api/precision');
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    if (data?.grade_hash !== gradeHash || data.time_zone !== SERVICE_TIME_ZONE
+      || !Array.isArray(data.estimates)
+      || typeof data.service_date !== 'string') {
+      throw new Error('Resposta de precisão inválida ou referente a outra grade.');
+    }
+
+    precisionServiceDate = data.service_date;
+    const estimates = new Map(data.estimates.map((estimate) => [estimate.schedule_key, estimate]));
+    allHorarios = allHorarios.map((horario) => {
+      const prediction = estimates.get(horario.schedule_key);
+      if (!prediction) return horario;
+      return {
+        ...horario,
+        horario_parada: prediction.horario_parada,
+        parada_dia_offset: prediction.parada_dia_offset,
+        horario_terminal: prediction.horario_terminal,
+        terminal_dia_offset: prediction.terminal_dia_offset,
+        passage_prediction: prediction,
+      };
+    });
+    document.body.dataset.precisionMode = data.mode;
+    document.body.dataset.precisionBacktest = String(data.backtest.evaluated);
+    if (precisionStatus) {
+      precisionStatus.textContent = data.mode === 'adaptativa'
+        ? `Estimativa adaptativa validada: MAE ${data.backtest.adaptive_mae} min, contra ${data.backtest.prior_mae} min do prior, em ${data.backtest.evaluated} previsões.`
+        : `Exibindo o prior; modo sombra avaliado em ${data.backtest.evaluated}/${data.backtest.required} previsões. A adaptação longa exige ${data.n_min} confirmações na faixa horária.`;
+    }
+  } catch (error) {
+    precisionServiceDate = null;
+    delete document.body.dataset.precisionMode;
+    console.error('Erro ao carregar estimativas adaptativas:', error);
+    if (precisionStatus) {
+      precisionStatus.textContent = 'Dados adaptativos indisponíveis; exibindo o prior. Tente novamente mais tarde.';
+    }
+  } finally {
+    precisionFetchInProgress = false;
+  }
+}
+
+function formatPassageRange(horario, prediction) {
+  if (!prediction) {
+    const departure = getMinutesFromTime(horario);
+    return `${formatClockTime(departure + 8)}–${formatClockTime(departure + 18)}`;
+  }
+  return `${prediction.horario_parada_p10}–${prediction.horario_parada_p90}`;
+}
+
+function getPassageModeLabel(prediction) {
+  if (!prediction) return 'prior';
+  if (prediction.mode === 'prior') return `prior · ${prediction.n}/${prediction.n_min} confirmações`;
+  if (prediction.mode === 'sombra') return `prior · modo sombra · ${prediction.n} observações`;
+  return `adaptativa · ${prediction.n} observações`;
+}
+
+function canConfirmPassage(horario, prediction, nowMinutes) {
+  if (!prediction?.can_confirm || !precisionServiceDate
+    || precisionServiceDate !== getCurrentServiceDate() || !horario.schedule_key) return false;
+  const tripKey = `${document.body.dataset.gradeHash}|${horario.schedule_key}|${precisionServiceDate}`;
+  if (confirmedPassageTrips.has(tripKey)) return false;
+  const departureMinutes = getMinutesFromTime(horario.horario);
+  const elapsed = nowMinutes - departureMinutes;
+  return elapsed >= 8 && elapsed <= 120;
+}
+
+const confirmedPassageTrips = new Set();
+
+async function handlePassageConfirmation(event) {
+  const button = event.currentTarget;
+  button.disabled = true;
+  button.textContent = 'Registrando…';
+
+  try {
+    const response = await fetch('/api/precision', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        grade_hash: document.body.dataset.gradeHash,
+        schedule_key: button.dataset.scheduleKey,
+        service_date: button.dataset.serviceDate,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      const error = new Error(data.error || `HTTP ${response.status}`);
+      error.status = response.status;
+      throw error;
+    }
+    confirmedPassageTrips.add(
+      `${document.body.dataset.gradeHash}|${button.dataset.scheduleKey}|${button.dataset.serviceDate}`,
+    );
+    await carregarPrecisaoHorarios(document.body.dataset.gradeHash);
+    renderCards();
+    alert('Obrigado! Confirmação registrada para esta viagem.');
+  } catch (error) {
+    console.error('Erro ao registrar passagem:', error);
+    if (error.status === 409) {
+      await carregarPrecisaoHorarios(document.body.dataset.gradeHash);
+      renderCards();
+    } else {
+      button.disabled = false;
+      button.innerHTML = '<i class="fas fa-check"></i> Confirmar passagem';
+    }
+    alert(error.message || 'Não foi possível registrar a confirmação. Tente novamente.');
   }
 }
 
@@ -403,6 +639,11 @@ function renderCards() {
 
   const nowMin = getCurrentMinutes();
   const diaAtual = getCurrentDay();
+  if (nowMin === null || diaAtual === null) {
+    container.innerHTML = '<div class="empty">Hora do servidor indisponível. Tente novamente.</div>';
+    renderBusStatus();
+    return;
+  }
 
   if (filterIndicator) {
     filterIndicator.textContent = 'Filtro: ' + (currentFilter === 'all' ? 'Todos' : currentFilter);
@@ -429,7 +670,9 @@ function renderCards() {
     sorted.forEach((h, idx) => {
       const departureMinutes = getMinutesFromTime(h.horario);
       const departurePassed = departureMinutes < nowMin;
-      const passed = departureMinutes + 32 < nowMin;
+      const terminalArrivalMinutes =
+        getMinutesFromTime(h.horario_terminal) + h.terminal_dia_offset * 1440;
+      const passed = departurePassed && terminalArrivalMinutes < nowMin;
       const operaHoje = h.dias.includes(diaAtual);
       const isOutroDia = currentFilter === 'all' && !operaHoje;
       let isNext = false;
@@ -443,8 +686,16 @@ function renderCards() {
         (passed ? ' passed' : '') +
         (isNext ? ' next' : '') +
         (isOutroDia ? ' outro-dia' : '');
-      const stopPassageTime = formatClockTime(departureMinutes + 13);
-      const terminalArrivalTime = formatClockTime(departureMinutes + 32);
+      const prediction = h.passage_prediction;
+      const terminalArrivalTime = h.horario_terminal;
+      const passageRange = formatPassageRange(h.horario, prediction);
+      const passageLabel = getPassageModeLabel(prediction);
+      const confirmButton = canConfirmPassage(h, prediction, nowMin)
+        ? '<button class="passage-confirm-button" data-schedule-key="' + h.schedule_key +
+          '" data-service-date="' + precisionServiceDate +
+          '" title="Confirme somente no momento em que o ônibus passar pela parada"' +
+          '><i class="fas fa-check"></i> Confirmar passagem</button>'
+        : '';
 
       let diaBadge = '';
       if (isOutroDia) {
@@ -466,14 +717,16 @@ function renderCards() {
         sanitize(h.horario) +
         '</div>' +
         '<div class="embarque"><i class="fas fa-location-dot"></i> ' +
-        'Parada Bela Vista ≈ ' + stopPassageTime + ' · Terminal ≈ ' + terminalArrivalTime +
+        'Parada Bela Vista ' + passageRange + ' (' + passageLabel + ')' +
+        ' · Terminal ≈ ' + terminalArrivalTime +
         '</div>' +
         '<div class="dias">' +
         h.dias.map((d) => '<span>' + sanitize(d) + '</span>').join('') +
         '</div>' +
         diaBadge +
+        confirmButton +
         '<button class="share-btn" data-destino="Bela Vista" data-embarque="Terminal" data-parada="' +
-        stopPassageTime +
+        passageRange +
         '" data-horario="' +
         sanitize(h.horario) +
         '" data-terminal-chegada="' +
@@ -487,6 +740,9 @@ function renderCards() {
       btn.removeEventListener('click', handleShare);
       btn.addEventListener('click', handleShare);
     });
+    document.querySelectorAll('.passage-confirm-button').forEach((btn) => {
+      btn.addEventListener('click', handlePassageConfirmation);
+    });
   }
 
   renderBusStatus();
@@ -495,6 +751,13 @@ function renderCards() {
 function renderBusStatus() {
   const statusContainer = document.getElementById('busStatus');
   if (!statusContainer) return;
+
+  if (!getServerNow()) {
+    statusContainer.innerHTML =
+      '<div class="bus-status-item bus-status-item--empty"><span class="bus-status-badge">HORA INDISPONÍVEL</span>' +
+      '<p>Não foi possível obter a hora do servidor para calcular a situação da viagem.</p></div>';
+    return;
+  }
 
   const status = getBusMovementStatus();
   if (!status) {
@@ -511,7 +774,9 @@ function renderBusStatus() {
       '<div class="bus-status-heading"><span class="bus-status-badge">EM ROTA PARA A PARADA</span>' +
       '<strong>Terminal → Bela Vista</strong></div>' +
       '<p>Saída do Terminal às ' + formatRoutePassageTime(trip.departureMinutes) +
-      '. Vá à parada Bela Vista; passagem prevista às ' + formatRoutePassageTime(trip.stopPassageMinutes) + '.</p>' +
+      '. Vá à parada Bela Vista; janela estimada de passagem entre ' +
+      formatRoutePassageTime(trip.stopPassageP10Minutes) + ' e ' +
+      formatRoutePassageTime(trip.stopPassageP90Minutes) + '.</p>' +
       '</div>'
     );
   });
@@ -521,7 +786,8 @@ function renderBusStatus() {
       '<div class="bus-status-item bus-status-item--returning">' +
       '<div class="bus-status-heading"><span class="bus-status-badge">PASSOU NA PARADA · EM ROTA AO TERMINAL</span>' +
       '<strong>Bela Vista → Terminal</strong></div>' +
-      '<p>Passagem em Bela Vista às ' + formatRoutePassageTime(trip.stopPassageMinutes) +
+      '<p>Passagem em Bela Vista entre ' + formatRoutePassageTime(trip.stopPassageP10Minutes) +
+      ' e ' + formatRoutePassageTime(trip.stopPassageP90Minutes) +
       '. Chegada estimada ao Terminal às ' + formatRoutePassageTime(trip.terminalArrivalMinutes) + '.</p>' +
       '</div>'
     );
@@ -575,6 +841,7 @@ function handleShare(e) {
 // ================================================================
 function verificarAlertas() {
   const agora = getCurrentMinutes();
+  if (agora === null) return;
   const filtered =
     currentFilter === 'all'
       ? [...allHorarios]
@@ -611,7 +878,7 @@ function verificarAlertas() {
     if (alertSubMsg) {
       alertSubMsg.textContent =
         '⏰ Alerta às ' +
-        new Date().toLocaleTimeString() +
+        getServerNow().toLocaleTimeString('pt-BR', { timeZone: SERVICE_TIME_ZONE }) +
         ' - ' +
         proximo.destino +
         ' às ' +
@@ -619,6 +886,7 @@ function verificarAlertas() {
     }
     if (alertModal) {
       alertModal.classList.add('active');
+      alertModal.dataset.gradeHash = document.body.dataset.gradeHash || '';
     }
 
     const msg =
@@ -643,7 +911,30 @@ function initFilters() {
     return;
   }
 
+  applyDefaultFilter();
+  btns.forEach((btn) => {
+    btn.addEventListener('click', function (e) {
+      if (!rateLimit('filter-click', 2, 2000)) return;
+      filterWasManuallySelected = true;
+      btns.forEach((b) => b.classList.remove('active'));
+      this.classList.add('active');
+      currentFilter = this.dataset.filter;
+      renderCards();
+    });
+  });
+}
+
+function applyDefaultFilter() {
+  const btns = document.querySelectorAll('.filter-btn');
+  if (!btns || btns.length === 0) return;
   const hoje = getCurrentDay();
+  if (!hoje) {
+    currentFilter = 'all';
+    const allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+    if (allBtn) allBtn.classList.add('active');
+    return;
+  }
+
   btns.forEach((btn) => btn.classList.remove('active'));
   let found = false;
   btns.forEach((btn) => {
@@ -659,15 +950,6 @@ function initFilters() {
     currentFilter = 'all';
   }
 
-  btns.forEach((btn) => {
-    btn.addEventListener('click', function (e) {
-      if (!rateLimit('filter-click', 2, 2000)) return;
-      btns.forEach((b) => b.classList.remove('active'));
-      this.classList.add('active');
-      currentFilter = this.dataset.filter;
-      renderCards();
-    });
-  });
 }
 
 // ================================================================
@@ -848,11 +1130,19 @@ async function salvarHorariosNoBanco() {
     });
     if (!res.ok) throw new Error('Erro ao salvar: ' + res.status);
     const data = await res.json();
-    console.log('Horários salvos no Supabase:', data);
+    if (!data || !Array.isArray(data.horarios) || typeof data.grade_hash !== 'string') {
+      throw new Error('Resposta da API de horários inválida.');
+    }
+    allHorarios = data.horarios.map(({ id, created_at, ...horario }) => horario);
+    document.body.dataset.gradeHash = data.grade_hash;
+    await carregarPrecisaoHorarios(data.grade_hash);
+    console.log('Horários salvos no Supabase:', data.grade_hash);
     showAdminMsg('✅ Horários salvos com sucesso no servidor!', 'success');
+    return data;
   } catch (e) {
     console.error('Erro ao salvar horários:', e);
     showAdminMsg('❌ Erro ao salvar no servidor. Tente novamente.', 'error');
+    throw e;
   }
 }
 
@@ -860,6 +1150,13 @@ async function salvarHorariosNoBanco() {
 //  INICIALIZAÇÃO
 // ================================================================
 function init() {
+  synchronizeServerTime();
+  setInterval(synchronizeServerTime, 300000);
+  window.addEventListener('focus', synchronizeServerTime);
+  setInterval(() => {
+    const gradeHash = document.body.dataset.gradeHash;
+    if (gradeHash) carregarPrecisaoHorarios(gradeHash);
+  }, 300000);
   updateDateAndGreeting();
   updateClock();
   setInterval(updateClock, 1000);
@@ -959,7 +1256,6 @@ function init() {
           destino: sanitize(destino),
           horario: sanitize(horario),
           mensagem: sanitize(mensagem),
-          timestamp: new Date().toISOString(),
           userAgent: navigator.userAgent,
           url: window.location.href
         };

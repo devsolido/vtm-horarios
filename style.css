@@ -561,6 +561,26 @@ body.light-mode .bus-status-item--empty .bus-status-badge {
   margin-bottom: 4px;
 }
 
+.card .passage-confirm-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 7px 10px;
+  border: 1px solid var(--accent-primary);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.card .passage-confirm-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
 .card .dias span {
   background: var(--badge-bg);
   color: var(--badge-color);
