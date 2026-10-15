@@ -156,7 +156,9 @@ export default async function handler(req, res) {
   const supabaseUrl = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceKey) {
-    return res.status(500).json({ error: 'Serviço de precisão não configurado.' });
+    return res.status(503).json({
+      error: 'Confirmação temporariamente indisponível. O administrador precisa configurar o registro adaptativo.',
+    });
   }
 
   try {

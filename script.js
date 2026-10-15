@@ -580,13 +580,15 @@ function getPassageModeLabel(prediction) {
 }
 
 function canConfirmPassage(horario, prediction, nowMinutes) {
-  if (!prediction?.can_confirm || !precisionServiceDate
-    || precisionServiceDate !== getCurrentServiceDate() || !horario.schedule_key) return false;
-  const tripKey = `${document.body.dataset.gradeHash}|${horario.schedule_key}|${precisionServiceDate}`;
+  const serviceDate = getCurrentServiceDate();
+  if (!serviceDate || !document.body.dataset.gradeHash || !horario.schedule_key
+    || !horario.dias.includes(getCurrentDay())) return false;
+  if (prediction && !prediction.can_confirm) return false;
+  const tripKey = `${document.body.dataset.gradeHash}|${horario.schedule_key}|${serviceDate}`;
   if (confirmedPassageTrips.has(tripKey)) return false;
   const departureMinutes = getMinutesFromTime(horario.horario);
   const elapsed = nowMinutes - departureMinutes;
-  return elapsed >= 8 && elapsed <= 120;
+  return elapsed >= 0 && elapsed <= 120;
 }
 
 const confirmedPassageTrips = new Set();
@@ -692,7 +694,7 @@ function renderCards() {
       const passageLabel = getPassageModeLabel(prediction);
       const confirmButton = canConfirmPassage(h, prediction, nowMin)
         ? '<button class="passage-confirm-button" data-schedule-key="' + h.schedule_key +
-          '" data-service-date="' + precisionServiceDate +
+          '" data-service-date="' + getCurrentServiceDate() +
           '" title="Confirme somente no momento em que o ônibus passar pela parada"' +
           '><i class="fas fa-check"></i> Confirmar passagem</button>'
         : '';
